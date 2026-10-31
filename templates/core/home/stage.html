@@ -1,0 +1,20 @@
+{# For organisers and venue owners #}
+<section class="ee-stage ee-wrap" aria-labelledby="ee-stage-title">
+    <h2 id="ee-stage-title" class="ee-h1 ee-stage-title">Got a stage?</h2>
+    <div class="ee-stage-body">
+        <p>Put your event or your venue on the wall. Sell tiered tickets, take bookings for your hall, and get paid through bKash, Nagad or card, all from one dashboard.</p>
+        <p class="ee-stage-note">
+            {% if not user.is_authenticated %}
+                Make a free account, then apply to list as an organiser or venue manager.
+            {% elif can_list %}
+                You&rsquo;re set up to list. Go ahead.
+            {% else %}
+                Apply once for an organiser or venue manager account; an admin approves it.
+            {% endif %}
+        </p>
+        <div class="ee-stage-actions">
+            <a class="ee-pill ee-pill--ink" href="{{ list_event_url }}">List an event</a>
+            <a class="ee-pill ee-pill--line" href="{{ list_venue_url }}">List a venue</a>
+        </div>
+    </div>
+</section>

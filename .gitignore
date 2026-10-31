@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Local database and user uploads
+db.sqlite3
+*.sqlite3
+media/
+
+# Collected static files
+staticfiles/
+
+# Logs
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Database copies taken before destructive commands
+backups/
+
+# Local demo accounts (seed_demo prints them when it finishes)
+DEMO_LOGINS.txt
+
+# AI tooling and its working files
+.claude/
+.impeccable/
+.github/copilot-instructions.md
+
+# Internal working notes and coursework
+PROGRESS.md
+PRODUCT.md
+DESIGN.md
+docs/

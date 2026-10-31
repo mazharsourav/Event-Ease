@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Upgrade request &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'users:admin_dashboard' %}">&larr; Admin dashboard</a>
+    {% include 'components/page_head.html' with title="Upgrade request" intro=upgrade_request.get_requested_role_display %}
+
+    <div class="ee-actions-inline">
+        <span class="ee-stamp ee-stamp--{{ upgrade_request.status }}">{{ upgrade_request.get_status_display }}</span>
+        <span class="ee-tag">{{ upgrade_request.user.get_full_name|default:upgrade_request.user.username }} &rarr; {{ upgrade_request.get_requested_role_display }}</span>
+    </div>
+
+    <div class="ee-panels">
+        <section class="ee-panel ee-stock">
+            <h2 class="ee-panel-title">The person</h2>
+            <dl class="ee-summary">
+                <div class="ee-summary-line"><dt>Name</dt><dd>{{ upgrade_request.user.get_full_name|default:upgrade_request.user.username }}</dd></div>
+                <div class="ee-summary-line"><dt>Username</dt><dd>@{{ upgrade_request.user.username }}</dd></div>
+                <div class="ee-summary-line"><dt>Email</dt><dd>{{ upgrade_request.user.email }}</dd></div>
+                <div class="ee-summary-line"><dt>Phone</dt><dd>{{ upgrade_request.phone|default:"Not given" }}</dd></div>
+                <div class="ee-summary-line"><dt>Current role</dt><dd>{{ upgrade_request.user.profile.get_role_display }}</dd></div>
+                <div class="ee-summary-line"><dt>Member since</dt><dd>{{ upgrade_request.user.date_joined|date:"j M Y" }}</dd></div>
+            </dl>
+        </section>
+
+        <section class="ee-panel ee-stock">
+            <h2 class="ee-panel-title">The application</h2>
+            <dl class="ee-summary">
+                <div class="ee-summary-line"><dt>Role</dt><dd>{{ upgrade_request.get_requested_role_display }}</dd></div>
+                <div class="ee-summary-line"><dt>Organisation</dt><dd>{{ upgrade_request.company_name|default:"Not given" }}</dd></div>
+                <div class="ee-summary-line"><dt>Website</dt><dd>{% if upgrade_request.portfolio %}<a href="{{ upgrade_request.portfolio }}" target="_blank" rel="noopener">{{ upgrade_request.portfolio }}</a>{% else %}Not given{% endif %}</dd></div>
+                <div class="ee-summary-line"><dt>Address</dt><dd>{{ upgrade_request.address|default:"Not given" }}</dd></div>
+                <div class="ee-summary-line"><dt>Sent</dt><dd>{{ upgrade_request.created_at|date:"j M Y, g:i A" }}</dd></div>
+                {% if upgrade_request.reviewed_by %}<div class="ee-summary-line"><dt>Reviewed by</dt><dd>{{ upgrade_request.reviewed_by.get_full_name|default:upgrade_request.reviewed_by.username }}</dd></div>{% endif %}
+            </dl>
+        </section>
+    </div>
+
+    {% if upgrade_request.experience %}
+    <section class="ee-panel ee-stock ee-narrow-wide">
+        <h2 class="ee-panel-title">Experience</h2>
+        <div class="ee-panel-text">{{ upgrade_request.experience|linebreaks }}</div>
+    </section>
+    {% endif %}
+
+    <section class="ee-panel ee-stock ee-narrow-wide">
+        <h2 class="ee-panel-title">Why they want it</h2>
+        <div class="ee-panel-text">{{ upgrade_request.reason|linebreaks }}</div>
+    </section>
+
+    {% if upgrade_request.status == 'pending' %}
+        <div class="ee-actions-inline">
+            <form method="post" action="{% url 'users:process_upgrade_request' upgrade_request.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="ee-pill ee-pill--ink" data-confirm="Approve this request?">Approve</button>
+            </form>
+            <form method="post" action="{% url 'users:process_upgrade_request' upgrade_request.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="ee-pill ee-pill--line" data-confirm="Reject this request?">Reject</button>
+            </form>
+        </div>
+    {% else %}
+        <p class="ee-note-text">This request was {{ upgrade_request.get_status_display|lower }}{% if upgrade_request.reviewed_by %} by {{ upgrade_request.reviewed_by.get_full_name|default:upgrade_request.reviewed_by.username }}{% endif %} on {{ upgrade_request.updated_at|date:"j M Y, g:i A" }}.</p>
+    {% endif %}
+</div>
+{% endblock %}

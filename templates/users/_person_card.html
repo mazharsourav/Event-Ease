@@ -1,0 +1,34 @@
+{% comment %}
+    A person in a results grid. Context: person (a User), and optionally person.friendship_status
+    ("none", "pending_sent", "pending_received", "friends"), is_friend (True on the friends list).
+{% endcomment %}
+<li class="ee-person-card" data-name="{{ person.get_full_name|default:person.username|lower }}" data-username="{{ person.username|lower }}">
+    {% include 'components/pic.html' with size='lg' %}
+    <h3 class="ee-person-card-name">{{ person.get_full_name|default:person.username }}</h3>
+    <p class="ee-person-card-handle">@{{ person.username }}</p>
+    {% if person.is_superuser %}<p class="ee-person-card-role">Admin</p>{% elif person.profile.role %}<p class="ee-person-card-role">{{ person.profile.get_role_display }}</p>{% endif %}
+
+    <div class="ee-person-card-actions">
+        {% if is_friend %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'users:conversation' person.id %}">Message</a>
+        {% elif person.friendship_status == 'none' %}
+            <form method="post" action="{% url 'users:send_friend_request' person.id %}">
+                {% csrf_token %}
+                <button type="submit" class="ee-pill ee-pill--ink">Add friend</button>
+            </form>
+        {% elif person.friendship_status == 'pending_sent' %}
+            <span class="ee-stamp ee-stamp--pending">Request sent</span>
+        {% elif person.friendship_status == 'pending_received' %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'users:friends' %}">Answer request</a>
+        {% elif person.friendship_status == 'friends' %}
+            <span class="ee-stamp ee-stamp--confirmed">Friends</span>
+        {% endif %}
+        <a class="ee-pill ee-pill--line" href="{% url 'users:view_user_profile' person.id %}">Profile</a>
+        {% if is_friend %}
+            <form method="post" action="{% url 'users:unfriend_user' person.id %}">
+                {% csrf_token %}
+                <button type="submit" class="ee-pill ee-pill--line" data-confirm="Remove {{ person.get_full_name|default:person.username }} from your friends?">Remove</button>
+            </form>
+        {% endif %}
+    </div>
+</li>

@@ -1,0 +1,56 @@
+/* Base: reset, the page surface, focus and the guard against sideways scrolling. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scrollbar-color: var(--ink) var(--paper); }
+@supports not (overflow: clip) { html { overflow-x: hidden; } }
+
+body.ee {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* Nothing on the site is allowed to widen the page. Components are sized to their container (never 100vw);
+     this is the safety net for anything that still overhangs, and unlike `hidden` it keeps position: sticky working. */
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .3s, color .3s;
+}
+
+/* Riso grain on the paper only: it sits behind the content, so cards, buttons, fields and text stay crisp. */
+body.ee::after {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: var(--grain); mix-blend-mode: var(--grain-blend);
+  -webkit-mask: url('../../img/texture/grain.svg') 0 0 / 240px 240px repeat;
+          mask: url('../../img/texture/grain.svg') 0 0 / 240px 240px repeat;
+}
+
+/* The reset sits at zero specificity (:where) so any component or page rule can override it without !important */
+:where(.ee) :is(h1, h2, h3, p, figure, blockquote, ol, ul) { margin: 0; }
+:where(.ee) a { color: inherit; }
+:where(.ee) img { max-width: 100%; }
+:where(.ee) :is(input, select, textarea, button) { font: inherit; color: inherit; }
+:where(.ee) :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.ee ::selection { background: var(--ink); color: var(--paper); }
+
+/* The hidden attribute always wins over a component's own display value */
+[hidden] { display: none !important; }
+
+/* Hidden visually, still read by screen readers */
+.ee-visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+.ee-skip {
+  position: absolute; z-index: 100; left: 12px; top: -80px; padding: 12px 18px;
+  background: var(--ink); color: var(--paper); font-weight: 800; text-transform: uppercase; text-decoration: none;
+}
+.ee-skip:focus { top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  body.ee { transition: none; }
+}

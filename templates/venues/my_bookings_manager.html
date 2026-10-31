@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Booking requests &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/manage.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'venues:my_venues' %}">&larr; My venues</a>
+    {% include 'components/page_head.html' with title="Booking requests" intro="Review who wants your venues, and when." %}
+
+    <div class="ee-chips" role="group" aria-label="Status">
+        <a class="ee-chip" href="?status=all"{% if current_status == 'all' %} aria-current="true"{% endif %}>All {{ total_count }}</a>
+        <a class="ee-chip" href="?status=pending"{% if current_status == 'pending' %} aria-current="true"{% endif %}>Pending {{ pending_count }}</a>
+        <a class="ee-chip" href="?status=confirmed"{% if current_status == 'confirmed' %} aria-current="true"{% endif %}>Confirmed {{ confirmed_count }}</a>
+        <a class="ee-chip" href="?status=completed"{% if current_status == 'completed' %} aria-current="true"{% endif %}>Completed {{ completed_count }}</a>
+        <a class="ee-chip" href="?status=cancelled"{% if current_status == 'cancelled' %} aria-current="true"{% endif %}>Cancelled {{ cancelled_count }}</a>
+        <a class="ee-chip" href="?status=rejected"{% if current_status == 'rejected' %} aria-current="true"{% endif %}>Rejected {{ rejected_count }}</a>
+    </div>
+
+    <form method="get" class="ee-searchbar ee-narrow" role="search">
+        <input type="hidden" name="status" value="{{ current_status }}">
+        <div class="ee-form-field">
+            <label class="ee-form-label" for="q">Search</label>
+            <input type="search" id="q" name="q" value="{{ search_query }}" placeholder="Event title, client or venue">
+        </div>
+        <button type="submit" class="ee-pill ee-pill--ink">Search</button>
+    </form>
+
+    {% if bookings %}
+        <ul class="ee-rows">
+            {% for booking in bookings %}{% include 'venues/_manager_row.html' %}{% endfor %}
+        </ul>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">Nothing here</h2>
+            <p class="ee-blank-text">{% if current_status == 'all' %}No one has asked to book your venues yet.{% else %}No {{ current_status }} bookings.{% endif %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

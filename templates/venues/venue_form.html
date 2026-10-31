@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{% if form.instance.pk %}Edit venue{% else %}List a venue{% endif %} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/manage.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% if form.instance.pk %}
+        <a class="ee-back" href="{% url 'venues:venue_detail' form.instance.pk %}">&larr; {{ form.instance.name }}</a>
+        {% include 'components/page_head.html' with title="Edit venue" %}
+    {% else %}
+        <a class="ee-back" href="{% url 'venues:my_venues' %}">&larr; My venues</a>
+        {% include 'components/page_head.html' with title="List a venue" intro="Tell people what your hall or ground offers." %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="ee-form ee-narrow-wide">
+        {% csrf_token %}
+        {% include 'components/form_errors.html' %}
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">1. The venue</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.name label="Name" %}
+                {% include 'components/form_field.html' with field=form.venue_type label="Type" %}
+            </div>
+            <div class="ee-form-row ee-form-row--1">
+                {% include 'components/form_field.html' with field=form.description label="Description" help="What kind of events suit it, what is nearby, anything that sells it." %}
+            </div>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.capacity label="Capacity" help="The most people it can hold." %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">2. Photos</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.main_image label="Main photo" %}
+                {% include 'components/form_field.html' with field=form.images label="More photos" help="Pick several at once. Up to 5 MB each." %}
+            </div>
+            {% if form.instance.pk and form.instance.images.exists %}
+                <ul class="ee-image-grid">
+                    {% for image in form.instance.images.all %}
+                        <li><img src="{{ image.image.url }}" alt="Photo {{ forloop.counter }}"><span class="ee-tag">{% if image.is_primary %}Main{% else %}Photo {{ forloop.counter }}{% endif %}</span></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">3. Where</legend>
+            <div class="ee-form-row ee-form-row--1">
+                {% include 'components/form_field.html' with field=form.address label="Address" %}
+            </div>
+            <div class="ee-form-row ee-form-row--3">
+                {% include 'components/form_field.html' with field=form.city label="City" %}
+                {% include 'components/form_field.html' with field=form.state label="Area or division" %}
+                {% include 'components/form_field.html' with field=form.zipcode label="Postcode" %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">4. Price</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.price_per_hour label="Per hour (&#2547;)" %}
+                {% include 'components/form_field.html' with field=form.price_per_day label="Per day (&#2547;)" help="Optional." %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">5. What&rsquo;s included</legend>
+            <div class="ee-form-row ee-form-row--3">
+                <label class="ee-check">{{ form.has_parking }}<span>Parking</span></label>
+                <label class="ee-check">{{ form.has_wifi }}<span>WiFi</span></label>
+                <label class="ee-check">{{ form.has_catering }}<span>Catering</span></label>
+                <label class="ee-check">{{ form.has_av_equipment }}<span>A/V equipment</span></label>
+                <label class="ee-check">{{ form.has_air_conditioning }}<span>Air conditioning</span></label>
+                <label class="ee-check">{{ form.has_accessibility }}<span>Accessible</span></label>
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">6. Contact and availability</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.contact_email label="Email" %}
+                {% include 'components/form_field.html' with field=form.contact_phone label="Phone" %}
+            </div>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.website label="Website" help="Start with http:// or https://" %}
+            </div>
+            <label class="ee-check">{{ form.is_available }}<span>This venue is open for booking requests</span></label>
+        </fieldset>
+
+        <div class="ee-form-actions">
+            <button type="submit" class="ee-pill ee-pill--ink">{% if form.instance.pk %}Save changes{% else %}List venue{% endif %}</button>
+            <a class="ee-pill ee-pill--line" href="{% if form.instance.pk %}{% url 'venues:venue_detail' form.instance.pk %}{% else %}{% url 'venues:my_venues' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% load core_tags %}
+{# Who lists and runs the venue #}
+<div class="ee-person">
+    <span class="ee-tape" aria-hidden="true"></span>
+    <span class="ee-person-avatar">
+        {% if venue.manager.profile.avatar %}<img src="{{ venue.manager.profile.avatar.url }}" alt="">{% else %}{{ venue.manager|initials }}{% endif %}
+    </span>
+    <span class="ee-person-name"><a href="{% url 'users:view_user_profile' venue.manager.id %}">{{ venue.manager.get_full_name|default:venue.manager.username }}</a></span>
+    <span class="ee-person-role">Listed by</span>
+    {% if venue.manager.profile.bio %}<p class="ee-person-more">{{ venue.manager.profile.bio|truncatewords:24 }}</p>{% endif %}
+    {% if venue.manager.email %}<p class="ee-person-more"><a href="mailto:{{ venue.manager.email }}">{{ venue.manager.email }}</a></p>{% endif %}
+</div>

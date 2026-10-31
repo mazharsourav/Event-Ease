@@ -1,0 +1,83 @@
+{% load humanize %}
+{% comment %}
+    One booking in the dashboard lists.
+    Context: kind ("event" or "venue"), mode ("upcoming", "past", "confirmed", "pending", "cancelled"), booking.
+{% endcomment %}
+<li class="ee-row ee-row--noimg">
+    <div class="ee-row-body">
+        {% if kind == 'event' %}
+            <h3 class="ee-row-title"><a href="{% url 'events:event_detail' booking.event.pk %}">{{ booking.event.title }}</a></h3>
+            <p class="ee-row-meta">
+                {{ booking.event.start_date|date:"D j M Y, g:i A" }} &middot; {{ booking.event.venue_name|default:"Venue to be announced" }}
+                &middot; {{ booking.attendees_count }} ticket{{ booking.attendees_count|pluralize }}
+                &middot; &#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}
+            </p>
+        {% else %}
+            <h3 class="ee-row-title"><a href="{% url 'venues:venue_detail' booking.venue.pk %}">{{ booking.venue.name }}</a></h3>
+            <p class="ee-row-meta">
+                {{ booking.event_title }} &middot; {{ booking.start_date|date:"D j M Y, g:i A" }} to {{ booking.end_date|date:"D j M, g:i A" }}
+                &middot; {% if mode == 'cancelled' %}Refund {% endif %}&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}
+            </p>
+            {% if mode == 'confirmed' %}<p class="ee-row-meta">{{ booking.review_status }}</p>{% endif %}
+        {% endif %}
+    </div>
+
+    <div class="ee-row-side">
+        <span class="ee-stamp ee-stamp--{% if mode == 'upcoming' %}pending{% elif mode == 'past' %}completed{% else %}{{ mode }}{% endif %}">
+            {% if mode == 'upcoming' %}Upcoming{% elif mode == 'past' %}Completed{% else %}{{ mode|capfirst }}{% endif %}
+        </span>
+
+        {% if kind == 'event' %}
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_detail' booking.event.pk %}">View event</a>
+            {% if booking.status == 'confirmed' or mode == 'past' %}
+                {% if booking.has_ticket and mode != 'past' %}
+                    <a class="ee-pill ee-pill--ink" href="{% url 'events:download_ticket' booking.pk %}">Ticket</a>
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:download_event_invoice' booking.id %}">Invoice</a>
+                {% else %}
+                    <a class="ee-pill ee-pill--ink" href="{% url 'users:download_event_invoice' booking.id %}">Invoice</a>
+                {% endif %}
+            {% else %}
+                <form method="post" action="{% url 'users:cancel_booking' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_type" value="event">
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <button type="submit" class="ee-pill ee-pill--line" data-confirm="Cancel this booking?">Cancel</button>
+                </form>
+            {% endif %}
+            {% if mode == 'past' %}
+                {% if booking.can_review %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'reviews:submit_event_review' booking.event.id %}">Write a review</a>
+                {% elif booking.user_review %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'reviews:event_reviews' booking.event.id %}">Your review</a>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_detail' booking.venue.pk %}">View venue</a>
+            <a class="ee-pill ee-pill--line" href="{% url 'venues:booking_details' booking.pk %}">Details</a>
+            {% if mode == 'pending' %}
+                <form method="post" action="{% url 'users:cancel_booking' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_type" value="venue">
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <button type="submit" class="ee-pill ee-pill--line" data-confirm="Cancel this request?">Cancel request</button>
+                </form>
+            {% elif mode == 'upcoming' and booking.status != 'confirmed' %}
+                <form method="post" action="{% url 'users:cancel_booking' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_type" value="venue">
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <button type="submit" class="ee-pill ee-pill--line" data-confirm="Cancel this booking?">Cancel</button>
+                </form>
+            {% elif mode != 'cancelled' %}
+                <a class="ee-pill ee-pill--ink" href="{% url 'users:download_venue_invoice' booking.id %}">Invoice</a>
+            {% endif %}
+            {% if mode == 'confirmed' or mode == 'past' %}
+                {% if booking.user_review %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'reviews:venue_reviews' booking.venue.id %}">Your review</a>
+                {% elif booking.can_review %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'reviews:submit_venue_review' booking.venue.id %}">Leave a review</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+</li>

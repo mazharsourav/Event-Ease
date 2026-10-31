@@ -1,0 +1,22 @@
+{% comment %}
+    Venue card. Context: venue.
+    Uses the first gallery image, then the main image, then a typeset plate.
+{% endcomment %}
+{% load humanize %}
+{% with primary_image=venue.images.all|first %}
+<a class="ee-hall{% if not primary_image and not venue.main_image %} ee-hall--plate{% endif %}" href="{% url 'venues:venue_detail' venue.pk %}">
+    <span class="ee-tape" aria-hidden="true"></span>
+    {% if primary_image %}
+        <span class="ee-hall-img"><img src="{{ primary_image.image.url }}" alt="" loading="lazy"></span>
+    {% elif venue.main_image %}
+        <span class="ee-hall-img"><img src="{{ venue.main_image.url }}" alt="" loading="lazy"></span>
+    {% else %}
+        <span class="ee-hall-img ee-gig" aria-hidden="true"><b>{{ venue.name }}</b><small>{{ venue.get_venue_type_display }}</small></span>
+    {% endif %}
+    <span class="ee-hall-name">{{ venue.name }}</span>
+    <span class="ee-hall-facts">
+        <span>{{ venue.city }} &middot; {{ venue.capacity|intcomma }} people</span>
+        <span class="ee-hall-price">{% if venue.price_per_day %}&#2547;{{ venue.price_per_day|floatformat:0|intcomma }} / day{% else %}Ask for a quote{% endif %}</span>
+    </span>
+</a>
+{% endwith %}

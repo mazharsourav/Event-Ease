@@ -1,0 +1,16 @@
+/* Review note: a short quote on white stock, with its star rating. */
+
+.ee-note {
+  position: relative; padding: 26px 24px 22px;
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow);
+  transform: rotate(var(--r, 0deg));
+}
+
+.ee-stars { display: flex; gap: 2px; }
+.ee-stars svg { flex: none; width: 18px; height: 18px; fill: none; stroke: var(--stock-ink); stroke-width: 1.6; stroke-linejoin: round; }
+.ee-stars svg.on { fill: var(--stock-ink); }
+
+.ee-note blockquote { margin: 14px 0 16px; }
+.ee-note-title { margin-bottom: 8px; font-weight: 800; font-size: 21px; line-height: 1.1; text-transform: uppercase; }
+.ee-note-body { font-size: 16px; line-height: 1.5; }
+.ee-note figcaption { font-size: 14px; font-weight: 600; color: var(--stock-muted); }

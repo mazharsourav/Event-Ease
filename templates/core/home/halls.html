@@ -1,0 +1,20 @@
+{# Venues: a black band of white venue cards, with torn paper edges top and bottom #}
+<section class="ee-halls ee-band" aria-labelledby="ee-halls-title">
+    <span class="ee-torn ee-torn--top ee-torn--halls-top" aria-hidden="true"></span>
+    <div class="ee-wrap">
+        <div class="ee-head">
+            <h2 id="ee-halls-title" class="ee-h2">Halls &amp; grounds</h2>
+            <a class="ee-more" href="{% url 'venues:venue_list' %}">Every venue <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+        {% if recent_venues %}
+            <div class="ee-halls-grid">
+                {% for venue in recent_venues %}
+                    {% include 'components/hall_card.html' %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="ee-empty">No venues listed yet. <a href="{{ list_venue_url }}">List the first one</a>.</p>
+        {% endif %}
+    </div>
+    <span class="ee-torn ee-torn--halls-bottom" aria-hidden="true"></span>
+</section>

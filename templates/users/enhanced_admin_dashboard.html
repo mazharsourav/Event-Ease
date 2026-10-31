@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Admin &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="Admin" intro="People, content and requests across EventEase." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_users|intcomma }}</b><span>People</span></li>
+        <li class="ee-stat"><b>{{ total_events|intcomma }}</b><span>Events</span></li>
+        <li class="ee-stat"><b>{{ total_venues|intcomma }}</b><span>Venues</span></li>
+        <li class="ee-stat"><b>{{ total_event_bookings|add:total_venue_bookings|intcomma }}</b><span>Bookings</span></li>
+        <li><a class="ee-stat" href="{% url 'users:admin_reviews_management' %}"><b>{{ total_event_reviews|add:total_venue_reviews|add:total_site_reviews|intcomma }}</b><span>Reviews &rarr;</span></a></li>
+        <li><a class="ee-stat" href="{% url 'users:admin_comments_management' %}"><b>{{ total_event_comments|add:total_venue_comments|intcomma }}</b><span>Comments &rarr;</span></a></li>
+        <li class="ee-stat"><b>&#2547;{{ revenue.total|floatformat:0|intcomma }}</b><span>Taken</span></li>
+    </ul>
+
+    <section data-ee-tabs aria-label="Admin sections">
+        <div class="ee-tabs" role="tablist">
+            <button type="button" class="ee-tab" role="tab" id="tab-people" aria-controls="panel-people" aria-selected="true">People</button>
+            <button type="button" class="ee-tab" role="tab" id="tab-content" aria-controls="panel-content" aria-selected="false">Content</button>
+            <button type="button" class="ee-tab" role="tab" id="tab-activity" aria-controls="panel-activity" aria-selected="false">Reviews</button>
+            <button type="button" class="ee-tab" role="tab" id="tab-money" aria-controls="panel-money" aria-selected="false">Money</button>
+            <button type="button" class="ee-tab" role="tab" id="tab-roles" aria-controls="panel-roles" aria-selected="false">Role requests <span class="ee-tab-count">{{ pending_requests|length }}</span></button>
+        </div>
+
+        <div class="ee-tabpanels">
+            <div class="ee-tabpanel" id="panel-people" role="tabpanel" aria-labelledby="tab-people">
+                <h2 class="ee-tabpanel-title">Everyone who has signed up</h2>
+                <div>
+                    <table class="ee-table ee-table--wide">
+                        <thead>
+                            <tr>
+                                <th scope="col">Person</th>
+                                <th scope="col">Role</th>
+                                <th scope="col" class="ee-num">Events</th>
+                                <th scope="col" class="ee-num">Venues</th>
+                                <th scope="col" class="ee-num">Reviews</th>
+                                <th scope="col" class="ee-num">Comments</th>
+                                <th scope="col" class="ee-num">Bookings</th>
+                                <th scope="col">Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for person in users_with_stats %}
+                            <tr>
+                                <td data-label="Person"><span class="ee-cell">
+                                    <a href="{% url 'users:view_user_profile' person.id %}">{{ person.get_full_name|default:person.username }}</a>
+                                    <small>{{ person.email|default:"No email" }}</small>
+                                </span></td>
+                                <td data-label="Role">{{ person.profile|role_label }}</td>
+                                <td data-label="Events" class="ee-num"><span class="ee-cell">{{ person.events_posted }}{% if person.event_bookings_received %}<small>{{ person.event_bookings_received }} booked</small>{% endif %}</span></td>
+                                <td data-label="Venues" class="ee-num"><span class="ee-cell">{{ person.venues_posted }}{% if person.venue_bookings_received %}<small>{{ person.venue_bookings_received }} booked</small>{% endif %}</span></td>
+                                <td data-label="Reviews" class="ee-num">{{ person.event_reviews_given|add:person.venue_reviews_given }}</td>
+                                <td data-label="Comments" class="ee-num">{{ person.event_comments_posted|add:person.venue_comments_posted }}</td>
+                                <td data-label="Bookings" class="ee-num">{{ person.event_bookings_made|add:person.venue_bookings_made }}</td>
+                                <td data-label="Joined">{{ person.date_joined|date:"j M Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td>No one has signed up yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ee-panels">
+                    <section class="ee-panel ee-panel--flat ee-stock">
+                        <h2 class="ee-panel-title">Top organisers</h2>
+                        <ol class="ee-rank">
+                            {% for person in top_event_creators %}
+                                <li><span>{{ person.get_full_name|default:person.username }}</span><b>{{ person.event_count }} event{{ person.event_count|pluralize }}</b></li>
+                            {% empty %}<li><span>No events yet.</span></li>{% endfor %}
+                        </ol>
+                    </section>
+                    <section class="ee-panel ee-panel--flat ee-stock">
+                        <h2 class="ee-panel-title">Top venue owners</h2>
+                        <ol class="ee-rank">
+                            {% for person in top_venue_creators %}
+                                <li><span>{{ person.get_full_name|default:person.username }}</span><b>{{ person.venue_count }} venue{{ person.venue_count|pluralize }}</b></li>
+                            {% empty %}<li><span>No venues yet.</span></li>{% endfor %}
+                        </ol>
+                    </section>
+                </div>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-content" role="tabpanel" aria-labelledby="tab-content">
+                <h2 class="ee-tabpanel-title">Latest events</h2>
+                <div>
+                    <table class="ee-table ee-table--wide">
+                        <thead>
+                            <tr>
+                                <th scope="col">Event</th>
+                                <th scope="col">Organiser</th>
+                                <th scope="col" class="ee-num">Bookings</th>
+                                <th scope="col" class="ee-num">Reviews</th>
+                                <th scope="col" class="ee-num">Rating</th>
+                                <th scope="col" class="ee-num">Comments</th>
+                                <th scope="col">Added</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events_with_stats %}
+                            <tr>
+                                <td data-label="Event"><a href="{% url 'events:event_detail' event.pk %}">{{ event.title }}</a></td>
+                                <td data-label="Organiser">{{ event.organizer.get_full_name|default:event.organizer.username }}</td>
+                                <td data-label="Bookings" class="ee-num">{{ event.booking_total }}</td>
+                                <td data-label="Reviews" class="ee-num">{{ event.review_total }}</td>
+                                <td data-label="Rating" class="ee-num">{% if event.avg_rating %}{{ event.avg_rating|floatformat:1 }}{% else %}&ndash;{% endif %}</td>
+                                <td data-label="Comments" class="ee-num">{{ event.comment_total }}</td>
+                                <td data-label="Added">{{ event.created_at|date:"j M Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td>No events yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2 class="ee-tabpanel-title">Latest venues</h2>
+                <div>
+                    <table class="ee-table ee-table--wide">
+                        <thead>
+                            <tr>
+                                <th scope="col">Venue</th>
+                                <th scope="col">Manager</th>
+                                <th scope="col" class="ee-num">Bookings</th>
+                                <th scope="col" class="ee-num">Reviews</th>
+                                <th scope="col" class="ee-num">Rating</th>
+                                <th scope="col" class="ee-num">Comments</th>
+                                <th scope="col">Added</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for venue in venues_with_stats %}
+                            <tr>
+                                <td data-label="Venue"><a href="{% url 'venues:venue_detail' venue.pk %}">{{ venue.name }}</a></td>
+                                <td data-label="Manager">{{ venue.manager.get_full_name|default:venue.manager.username }}</td>
+                                <td data-label="Bookings" class="ee-num">{{ venue.booking_total }}</td>
+                                <td data-label="Reviews" class="ee-num">{{ venue.review_total }}</td>
+                                <td data-label="Rating" class="ee-num">{% if venue.avg_rating %}{{ venue.avg_rating|floatformat:1 }}{% else %}&ndash;{% endif %}</td>
+                                <td data-label="Comments" class="ee-num">{{ venue.comment_total }}</td>
+                                <td data-label="Added">{{ venue.created_at|date:"j M Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td>No venues yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-activity" role="tabpanel" aria-labelledby="tab-activity">
+                <h2 class="ee-tabpanel-title">Latest event reviews</h2>
+                <ul class="ee-rows">
+                    {% for review in recent_event_reviews %}
+                    <li class="ee-row ee-row--noimg">
+                        <div class="ee-row-body">
+                            <h3 class="ee-row-title"><a href="{% url 'reviews:event_reviews' review.event.pk %}">{{ review.title }}</a></h3>
+                            <p class="ee-row-meta">{{ review.user.get_full_name|default:review.user.username }} on {{ review.event.title }} &middot; {{ review.created_at|timesince }} ago</p>
+                        </div>
+                        <div class="ee-row-side">{% include 'components/stars.html' with rating=review.rating %}</div>
+                    </li>
+                    {% empty %}
+                    <li class="ee-row ee-row--noimg"><p class="ee-row-meta">No event reviews yet.</p></li>
+                    {% endfor %}
+                </ul>
+
+                <h2 class="ee-tabpanel-title">Latest venue reviews</h2>
+                <ul class="ee-rows">
+                    {% for review in recent_venue_reviews %}
+                    <li class="ee-row ee-row--noimg">
+                        <div class="ee-row-body">
+                            <h3 class="ee-row-title"><a href="{% url 'reviews:venue_reviews' review.venue.pk %}">{{ review.title }}</a></h3>
+                            <p class="ee-row-meta">{{ review.user.get_full_name|default:review.user.username }} on {{ review.venue.name }} &middot; {{ review.created_at|timesince }} ago</p>
+                        </div>
+                        <div class="ee-row-side">{% include 'components/stars.html' with rating=review.rating %}</div>
+                    </li>
+                    {% empty %}
+                    <li class="ee-row ee-row--noimg"><p class="ee-row-meta">No venue reviews yet.</p></li>
+                    {% endfor %}
+                </ul>
+
+                <div class="ee-actions-inline">
+                    <a class="ee-pill ee-pill--ink" href="{% url 'users:admin_reviews_management' %}">Moderate reviews</a>
+                </div>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-money" role="tabpanel" aria-labelledby="tab-money">
+                <h2 class="ee-tabpanel-title">What EventEase has taken</h2>
+                <div>
+                    <table class="ee-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Source</th>
+                                <th scope="col" class="ee-num">Count</th>
+                                <th scope="col" class="ee-num">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Source"><span class="ee-cell">Ticket payments<small>Payments marked complete</small></span></td>
+                                <td data-label="Count" class="ee-num">{{ revenue.tickets.count|intcomma }}</td>
+                                <td data-label="Amount" class="ee-num">&#2547;{{ revenue.tickets.amount|floatformat:0|intcomma }}</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Source"><span class="ee-cell">Venue hire<small>Bookings a manager accepted</small></span></td>
+                                <td data-label="Count" class="ee-num">{{ revenue.venues.count|intcomma }}</td>
+                                <td data-label="Amount" class="ee-num">&#2547;{{ revenue.venues.amount|floatformat:0|intcomma }}</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Source"><span class="ee-cell">Total</span></td>
+                                <td data-label="Count" class="ee-num">{{ revenue.tickets.count|add:revenue.venues.count|intcomma }}</td>
+                                <td data-label="Amount" class="ee-num">&#2547;{{ revenue.total|floatformat:0|intcomma }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="ee-stats">
+                    <li class="ee-stat"><b>&#2547;{{ revenue.recent|floatformat:0|intcomma }}</b><span>Last {{ revenue.recent_days }} days</span></li>
+                    <li class="ee-stat"><b>&#2547;{{ revenue.awaiting|floatformat:0|intcomma }}</b><span>Payments in progress</span></li>
+                </ul>
+
+                <div class="ee-panels">
+                    <section class="ee-panel ee-panel--flat ee-stock">
+                        <h2 class="ee-panel-title">Best-earning events</h2>
+                        <ol class="ee-rank">
+                            {% for event in revenue.top_events %}
+                                <li><span><a href="{% url 'events:event_detail' event.pk %}">{{ event.title }}</a></span><b>&#2547;{{ event.taken|floatformat:0|intcomma }}</b></li>
+                            {% empty %}<li><span>No tickets have been paid for yet.</span></li>{% endfor %}
+                        </ol>
+                    </section>
+
+                    <section class="ee-panel ee-panel--flat ee-stock">
+                        <h2 class="ee-panel-title">Best-earning venues</h2>
+                        <ol class="ee-rank">
+                            {% for venue in revenue.top_venues %}
+                                <li><span><a href="{% url 'venues:venue_detail' venue.pk %}">{{ venue.name }}</a></span><b>&#2547;{{ venue.taken|floatformat:0|intcomma }}</b></li>
+                            {% empty %}<li><span>No venue bookings have been accepted yet.</span></li>{% endfor %}
+                        </ol>
+                    </section>
+                </div>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-roles" role="tabpanel" aria-labelledby="tab-roles">
+                <h2 class="ee-tabpanel-title">Waiting for a decision</h2>
+                <ul class="ee-rows">
+                    {% for upgrade in pending_requests %}
+                    <li class="ee-row ee-row--noimg">
+                        <div class="ee-row-body">
+                            <h3 class="ee-row-title"><a href="{% url 'users:view_upgrade_request' upgrade.id %}">{{ upgrade.user.get_full_name|default:upgrade.user.username }}</a></h3>
+                            <p class="ee-row-meta">Wants to be {{ upgrade.get_requested_role_display }} &middot; sent {{ upgrade.created_at|date:"j M Y" }}</p>
+                            <p class="ee-row-meta">&ldquo;{{ upgrade.reason|truncatewords:20 }}&rdquo;</p>
+                        </div>
+                        <div class="ee-row-side">
+                            <a class="ee-pill ee-pill--line" href="{% url 'users:view_upgrade_request' upgrade.id %}">Review</a>
+                            <form method="post" action="{% url 'users:process_upgrade_request' upgrade.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="ee-pill ee-pill--ink" data-confirm="Approve {{ upgrade.user.username }} as {{ upgrade.get_requested_role_display }}?">Approve</button>
+                            </form>
+                            <form method="post" action="{% url 'users:process_upgrade_request' upgrade.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="ee-pill ee-pill--line" data-confirm="Reject this request?">Reject</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="ee-row ee-row--noimg"><p class="ee-row-meta">Nothing is waiting. New requests show up here.</p></li>
+                    {% endfor %}
+                </ul>
+
+                <h2 class="ee-tabpanel-title">Recently approved</h2>
+                <ul class="ee-rows">
+                    {% for upgrade in approved_requests %}
+                    <li class="ee-row ee-row--noimg">
+                        <div class="ee-row-body">
+                            <h3 class="ee-row-title"><a href="{% url 'users:view_upgrade_request' upgrade.id %}">{{ upgrade.user.get_full_name|default:upgrade.user.username }}</a></h3>
+                            <p class="ee-row-meta">{{ upgrade.get_requested_role_display }} &middot; {{ upgrade.updated_at|timesince }} ago</p>
+                        </div>
+                        <div class="ee-row-side"><span class="ee-stamp ee-stamp--approved">Approved</span></div>
+                    </li>
+                    {% empty %}
+                    <li class="ee-row ee-row--noimg"><p class="ee-row-meta">No approvals yet.</p></li>
+                    {% endfor %}
+                </ul>
+
+                <h2 class="ee-tabpanel-title">Recently rejected</h2>
+                <ul class="ee-rows">
+                    {% for upgrade in rejected_requests %}
+                    <li class="ee-row ee-row--noimg">
+                        <div class="ee-row-body">
+                            <h3 class="ee-row-title"><a href="{% url 'users:view_upgrade_request' upgrade.id %}">{{ upgrade.user.get_full_name|default:upgrade.user.username }}</a></h3>
+                            <p class="ee-row-meta">{{ upgrade.get_requested_role_display }} &middot; {{ upgrade.updated_at|timesince }} ago</p>
+                        </div>
+                        <div class="ee-row-side"><span class="ee-stamp ee-stamp--rejected">Rejected</span></div>
+                    </li>
+                    {% empty %}
+                    <li class="ee-row ee-row--noimg"><p class="ee-row-meta">No rejections.</p></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/components/tabs.js' %}" defer></script>{% endblock %}

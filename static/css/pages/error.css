@@ -1,0 +1,10 @@
+/* Error pages: 403, 404 and 500. A very large status code, a short sentence, and ways back. */
+
+.ee-error { display: grid; gap: 18px; justify-items: start; max-width: 720px; padding-top: clamp(24px, 6vw, 72px); container-type: inline-size; width: 100%; }
+.ee-error-code {
+  margin: 0; font-weight: 800; font-stretch: 75%; font-size: clamp(96px, 38cqw, 280px); line-height: .8; letter-spacing: -.05em;
+}
+.ee-error-title { margin: 0; overflow-wrap: anywhere; }
+.ee-error-text { margin: 0; max-width: 52ch; font-size: 19px; color: var(--muted); }
+.ee-error .ee-actions-inline { margin-top: 6px; }
+.ee-error-mark { margin: 0; font-weight: 800; font-size: 26px; letter-spacing: -.03em; }

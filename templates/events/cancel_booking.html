@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Cancel booking &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; My events</a>
+    {% include 'components/page_head.html' with title="Cancel booking" intro="This cannot be undone." %}
+
+    <div class="ee-page ee-narrow">
+        <section class="ee-panel ee-panel--taped ee-stock">
+            <span class="ee-tape" aria-hidden="true"></span>
+            <div class="ee-summary-head">
+                <span class="ee-summary-img">{% if booking.event.image %}<img src="{{ booking.event.image.url }}" alt="">{% endif %}</span>
+                <div>
+                    <h2 class="ee-summary-name">{{ booking.event.title }}</h2>
+                    <p class="ee-summary-meta">{{ booking.event.start_date|date:"D j M Y" }} &middot; {{ booking.event.venue_name }}</p>
+                </div>
+            </div>
+            <dl class="ee-summary">
+                <div class="ee-summary-line"><dt>Booked on</dt><dd>{{ booking.booking_date|date:"j M Y" }}</dd></div>
+                <div class="ee-summary-line"><dt>Status</dt><dd>{{ booking.get_status_display }}</dd></div>
+                <div class="ee-summary-line"><dt>{% if booking.event.is_free %}Amount{% else %}Amount paid{% endif %}</dt><dd>{% if booking.event.is_free %}Free{% else %}&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}{% endif %}</dd></div>
+                {% if booking.special_requests %}<div class="ee-summary-line"><dt>Your requests</dt><dd>{{ booking.special_requests }}</dd></div>{% endif %}
+            </dl>
+        </section>
+
+        <section class="ee-panel ee-stock">
+            <h2 class="ee-panel-title">If you cancel</h2>
+            <ul class="ee-terms">
+                <li>Your registration for this event is removed.</li>
+                <li>You will stop receiving updates about it.</li>
+                <li>Your place becomes available to someone else.</li>
+                {% if not booking.event.is_free %}<li>Refunds are decided by the organiser. Contact them at {{ booking.event.contact_email }}{% if booking.event.contact_phone %} or {{ booking.event.contact_phone }}{% endif %}.</li>{% endif %}
+            </ul>
+        </section>
+
+        <form method="post" class="ee-actions-inline">
+            {% csrf_token %}
+            <button type="submit" class="ee-pill ee-pill--ink">Yes, cancel my booking</button>
+            <a class="ee-pill ee-pill--line" href="{% url 'events:my_events' %}">Keep my booking</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

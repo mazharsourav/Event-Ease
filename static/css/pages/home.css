@@ -1,0 +1,177 @@
+/* Home page: the wall, the marquee, the bill, the halls, "Got a stage?" and Overheard.
+   Shared pieces (posters, venue cards, notes, buttons, finder) live in css/components/. */
+
+/* ---------- The wall ---------- */
+.ee-wall { position: relative; }
+.ee-wall-grid {
+  display: grid; grid-template-columns: minmax(0, 12fr) minmax(0, 8fr); gap: clamp(32px, 5vw, 80px);
+  padding-top: clamp(16px, 3vw, 40px); padding-bottom: clamp(64px, 6vw, 96px);
+}
+/* The heading sits level with the top poster and the finder card level with the bottom one */
+.ee-wall-copy { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.ee-wall .ee-torn { z-index: 1; }
+
+.ee-city { display: flex; font-size: clamp(84px, 12vw, 188px); font-stretch: 112%; }
+.ee-city span { display: inline-block; animation: ee-print .9s var(--ease) backwards; }
+/* Outlined letters: a double-width stroke painted under a paper-coloured fill, so the
+   variable font's overlapping contours don't show as lines inside the letter */
+.ee-city span:nth-child(even) { color: var(--paper); -webkit-text-stroke: clamp(4px, .56vw, 8px) var(--ink); paint-order: stroke fill; }
+.ee-city span:nth-child(1) { animation-delay: .05s; }
+.ee-city span:nth-child(2) { animation-delay: .14s; }
+.ee-city span:nth-child(3) { animation-delay: .23s; }
+.ee-city span:nth-child(4) { animation-delay: .32s; }
+.ee-city span:nth-child(5) { animation-delay: .41s; }
+@keyframes ee-print {
+  from { transform: translateY(.06em) scale(1.06) rotate(-2deg); filter: blur(3px); }
+}
+.ee-wall-title { display: block; font-size: clamp(48px, 6.6vw, 96px); font-stretch: 100%; }
+
+.ee-brush {
+  display: inline-block; margin-bottom: clamp(40px, 4.5vw, 64px); padding: 16px 34px 17px;
+  background: var(--ink); color: var(--paper);
+  font-weight: 700; font-size: clamp(15px, 1.5vw, 20px); letter-spacing: .02em; text-transform: uppercase;
+  transform: rotate(-1.2deg); text-wrap: balance;
+  -webkit-mask: url('../../img/home/brush-bar.svg') center / 100% 100% no-repeat;
+          mask: url('../../img/home/brush-bar.svg') center / 100% 100% no-repeat;
+}
+.ee-brush-break { display: none; }
+
+.ee-wall-copy .ee-finder { margin-top: auto; }
+
+/* The sticker rides the top-right corner of the finder card */
+.ee-sticker {
+  position: absolute; z-index: 6; right: -14px; top: -92px;
+  display: grid; place-items: center; width: 112px; height: 112px; padding: 16px; border-radius: 50%;
+  background: var(--stock-ink); color: var(--stock); text-align: center;
+  font-weight: 800; font-size: 14px; line-height: 1.02; text-transform: uppercase;
+  transform: rotate(12deg);
+  box-shadow: 0 0 0 4px var(--stock), 0 8px 16px rgba(17, 17, 17, .22);
+}
+
+/* A tidy two-by-two wall: every poster is the same width with the same 16:9 print.
+   The right-hand column hangs a little lower so it still reads as hand-hung. */
+.ee-posters {
+  position: relative; z-index: 2; --lean: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; align-content: start;
+  padding-top: 8px;
+}
+.ee-posters .ee-poster:nth-child(1) { --r: -1.8deg; }
+.ee-posters .ee-poster:nth-child(2) { --r: 1.5deg; }
+.ee-posters .ee-poster:nth-child(3) { --r: 1.2deg; }
+.ee-posters .ee-poster:nth-child(4) { --r: -1.5deg; }
+.ee-posters .ee-poster:nth-child(even) { margin-top: 32px; }
+.ee-posters .ee-poster--blank { grid-column: 1 / -1; margin: 40px 10% 0; --r: -2deg; }
+
+/* ---------- Category marquee ---------- */
+.ee-marquee { overflow: hidden; padding: 14px 0 20px; }
+.ee-marquee-track { display: flex; width: max-content; animation: ee-marquee 60s linear infinite; }
+.ee-marquee:hover .ee-marquee-track, .ee-marquee:focus-within .ee-marquee-track { animation-play-state: paused; }
+.ee-marquee-set { display: flex; align-items: center; gap: 28px; padding-right: 28px; }
+.ee-marquee a {
+  font-weight: 800; font-stretch: 110%; font-size: clamp(24px, 2.6vw, 36px); text-transform: uppercase;
+  letter-spacing: -.01em; text-decoration: none; white-space: nowrap;
+}
+.ee-marquee a:hover { color: var(--band-muted); }
+.ee-marquee svg { flex: none; width: 20px; height: 20px; fill: var(--band-muted); }
+@keyframes ee-marquee { to { transform: translateX(-50%); } }
+
+/* ---------- The bill ---------- */
+.ee-bill { padding-block: clamp(64px, 8vw, 120px) clamp(80px, 9vw, 136px); }
+.ee-bill-list { list-style: none; padding: 0; border-bottom: 2px solid var(--ink); }
+.ee-bill-row {
+  display: grid; grid-template-columns: 96px minmax(0, 1.6fr) minmax(0, 1fr) 120px 128px; align-items: center; gap: 24px;
+  padding: 20px 8px; border-top: 2px solid var(--ink); text-decoration: none;
+  transition: background-color .2s;
+}
+.ee-bill-row > * { transition: translate .35s var(--ease); }
+.ee-bill-row:hover { background: var(--paper-2); }
+.ee-bill-row:hover > * { translate: 10px 0; }
+.ee-bill-date { display: flex; flex-direction: column; line-height: .9; font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: .04em; }
+.ee-bill-date b {
+  font-weight: 800; font-size: 46px; letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+  -webkit-mask: url('../../img/texture/ink.svg') 0 0 / 240px 240px repeat;
+          mask: url('../../img/texture/ink.svg') 0 0 / 240px 240px repeat;
+}
+.ee-bill-name { font-weight: 800; font-stretch: 88%; font-size: clamp(22px, 2.4vw, 34px); line-height: 1; text-transform: uppercase; letter-spacing: -.01em; }
+.ee-bill-venue { display: grid; font-weight: 600; font-size: 17px; line-height: 1.3; }
+.ee-bill-venue small { font-weight: 500; font-size: 14px; color: var(--muted); }
+.ee-bill-price { font-weight: 800; font-size: 22px; font-variant-numeric: tabular-nums; text-align: right; }
+.ee-bill-row .ee-stamp { justify-self: end; }
+
+/* ---------- Halls ---------- */
+.ee-halls { padding: clamp(96px, 10vw, 150px) 0 clamp(120px, 12vw, 180px); }
+.ee-halls .ee-empty { color: var(--band-muted); }
+.ee-halls .ee-empty a { color: var(--band-fg); }
+.ee-halls-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start;
+  gap: clamp(32px, 3.4vw, 52px) clamp(24px, 2.8vw, 44px);
+}
+.ee-halls-grid .ee-hall:nth-child(3n + 1) { --r: -1.4deg; }
+.ee-halls-grid .ee-hall:nth-child(3n + 2) { --r: 1.2deg; margin-top: 40px; }
+.ee-halls-grid .ee-hall:nth-child(3n) { --r: -.8deg; }
+
+/* ---------- Got a stage ---------- */
+.ee-stage {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); align-items: end;
+  padding-block: clamp(80px, 10vw, 150px);
+}
+.ee-stage-title { font-size: clamp(72px, 11vw, 168px); font-stretch: 105%; }
+.ee-stage-body p { max-width: 34em; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.5; }
+.ee-stage-body .ee-stage-note { margin-top: 14px; color: var(--muted); font-size: 16px; }
+.ee-stage-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+/* ---------- Overheard ---------- */
+.ee-overheard { padding-bottom: clamp(96px, 10vw, 150px); }
+.ee-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 3vw, 44px); padding-top: 16px; }
+.ee-notes .ee-note:nth-child(1) { --r: -1.5deg; }
+.ee-notes .ee-note:nth-child(2) { --r: 1.8deg; translate: 0 18px; }
+.ee-notes .ee-note:nth-child(3) { --r: -.6deg; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .ee-wall-grid { grid-template-columns: minmax(0, 1fr); }
+  .ee-posters { width: min(100%, 680px); justify-self: start; }
+  .ee-brush { margin-bottom: clamp(36px, 5vw, 48px); }
+  .ee-bill-row { grid-template-columns: 84px minmax(0, 1fr) 110px 120px; }
+  .ee-bill-venue { grid-column: 2; grid-row: 2; }
+  .ee-bill-price { grid-row: 1; grid-column: 3; }
+  .ee-bill-row .ee-stamp { grid-row: 1; grid-column: 4; }
+  .ee-stage { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .ee-city { font-size: clamp(76px, 25vw, 120px); }
+  .ee-brush { margin-bottom: 40px; padding: 12px 22px; }
+  .ee-brush-sep { display: none; }
+  .ee-brush-break { display: inline; }
+  .ee-sticker { width: 80px; height: 80px; font-size: 11px; padding: 10px; right: 8px; top: -64px; }
+  .ee-posters { gap: 18px 12px; padding-top: 20px; }
+  .ee-posters .ee-poster:nth-child(even) { margin-top: 22px; }
+
+  .ee-bill-row { grid-template-columns: 64px minmax(0, 1fr) auto; gap: 6px 16px; padding: 18px 4px; }
+  .ee-bill-row:hover > * { translate: none; }
+  .ee-bill-date b { font-size: 36px; }
+  .ee-bill-name { grid-column: 2 / 4; }
+  .ee-bill-venue { grid-column: 2 / 4; grid-row: 2; }
+  .ee-bill-price { grid-row: 3; grid-column: 2; text-align: left; font-size: 20px; }
+  .ee-bill-row .ee-stamp { grid-row: 3; grid-column: 3; }
+
+  .ee-head { flex-wrap: wrap; }
+  .ee-halls-grid { grid-template-columns: 1fr; }
+  .ee-halls-grid .ee-hall:nth-child(3n + 2) { margin-top: 0; }
+  .ee-halls-grid .ee-hall:nth-child(n) { --r: -.8deg; }
+  .ee-halls-grid .ee-hall:nth-child(even) { --r: .8deg; }
+  .ee-halls-grid .ee-hall:nth-child(n + 5) { display: none; }
+  .ee-notes { grid-template-columns: 1fr; }
+  .ee-notes .ee-note:nth-child(2) { --r: 1.2deg; translate: none; }
+}
+
+@media (max-width: 360px) {
+  .ee-city { font-size: 21vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-city span, .ee-marquee-track { animation: none; }
+  .ee-marquee { overflow-x: auto; }
+  .ee-sticker, .ee-bill-row > * { transition: none; }
+}

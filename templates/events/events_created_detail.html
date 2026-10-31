@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Events created &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+    {% include 'components/page_head.html' with title="Events created" intro="Everything you have put on the wall." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_count }}</b><span>Total</span></li>
+        <li class="ee-stat"><b>{{ live_count }}</b><span>On now</span></li>
+        <li class="ee-stat"><b>{{ upcoming_count }}</b><span>Coming up</span></li>
+        <li class="ee-stat"><b>{{ completed_count }}</b><span>Completed</span></li>
+    </ul>
+
+    {% if total_count > 0 %}
+        {% if live_events %}
+        <section class="ee-section">
+            <h2 class="ee-h1 ee-section-title">On now ({{ live_count }})</h2>
+            <ul class="ee-rows">{% for event in live_events %}{% include 'events/_organiser_row.html' %}{% endfor %}</ul>
+        </section>
+        {% endif %}
+        {% if upcoming_events %}
+        <section class="ee-section">
+            <h2 class="ee-h1 ee-section-title">Coming up ({{ upcoming_count }})</h2>
+            <ul class="ee-rows">{% for event in upcoming_events %}{% include 'events/_organiser_row.html' %}{% endfor %}</ul>
+        </section>
+        {% endif %}
+        {% if completed_events %}
+        <section class="ee-section">
+            <h2 class="ee-h1 ee-section-title">Completed ({{ completed_count }})</h2>
+            <ul class="ee-rows">{% for event in completed_events %}{% include 'events/_organiser_row.html' %}{% endfor %}</ul>
+        </section>
+        {% endif %}
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No events yet</h2>
+            <p class="ee-blank-text">You haven't organised anything on EventEase yet.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'events:event_create' %}">Create your first event</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

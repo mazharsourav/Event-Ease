@@ -1,0 +1,48 @@
+/* Custom dropdown, drawn by js/components/select.js in place of the operating system's list.
+   The real <select> stays in the form (visually hidden) and is the source of truth for submission. */
+
+.ee-select-native {
+  position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
+  overflow: hidden; clip-path: inset(50%);
+}
+
+.ee-select-btn {
+  display: block; width: 100%; min-height: 32px; margin: 0; padding: 0 22px 0 0; border: 0; border-radius: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right center / 16px no-repeat;
+  color: var(--stock-ink); font-size: 18px; font-weight: 500; text-align: left; cursor: pointer;
+}
+
+.ee-select-menu {
+  position: absolute; z-index: 10; top: calc(100% + 6px); left: 0; min-width: max(100%, 232px);
+  margin: 0; padding: 6px; list-style: none;
+  background: var(--stock); color: var(--stock-ink);
+  border: 2px solid var(--stock-ink); border-radius: 0;
+  max-height: min(340px, 58vh); overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: var(--stock-ink) transparent;
+  transform-origin: top left; animation: ee-menu .18s var(--ease);
+}
+.ee-select-menu[hidden] { display: none; }
+/* The last field opens leftwards so the list never leaves the card */
+.ee-field:last-child .ee-select-menu { left: auto; right: 0; transform-origin: top right; }
+
+.ee-select-opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 11px 12px; cursor: pointer;
+  font-weight: 700; font-size: 15px; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap;
+}
+.ee-select-opt:hover, .ee-select-opt:focus { background: var(--stock-ink); color: var(--stock); outline: none; }
+.ee-select-opt[aria-selected="true"]::after {
+  content: ''; flex: none; width: 16px; height: 16px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@keyframes ee-menu { from { opacity: 0; transform: translateY(-6px); } }
+
+@media (max-width: 720px) {
+  .ee-select-menu, .ee-field:last-child .ee-select-menu { left: 0; right: 0; min-width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-select-menu { animation: none; }
+}

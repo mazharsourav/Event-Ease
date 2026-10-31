@@ -1,0 +1,18 @@
+{% comment %}
+    A 1 to 5 star chooser built from radio buttons (keyboard and screen-reader friendly).
+    Context: field (a bound field with values 1 to 5), label (optional).
+    No star is preselected on a new review. Styles: css/components/rate.css.
+{% endcomment %}
+<fieldset class="ee-rate{% if field.errors %} has-error{% endif %}">
+    <legend class="ee-form-label">{{ label|default:field.label }}<span class="ee-required" aria-hidden="true">*</span></legend>
+    <div class="ee-rate-stars">
+        {% for i in "54321" %}
+            <input type="radio" id="{{ field.auto_id }}_{{ i }}" name="{{ field.html_name }}" value="{{ i }}"{% if field.value|stringformat:"s" == i %} checked{% endif %} required>
+            <label for="{{ field.auto_id }}_{{ i }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></svg>
+                <span class="ee-visually-hidden">{{ i }} star{% if i != "1" %}s{% endif %}</span>
+            </label>
+        {% endfor %}
+    </div>
+    {% for error in field.errors %}<p class="ee-form-error" role="alert">{{ error }}</p>{% endfor %}
+</fieldset>

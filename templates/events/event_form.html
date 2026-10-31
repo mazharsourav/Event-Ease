@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ title }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/manage.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% if event %}
+        <a class="ee-back" href="{% url 'events:event_detail' event.pk %}">&larr; {{ event.title }}</a>
+        {% include 'components/page_head.html' with title="Edit event" %}
+    {% else %}
+        <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+        {% include 'components/page_head.html' with title="Create an event" intro="Fill in the basics. You can edit everything later." %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="ee-form ee-narrow-wide" id="eventForm">
+        {% csrf_token %}
+        {% include 'components/form_errors.html' %}
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">1. The event</legend>
+            <div class="ee-form-row ee-form-row--1">
+                {% include 'components/form_field.html' with field=form.title label="Title" %}
+                {% include 'components/form_field.html' with field=form.description label="Description" %}
+            </div>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.event_type label="Type" %}
+                {% include 'components/form_field.html' with field=form.image label="Poster image" help="Landscape works best. It is shown in full." %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">2. When</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.start_date label="Starts" %}
+                {% include 'components/form_field.html' with field=form.end_date label="Ends" %}
+            </div>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.registration_deadline label="Registration closes" help="Optional. After this, nobody can book." %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">3. Where</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.venue label="Venue on EventEase" help="Optional. Pick a listed venue, or type one below." %}
+                {% include 'components/form_field.html' with field=form.venue_name label="Venue name" %}
+            </div>
+            <div class="ee-form-row ee-form-row--1">
+                {% include 'components/form_field.html' with field=form.venue_address label="Venue address" %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section" data-pricing>
+            <legend class="ee-form-title">4. Places and price</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.max_attendees label="Maximum attendees" %}
+                <div class="ee-form-field">
+                    <span class="ee-form-label">Entry</span>
+                    <label class="ee-check">
+                        {{ form.is_free }}
+                        <span>This is a free event</span>
+                    </label>
+                    {% for error in form.is_free.errors %}<p class="ee-form-error" role="alert">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+            <div class="ee-form-row" data-price-row>
+                {% include 'components/form_field.html' with field=form.ticket_price label="Ticket price (&#2547;)" help="Used when you don't add ticket tiers below." %}
+            </div>
+        </fieldset>
+
+        {% if ticket_formset %}
+        <fieldset class="ee-form-section" data-tiers data-prefix="{{ ticket_formset.prefix }}" data-max="5">
+            <legend class="ee-form-title">Ticket tiers <span class="ee-tag">optional, up to 5</span></legend>
+            <p class="ee-form-lead">Offer different prices, such as General and VIP. Leave this empty to use the single price above.</p>
+            {{ ticket_formset.management_form }}
+            <div data-tier-list>
+                {% for tier in ticket_formset %}{% include 'events/_ticket_tier_form.html' %}{% endfor %}
+            </div>
+            <template data-tier-template>{% with tier=ticket_formset.empty_form %}{% include 'events/_ticket_tier_form.html' %}{% endwith %}</template>
+            <div><button type="button" class="ee-pill ee-pill--line" data-add-tier>Add a tier</button></div>
+        </fieldset>
+        {% endif %}
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">5. Contact and notes</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.contact_email label="Contact email" %}
+                {% include 'components/form_field.html' with field=form.contact_phone label="Contact phone" %}
+            </div>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.website label="Website" %}
+            </div>
+            <div class="ee-form-row ee-form-row--1">
+                {% include 'components/form_field.html' with field=form.requirements label="Requirements and notes" help="Rules, what to bring, anything attendees should know." %}
+            </div>
+        </fieldset>
+
+        <div class="ee-form-actions">
+            <button type="submit" class="ee-pill ee-pill--ink">{% if event %}Save changes{% else %}Create event{% endif %}</button>
+            <a class="ee-pill ee-pill--line" href="{% if event %}{% url 'events:event_detail' event.pk %}{% else %}{% url 'events:my_events' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/event-form.js' %}" defer></script>{% endblock %}

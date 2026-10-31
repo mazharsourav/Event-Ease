@@ -1,0 +1,29 @@
+{% load core_tags %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}EventEase{% endblock %}</title>
+    {% include 'layout/styles.html' %}
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="ee {% block body_class %}{% endblock %}">
+    {# First thing in <body>, so the saved light or dark theme is applied before anything paints #}
+    <script src="{% asset 'js/core/theme.js' %}"></script>
+
+    <a class="ee-skip" href="#main">Skip to content</a>
+
+    {% block site_nav %}{% include 'layout/header.html' %}{% endblock %}
+
+    {% include 'layout/toasts.html' %}
+
+    <main id="main" class="ee-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block site_footer %}{% include 'layout/footer.html' %}{% endblock %}
+
+    {% include 'layout/scripts.html' %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

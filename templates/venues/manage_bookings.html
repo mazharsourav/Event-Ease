@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Bookings for {{ venue.name }} &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'venues:venue_detail' venue.pk %}">&larr; {{ venue.name }}</a>
+    {% include 'components/page_head.html' with title="Bookings" intro=venue.name %}
+
+    {% if bookings %}
+        <ul class="ee-rows">
+            {% for booking in bookings %}{% include 'venues/_manager_row.html' %}{% endfor %}
+        </ul>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No bookings yet</h2>
+            <p class="ee-blank-text">Requests for {{ venue.name }} will show up here.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_detail' venue.pk %}">View the venue page</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

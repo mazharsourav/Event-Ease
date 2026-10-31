@@ -1,0 +1,46 @@
+{% load humanize %}
+{% comment %}
+    The facts of one venue booking. Included by booking_details.html and returned on its own to the
+    "view details" pop-up. Context: booking, duration_hours.
+{% endcomment %}
+<div class="ee-bookingfacts">
+    <div class="ee-bookingfacts-head">
+        <span class="ee-tag">Booking #{{ booking.id }}</span>
+        <span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.status|capfirst }}</span>
+    </div>
+    <h2 class="ee-bookingfacts-title">{{ booking.event_title }}</h2>
+
+    <section class="ee-bookingfacts-block">
+        <h3 class="ee-form-title">The event</h3>
+        <dl class="ee-facts">
+            <div class="ee-fact"><dt>Starts</dt><dd>{{ booking.start_date|date:"D j M Y" }}<small>{{ booking.start_date|time:"g:i A" }}</small></dd></div>
+            <div class="ee-fact"><dt>Ends</dt><dd>{{ booking.end_date|date:"D j M Y" }}<small>{{ booking.end_date|time:"g:i A" }}</small></dd></div>
+            <div class="ee-fact"><dt>Length</dt><dd>{{ duration_hours }} hours</dd></div>
+            <div class="ee-fact"><dt>Booked on</dt><dd>{{ booking.booking_date|date:"j M Y" }}</dd></div>
+        </dl>
+        {% if booking.event_description %}<p class="ee-panel-text">{{ booking.event_description }}</p>{% endif %}
+        {% if booking.special_requirements %}<p class="ee-panel-text"><b>Special requirements:</b> {{ booking.special_requirements }}</p>{% endif %}
+    </section>
+
+    <section class="ee-bookingfacts-block">
+        <h3 class="ee-form-title">The venue</h3>
+        <dl class="ee-facts">
+            <div class="ee-fact"><dt>Name</dt><dd>{{ booking.venue.name }}</dd></div>
+            <div class="ee-fact"><dt>Type</dt><dd>{{ booking.venue.get_venue_type_display }}</dd></div>
+            <div class="ee-fact"><dt>Capacity</dt><dd>{{ booking.venue.capacity|intcomma }} guests</dd></div>
+            <div class="ee-fact"><dt>Hourly rate</dt><dd>&#2547;{{ booking.venue.price_per_hour|floatformat:0|intcomma }}</dd></div>
+            <div class="ee-fact"><dt>Address</dt><dd>{{ booking.venue.address }}<small>{{ booking.venue.city }}{% if booking.venue.state %}, {{ booking.venue.state }}{% endif %} {{ booking.venue.zipcode }}</small></dd></div>
+            <div class="ee-fact"><dt>Venue contact</dt><dd>{{ booking.venue.contact_email }}<small>{{ booking.venue.contact_phone }}</small></dd></div>
+        </dl>
+    </section>
+
+    <section class="ee-bookingfacts-block">
+        <h3 class="ee-form-title">The organiser</h3>
+        <dl class="ee-facts">
+            <div class="ee-fact"><dt>Name</dt><dd>{{ booking.user.get_full_name|default:booking.user.username }}</dd></div>
+            <div class="ee-fact"><dt>Email</dt><dd>{{ booking.contact_email }}</dd></div>
+            <div class="ee-fact"><dt>Phone</dt><dd>{{ booking.contact_phone }}</dd></div>
+            <div class="ee-fact"><dt>Total</dt><dd>&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}<small>Payment: {{ booking.get_payment_status_display|default:"Pending" }}</small></dd></div>
+        </dl>
+    </section>
+</div>

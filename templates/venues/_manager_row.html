@@ -1,0 +1,47 @@
+{% load humanize %}
+{% comment %}
+    A booking request on one of the manager's venues, with the actions the manager can take.
+    Context: booking, with_venue (optional, True shows the venue name first).
+{% endcomment %}
+<li class="ee-row ee-row--noimg">
+    <div class="ee-row-body">
+        <h3 class="ee-row-title"><a href="{% url 'venues:booking_details' booking.pk %}">{{ booking.event_title }}</a></h3>
+        <p class="ee-row-meta">
+            {{ booking.venue.name }} &middot; {{ booking.user.get_full_name|default:booking.user.username }}
+            &middot; {{ booking.start_date|date:"D j M Y, g:i A" }} to {{ booking.end_date|date:"j M, g:i A" }}
+            &middot; &#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}
+        </p>
+        {% if booking.special_requirements %}<p class="ee-row-meta">Requirements: {{ booking.special_requirements|truncatewords:18 }}</p>{% endif %}
+    </div>
+    <div class="ee-row-side">
+        <span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.get_status_display }}</span>
+        <a class="ee-pill ee-pill--line" href="{% url 'venues:booking_details' booking.pk %}">Details</a>
+        <a class="ee-pill ee-pill--line" href="mailto:{{ booking.contact_email }}?subject=Your booking for {{ booking.event_title|urlencode }}">Email</a>
+        {% if booking.status == 'pending' %}
+            <form method="post" action="{% url 'venues:update_booking_status' booking.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="confirmed">
+                <button type="submit" class="ee-pill ee-pill--ink" data-confirm="Approve this booking?">Approve</button>
+            </form>
+            <form method="post" action="{% url 'venues:update_booking_status' booking.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="rejected">
+                <button type="submit" class="ee-pill ee-pill--line" data-confirm="Reject this booking?">Reject</button>
+            </form>
+        {% elif booking.status == 'confirmed' %}
+            <form method="post" action="{% url 'venues:update_booking_status' booking.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="completed">
+                <button type="submit" class="ee-pill ee-pill--ink" data-confirm="Mark this booking as completed?">Mark completed</button>
+            </form>
+            <form method="post" action="{% url 'venues:update_booking_status' booking.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="ee-pill ee-pill--line" data-confirm="Cancel this booking?">Cancel</button>
+            </form>
+        {% endif %}
+        {% if booking.status == 'confirmed' or booking.status == 'completed' %}
+            <a class="ee-pill ee-pill--line" href="{% url 'venues:generate_invoice' booking.pk %}">Invoice</a>
+        {% endif %}
+    </div>
+</li>

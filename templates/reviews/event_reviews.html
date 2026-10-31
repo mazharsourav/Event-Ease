@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Reviews of {{ event.title }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/reviews.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:event_detail' event.pk %}">&larr; {{ event.title }}</a>
+    {% include 'components/page_head.html' with title="Reviews" intro=event.title %}
+
+    {% if reviews %}
+        {% if user_can_review_event %}{% url 'reviews:submit_event_review' event.id as write_url %}{% endif %}
+        {% include 'reviews/_summary.html' with write_url=write_url %}
+
+        <ul class="ee-reviews">
+            {% for review in reviews %}
+                {% url 'reviews:delete_event_review' review.id as delete_url %}
+                {% include 'reviews/_review_card.html' with delete_url=delete_url %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No reviews yet</h2>
+            <p class="ee-blank-text">Reviews from people who attended will show up here.</p>
+            {% if user_can_review_event %}<a class="ee-pill ee-pill--ink" href="{% url 'reviews:submit_event_review' event.id %}">Write the first review</a>{% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+{% load core_tags %}{% comment %}A person's picture or initials. Context: person (a User), size (optional: sm, lg, xl).{% endcomment %}
+<span class="ee-pic{% if size %} ee-pic--{{ size }}{% endif %}">{% if person.profile.avatar %}<img src="{{ person.profile.avatar.url }}" alt="">{% else %}{{ person|initials }}{% endif %}</span>

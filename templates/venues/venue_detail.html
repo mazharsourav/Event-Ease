@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}{{ venue.name }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/components/tickets.css' %}">
+<link rel="stylesheet" href="{% asset 'css/components/gallery.css' %}">
+<link rel="stylesheet" href="{% asset 'css/components/comments.css' %}">
+<link rel="stylesheet" href="{% asset 'css/components/lightbox.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/detail.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/venue-detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'venues:venue_list' %}">&larr; All venues</a>
+
+    <div class="ee-detail">
+        <article class="ee-detail-main">
+            {% include 'venues/detail/_gallery.html' %}
+
+            <div class="ee-detail-kicker">
+                <span class="ee-tag">{{ venue.get_venue_type_display }}</span>
+                {% if not venue.is_available %}<span class="ee-stamp ee-stamp--completed">Not taking bookings</span>{% endif %}
+            </div>
+            <h1 class="ee-h1 ee-detail-title{% if venue.name|length > 24 %} ee-detail-title--long{% endif %}">{{ venue.name }}</h1>
+
+            <dl class="ee-facts">
+                <div class="ee-fact"><dt>City</dt><dd>{{ venue.city }}</dd></div>
+                <div class="ee-fact"><dt>Capacity</dt><dd>{{ venue.capacity|intcomma }} people</dd></div>
+                <div class="ee-fact">
+                    <dt>Address</dt>
+                    <dd>{{ venue.address }}<small>{{ venue.city }}{% if venue.state %}, {{ venue.state }}{% endif %}{% if venue.zipcode %} {{ venue.zipcode }}{% endif %}</small></dd>
+                </div>
+                <div class="ee-fact">
+                    <dt>Booking length</dt>
+                    <dd>{{ venue.min_booking_hours }} hour{{ venue.min_booking_hours|pluralize }} to {{ venue.max_booking_days }} day{{ venue.max_booking_days|pluralize }}</dd>
+                </div>
+                {% if venue.contact_email or venue.contact_phone or venue.website %}
+                <div class="ee-fact">
+                    <dt>Contact</dt>
+                    <dd>
+                        {% if venue.contact_email %}<a href="mailto:{{ venue.contact_email }}">{{ venue.contact_email }}</a>{% endif %}
+                        {% if venue.contact_phone %}<small><a href="tel:{{ venue.contact_phone }}">{{ venue.contact_phone }}</a></small>{% endif %}
+                        {% if venue.website %}<small><a href="{{ venue.website }}" target="_blank" rel="noopener">{{ venue.website }}</a></small>{% endif %}
+                    </dd>
+                </div>
+                {% endif %}
+            </dl>
+
+            <section class="ee-section" aria-labelledby="about-title">
+                <h2 id="about-title" class="ee-h1 ee-section-title">About this venue</h2>
+                <div class="ee-detail-copy">{{ venue.description|linebreaks }}</div>
+            </section>
+
+            {% include 'venues/detail/_amenities.html' %}
+
+            {% if venue.rules_and_regulations %}
+            <section class="ee-section" aria-labelledby="rules-title">
+                <h2 id="rules-title" class="ee-h1 ee-section-title">House rules</h2>
+                <div class="ee-detail-copy ee-policy">{{ venue.rules_and_regulations|linebreaks }}</div>
+            </section>
+            {% endif %}
+
+            {% if venue.cancellation_policy %}
+            <section class="ee-section" aria-labelledby="cancel-title">
+                <h2 id="cancel-title" class="ee-h1 ee-section-title">Cancellation</h2>
+                <div class="ee-detail-copy ee-policy">{{ venue.cancellation_policy|linebreaks }}</div>
+            </section>
+            {% endif %}
+
+            <div class="ee-section ee-detail-split">
+                {% include 'venues/detail/_reviews.html' %}
+                {% include 'venues/detail/_manager.html' %}
+            </div>
+        </article>
+
+        <aside class="ee-detail-aside" aria-label="Booking">
+            {% include 'venues/detail/_booking_card.html' %}
+        </aside>
+    </div>
+
+    <div class="ee-detail-comments">
+        {% url 'venues:comment_like_toggle' 0 as like_url %}
+        {% url 'venues:comment_delete' 0 as delete_url %}
+        {% include 'components/comments.html' with subject="venue" like_url=like_url delete_url=delete_url %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% asset 'js/components/gallery.js' %}" defer></script>
+<script src="{% asset 'js/components/lightbox.js' %}" defer></script>
+<script src="{% asset 'js/components/comments.js' %}" defer></script>
+{% endblock %}

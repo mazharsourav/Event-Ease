@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Messages &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/components/lightbox.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/messages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-chat-page">
+    <div class="ee-chat" data-ee-chat
+         data-user-id="{{ user.id }}"
+         data-messages-url="{% url 'users:api_get_messages' 0 %}"
+         data-send-url="{% url 'users:api_send_message' %}"
+         data-send-files-url="{% url 'users:api_send_message_with_files' %}">
+        {% csrf_token %}
+
+        <aside class="ee-chat-list" aria-label="Conversations">
+            <div class="ee-chat-list-head">
+                <h1 class="ee-chat-heading">Messages</h1>
+                <label class="ee-visually-hidden" for="chatSearch">Search conversations</label>
+                <input type="search" id="chatSearch" class="ee-chat-search" placeholder="Search conversations" autocomplete="off">
+            </div>
+            <ul class="ee-chat-people" id="chatPeople">
+                {% for conversation in conversations %}
+                <li>
+                    <button type="button" class="ee-chat-person" data-chat-user="{{ conversation.user.id }}"
+                            data-name="{{ conversation.user.get_full_name|default:conversation.user.username }}"
+                            data-avatar="{% if conversation.user.profile.avatar %}{{ conversation.user.profile.avatar.url }}{% endif %}"
+                            data-initials="{{ conversation.user|initials }}">
+                        {% include 'components/pic.html' with person=conversation.user %}
+                        <span class="ee-chat-person-text">
+                            <b>{{ conversation.user.get_full_name|default:conversation.user.username }}</b>
+                            <small>
+                                {% if conversation.last_message %}{% if conversation.last_message.sender == user %}You: {% endif %}{{ conversation.last_message.content|truncatechars:34 }}{% else %}Say hello{% endif %}
+                            </small>
+                        </span>
+                        {% if conversation.unread_count > 0 %}<span class="ee-count-badge">{{ conversation.unread_count }}</span>{% endif %}
+                    </button>
+                </li>
+                {% empty %}
+                <li class="ee-chat-none">
+                    <p>No conversations yet.</p>
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:friends' %}">Go to friends</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+
+        <section class="ee-chat-thread" aria-label="Conversation">
+            <div class="ee-chat-empty" data-chat-empty>
+                <p class="ee-chat-empty-title">Pick a conversation</p>
+                <p>Choose someone on the left to read and reply.</p>
+            </div>
+
+            <div class="ee-chat-open" data-chat-open hidden>
+                <header class="ee-chat-head">
+                    <button type="button" class="ee-chat-back" data-chat-back aria-label="Back to conversations">&larr;</button>
+                    <span class="ee-pic" data-chat-avatar></span>
+                    <h2 class="ee-chat-with" data-chat-name></h2>
+                </header>
+
+                <div class="ee-chat-messages" data-chat-messages tabindex="0" aria-live="polite"></div>
+                <button type="button" class="ee-chat-new" data-chat-new hidden>New messages</button>
+
+                <form class="ee-chat-compose" data-chat-form>
+                    <ul class="ee-chat-files" data-chat-files hidden></ul>
+                    <div class="ee-chat-compose-row">
+                        <input type="file" id="chatFile" multiple hidden>
+                        <label class="ee-chat-attach" for="chatFile" title="Attach files" aria-label="Attach files">+</label>
+                        <textarea class="ee-chat-input" data-chat-input rows="1" placeholder="Type a message" aria-label="Message"></textarea>
+                        <button type="submit" class="ee-pill ee-pill--ink">Send</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% asset 'js/components/lightbox.js' %}" defer></script>
+<script src="{% asset 'js/pages/messages.js' %}" defer></script>
+{% endblock %}

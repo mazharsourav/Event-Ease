@@ -1,0 +1,35 @@
+/* Toasts: Django messages (success, info, warning, error), pinned under the header. */
+
+.ee-toasts {
+  position: fixed; z-index: 50; top: calc(var(--nav-height) + 14px); right: var(--gutter);
+  display: grid; gap: 10px; width: min(420px, calc(100% - 2 * var(--gutter)));
+}
+
+.ee-toast {
+  display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+  background: var(--stock); color: var(--stock-ink); border: 2px solid var(--stock-ink);
+  font-weight: 600;
+  animation: ee-toast-in .3s var(--ease);
+  transition: opacity .3s, transform .3s var(--ease);
+}
+.ee-toast.is-leaving { opacity: 0; transform: translateX(16px); }
+
+/* Success and info are solid black; warnings and errors stay white so they read as a problem */
+.ee-toast--success, .ee-toast--info { background: var(--stock-ink); color: var(--stock); }
+
+.ee-toast-icon {
+  flex: none; display: inline-grid; place-items: center; width: 26px; height: 26px;
+  border: 2px solid currentColor; border-radius: 50%; font-weight: 800; font-size: 14px; line-height: 1;
+}
+.ee-toast-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ee-toast-close {
+  flex: none; display: grid; place-items: center; width: 26px; height: 26px; margin: -2px -4px 0 0;
+  border: 0; background: transparent; color: inherit; font-size: 22px; line-height: 1; cursor: pointer;
+}
+.ee-toast :focus-visible { outline-color: currentColor; }
+
+@keyframes ee-toast-in { from { opacity: 0; transform: translateX(16px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-toast { animation: none; transition: none; }
+}

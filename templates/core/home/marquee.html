@@ -1,0 +1,13 @@
+{# Category marquee: the event types scroll past on a black band. The second pass is hidden from assistive tech. #}
+<nav class="ee-marquee ee-band" aria-label="Browse by type">
+    <div class="ee-marquee-track">
+        {% for pass in "ab" %}
+            <div class="ee-marquee-set"{% if forloop.last %} aria-hidden="true"{% endif %}>
+                {% for value, label in event_types %}
+                    <a href="{% url 'events:event_list' %}?type={{ value }}"{% if forloop.parentloop.last %} tabindex="-1"{% endif %}>{{ label }}</a>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6Z"/></svg>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</nav>

@@ -1,0 +1,102 @@
+{% load humanize %}
+{% comment %}
+    The ticket card. One of these states, in this order:
+    booked (payment pending / registered) · registration closed · fully booked · visitor · ticket picker · single ticket
+{% endcomment %}
+<section class="ee-ticket ee-stock" id="tickets" aria-labelledby="tickets-title"
+         {% if can_pick %}data-ee-tickets data-book-url="{% url 'events:event_book' event.pk %}" data-max-tickets="6"{% endif %}>
+    <h2 id="tickets-title" class="ee-ticket-label">Tickets</h2>
+
+    {% if is_booked %}
+        {% if user_booking.payment_status == 'pending' %}
+            <div class="ee-ticket-status">
+                <b>Payment pending</b>
+                <p>Your booking is held until you pay.</p>
+            </div>
+            <a class="ee-pill ee-pill--ink" href="{% url 'payments:payment_process' user_booking.id %}">Pay &#2547;{{ user_booking.amount|floatformat:0|intcomma }}</a>
+        {% else %}
+            <div class="ee-ticket-status">
+                <b>You&rsquo;re registered</b>
+                <p>Status: {{ user_booking.get_status_display }}</p>
+            </div>
+        {% endif %}
+
+    {% elif registration_closed %}
+        <div class="ee-ticket-status">
+            <b>Registration closed</b>
+            <p>The deadline passed on {{ event.registration_deadline|date:"j F Y" }} at {{ event.registration_deadline|time:"g:i A" }}.</p>
+        </div>
+
+    {% elif is_full %}
+        <div class="ee-ticket-status">
+            <b>Fully booked</b>
+            <p>There are no places left for this event.</p>
+        </div>
+
+    {% else %}
+        {% if event.registration_deadline %}
+            <p class="ee-deadline" data-deadline="{{ event.registration_deadline|date:'c' }}">Registration closes {{ event.registration_deadline|date:"j M, g:i A" }}</p>
+        {% endif %}
+
+        {% if has_categories %}
+            <ul class="ee-tiers">
+                {% for category in active_categories %}
+                    <li class="ee-tier{% if category.tickets_available <= 0 %} ee-tier--sold{% endif %}" data-tier>
+                        <span class="ee-tier-name">{{ category.name }}</span>
+                        <span class="ee-tier-price">{% if category.price == 0 %}Free{% else %}&#2547;{{ category.price|floatformat:0|intcomma }}{% endif %}</span>
+                        {% if category.description %}<span class="ee-tier-note">{{ category.description }}</span>{% endif %}
+                        {% if category.tickets_available > 0 %}
+                            <span class="ee-tier-left">{{ category.tickets_available }} left</span>
+                            {% if can_pick %}
+                            <div class="ee-stepper">
+                                <label class="ee-tag" for="quantity_{{ category.id }}">Quantity</label>
+                                <span class="ee-stepper-controls">
+                                    <button type="button" data-step="down" aria-label="One fewer {{ category.name }} ticket">&minus;</button>
+                                    <input type="number" id="quantity_{{ category.id }}" value="0" min="0" max="{{ category.tickets_available }}"
+                                           inputmode="numeric" data-qty data-category-id="{{ category.id }}"
+                                           data-price="{{ category.price }}" data-max="{{ category.tickets_available }}">
+                                    <button type="button" data-step="up" aria-label="One more {{ category.name }} ticket">+</button>
+                                </span>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <span class="ee-tier-left">Sold out</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <ul class="ee-tiers">
+                <li class="ee-tier">
+                    <span class="ee-tier-name">General</span>
+                    <span class="ee-tier-price">{% if event.is_free %}Free{% else %}&#2547;{{ event.ticket_price|floatformat:0|intcomma }}{% endif %}</span>
+                </li>
+            </ul>
+        {% endif %}
+
+        {% if can_pick %}
+            <div class="ee-total">
+                <span>
+                    <span class="ee-ticket-label">Total</span><br>
+                    <span class="ee-total-count" data-total-count>0 of 6 tickets</span>
+                </span>
+                <b class="ee-total-amount" data-total-amount>&#2547;0</b>
+            </div>
+            <button type="button" class="ee-pill ee-pill--ink" data-checkout disabled>Book tickets</button>
+            <p class="ee-ticket-note">Pay with bKash, Nagad or card. You&rsquo;ll see the total again before you pay.</p>
+        {% elif user.is_authenticated %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'events:event_book' event.pk %}">{% if event.is_free %}Register for free{% else %}Buy a ticket{% endif %}</a>
+        {% else %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'users:login' %}?next={% url 'events:event_detail' event.pk %}">Log in to book</a>
+            <p class="ee-ticket-note">Pay with bKash, Nagad or card.</p>
+        {% endif %}
+    {% endif %}
+
+</section>
+
+{% if not is_booked and not registration_closed and not is_full %}
+    <div class="ee-ticket-bar">
+        <span><span class="ee-ticket-bar-label">From</span><b>{% if from_price == 0 %}Free{% else %}&#2547;{{ from_price|floatformat:0|intcomma }}{% endif %}</b></span>
+        <a class="ee-pill" href="#tickets">{% if user.is_authenticated %}Book tickets{% else %}Get tickets{% endif %}</a>
+    </div>
+{% endif %}

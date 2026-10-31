@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Venues &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/pages/listing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-listing">
+    {% include 'components/page_head.html' with title="Halls & grounds" intro="Book a hall, stadium or ground for your own event." %}
+
+    <div class="ee-listing-tools">
+        <form class="ee-finder ee-finder--wide ee-stock" method="get" role="search" action="{% url 'venues:venue_list' %}">
+            <div class="ee-fields">
+                <label class="ee-field">
+                    <span>What</span>
+                    <input type="search" name="q" value="{{ search_query }}" placeholder="Venue name or area" autocomplete="off">
+                </label>
+                <label class="ee-field">
+                    <span>Type</span>
+                    <select name="type">
+                        <option value="">Any type</option>
+                        {% for value, label in venue_types %}<option value="{{ value }}"{% if value == venue_type %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </label>
+                <label class="ee-field">
+                    <span>Capacity</span>
+                    <select name="min_capacity">
+                        <option value="">Any size</option>
+                        <option value="50"{% if min_capacity == '50' %} selected{% endif %}>50 or more</option>
+                        <option value="100"{% if min_capacity == '100' %} selected{% endif %}>100 or more</option>
+                        <option value="500"{% if min_capacity == '500' %} selected{% endif %}>500 or more</option>
+                        <option value="1000"{% if min_capacity == '1000' %} selected{% endif %}>1,000 or more</option>
+                        <option value="5000"{% if min_capacity == '5000' %} selected{% endif %}>5,000 or more</option>
+                    </select>
+                </label>
+                <label class="ee-field">
+                    <span>Sort</span>
+                    <select name="sort">
+                        {% for value, label in sort_choices %}<option value="{{ value }}"{% if value == sort_by %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div class="ee-finder-foot">
+                <span>{{ page_obj.paginator.count }} venue{{ page_obj.paginator.count|pluralize }}</span>
+                <button class="ee-pill ee-pill--ink" type="submit">Find venues</button>
+            </div>
+        </form>
+
+        {% if search_query or venue_type or min_capacity %}
+            <div class="ee-listing-filters">
+                <a class="ee-listing-clear" href="{% url 'venues:venue_list' %}">Clear all filters</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if page_obj %}
+        <div class="ee-cards">
+            {% for venue in page_obj %}
+                {% include 'components/hall_card.html' %}
+            {% endfor %}
+        </div>
+        <div class="ee-listing-pager">{% include 'components/pagination.html' %}</div>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">{% if search_query or venue_type or min_capacity %}Nothing matches{% else %}No venues yet{% endif %}</h2>
+            <p class="ee-blank-text">{% if search_query or venue_type or min_capacity %}Try a different word, or clear the filters.{% else %}Venues will show up here as soon as owners list them.{% endif %}</p>
+            {% if search_query or venue_type or min_capacity %}
+                <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_list' %}">Clear filters</a>
+            {% else %}
+                <a class="ee-pill ee-pill--ink" href="{{ list_venue_url }}">List a venue</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

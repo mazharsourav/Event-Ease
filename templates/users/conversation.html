@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ other_user.get_full_name|default:other_user.username }} &middot; Messages &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/messages.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-chat-page ee-thread-page">
+    <div class="ee-chat">
+        <section class="ee-chat-thread" aria-label="Conversation with {{ other_user.get_full_name|default:other_user.username }}">
+            <div class="ee-chat-open">
+                <header class="ee-chat-head">
+                    <a class="ee-chat-back ee-chat-back--link" href="{% url 'users:messages' %}" aria-label="Back to messages">&larr;</a>
+                    {% include 'components/pic.html' with person=other_user %}
+                    <h1 class="ee-chat-with">{{ other_user.get_full_name|default:other_user.username }}</h1>
+                </header>
+
+                <div class="ee-chat-messages" id="messagesArea" tabindex="0">
+                    {% for message in messages_list %}
+                        <div class="ee-chat-bubble {% if message.sender == user %}is-mine{% else %}is-theirs{% endif %}">
+                            <p>{{ message.content }}</p>
+                            <time datetime="{{ message.created_at|date:'c' }}">{{ message.created_at|date:"j M, g:i A" }}</time>
+                        </div>
+                    {% empty %}
+                        <p class="ee-chat-none">No messages yet. Say hello.</p>
+                    {% endfor %}
+                </div>
+
+                <form method="post" class="ee-chat-compose" id="messageForm">
+                    {% csrf_token %}
+                    <div class="ee-chat-compose-row ee-chat-compose-row--text">
+                        <textarea name="content" class="ee-chat-input" id="messageInput" rows="1" placeholder="Type a message" aria-label="Message" required></textarea>
+                        <button type="submit" class="ee-pill ee-pill--ink">Send</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/conversation.js' %}" defer></script>{% endblock %}

@@ -1,0 +1,56 @@
+{# The wall: headline and finder on the left, four posters on the right #}
+<section class="ee-wall" aria-labelledby="ee-title">
+    <div class="ee-wrap ee-wall-grid">
+        <div class="ee-wall-copy">
+            <h1 id="ee-title" class="ee-h1">
+                <span class="ee-wall-title">What&rsquo;s on</span>
+                <span class="ee-city" aria-label="Dhaka"><span>D</span><span>H</span><span>A</span><span>K</span><span>A</span></span>
+            </h1>
+            <p class="ee-brush">Concerts &middot; festivals &middot; seminars<span class="ee-brush-sep"> &middot; </span><br class="ee-brush-break">sport &middot; venues</p>
+
+            <form class="ee-finder ee-stock" action="{% url 'events:event_list' %}" method="get" role="search">
+                <span class="ee-sticker" aria-hidden="true">Pay with bKash, Nagad or card</span>
+                <div class="ee-fields">
+                    <label class="ee-field">
+                        <span>What</span>
+                        <input type="search" name="q" placeholder="Artist, event or venue" autocomplete="off">
+                    </label>
+                    <label class="ee-field">
+                        <span>Type</span>
+                        <select name="type">
+                            <option value="">Any type</option>
+                            {% for value, label in event_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+                        </select>
+                    </label>
+                    <label class="ee-field">
+                        <span>When</span>
+                        <select name="status">
+                            <option value="">Any time</option>
+                            <option value="upcoming">Coming up</option>
+                            <option value="live">On now</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="ee-finder-foot">
+                    <a href="{{ list_event_url }}">Running an event or a hall? Put it on the wall</a>
+                    <button class="ee-pill ee-pill--ink" type="submit">Find events</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="ee-posters" data-lean>
+            {% for event in wall_events %}
+                {% include 'components/poster_card.html' %}
+            {% empty %}
+                <div class="ee-poster ee-poster--blank">
+                    <span class="ee-tape" aria-hidden="true"></span>
+                    <span class="ee-poster-title">This wall is waiting for its first poster</span>
+                    <span class="ee-poster-meta">Organisers can list an event in minutes.</span>
+                    <a class="ee-pill ee-pill--ink" href="{{ list_event_url }}">List an event</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <span class="ee-torn ee-torn--wall" aria-hidden="true"></span>
+</section>

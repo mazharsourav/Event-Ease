@@ -1,0 +1,32 @@
+{# The post's photos: the cover and any extra photos, as one gallery. Nothing is shown for a post without photos. #}
+{% with extra=post.images.all %}
+{% if post.image or extra %}
+    <div class="ee-gallery ee-gallery--whole" data-ee-gallery>
+        <figure class="ee-gallery-main">
+            <span class="ee-tape" aria-hidden="true"></span>
+            <div class="ee-gallery-frame">
+                <img data-gallery-image src="{% if post.image %}{{ post.image.url }}{% else %}{{ extra.0.image.url }}{% endif %}" alt="{{ post.title }}">
+            </div>
+        </figure>
+        {% if post.image and extra or extra|length > 1 %}
+            <ul class="ee-gallery-thumbs">
+                {% if post.image %}
+                    <li>
+                        <button type="button" class="ee-gallery-thumb" data-src="{{ post.image.url }}" data-alt="{{ post.title }}" aria-label="Show cover photo" aria-current="true">
+                            <img src="{{ post.image.url }}" alt="" loading="lazy">
+                        </button>
+                    </li>
+                {% endif %}
+                {% for photo in extra %}
+                    <li>
+                        <button type="button" class="ee-gallery-thumb" data-src="{{ photo.image.url }}" data-alt="{{ post.title }}, photo {{ forloop.counter }}"
+                                aria-label="Show photo {{ forloop.counter }}"{% if not post.image and forloop.first %} aria-current="true"{% endif %}>
+                            <img src="{{ photo.image.url }}" alt="" loading="lazy">
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endif %}
+{% endwith %}

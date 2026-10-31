@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}My profile &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="My profile" %}
+
+    <div class="ee-profile-grid">
+        <form method="post" enctype="multipart/form-data" class="ee-form ee-panel ee-stock">
+            {% csrf_token %}
+            <h2 class="ee-panel-title">Your details</h2>
+
+            <div class="ee-avatar-edit">
+                <label class="ee-pic ee-pic--lg" for="avatar" id="avatarPreview" title="Change photo">
+                    {% if user.profile.avatar %}<img src="{{ user.profile.avatar.url }}" alt="Your photo">{% else %}{{ user|initials }}{% endif %}
+                </label>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="avatar">Photo</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*">
+                    <p class="ee-form-help">JPG, PNG or GIF, up to 5 MB.</p>
+                </div>
+            </div>
+
+            <div class="ee-form-row">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="first_name">First name</label>
+                    <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                </div>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="last_name">Last name</label>
+                    <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+                </div>
+            </div>
+            <div class="ee-form-row">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" value="{{ user.profile.phone|default:'' }}" placeholder="01XXXXXXXXX">
+                </div>
+            </div>
+            <div class="ee-form-field">
+                <label class="ee-form-label" for="address">Address</label>
+                <textarea id="address" name="address" rows="2">{{ user.profile.address|default:'' }}</textarea>
+            </div>
+            <div class="ee-form-field">
+                <label class="ee-form-label" for="bio">Bio</label>
+                <textarea id="bio" name="bio" rows="4" placeholder="A line or two about you.">{{ user.profile.bio|default:'' }}</textarea>
+            </div>
+            <div class="ee-form-actions">
+                <button type="submit" class="ee-pill ee-pill--ink">Save changes</button>
+            </div>
+        </form>
+
+        <div class="ee-profile-body">
+            <section class="ee-panel ee-panel--taped ee-stock">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <h2 class="ee-panel-title">Account</h2>
+                <dl class="ee-summary">
+                    <div class="ee-summary-line"><dt>Name</dt><dd>{{ user.get_full_name|default:user.username }}</dd></div>
+                    <div class="ee-summary-line"><dt>Username</dt><dd>@{{ user.username }}</dd></div>
+                    <div class="ee-summary-line"><dt>Role</dt><dd>{% if user.is_superuser %}Super admin{% else %}{{ user.profile.get_role_display }}{% endif %}</dd></div>
+                    <div class="ee-summary-line"><dt>Member since</dt><dd>{{ user.date_joined|date:"j M Y" }}</dd></div>
+                    <div class="ee-summary-line"><dt>Last updated</dt><dd>{{ user.profile.updated_at|date:"j M Y" }}</dd></div>
+                </dl>
+
+                {% if user.profile.role == 'basic_user' %}
+                    {% if pending_request %}
+                        <p class="ee-panel-text"><b>Pending:</b> your request to become {{ pending_request.get_requested_role_display }} is waiting for an admin.</p>
+                    {% else %}
+                        <a class="ee-pill ee-pill--ink" href="{% url 'users:request_upgrade' %}">Become an organiser</a>
+                    {% endif %}
+                {% endif %}
+
+                <div class="ee-account-links">
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:dashboard' %}">My dashboard</a>
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:search_users' %}">Find people</a>
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:password_change' %}">Change password</a>
+                    {% if user.is_superuser or user.profile.role == 'admin' %}
+                        <a class="ee-pill ee-pill--line" href="{% url 'users:admin_dashboard' %}">Admin dashboard</a>
+                    {% endif %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:logout' %}">Log out</a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/profile.js' %}" defer></script>{% endblock %}

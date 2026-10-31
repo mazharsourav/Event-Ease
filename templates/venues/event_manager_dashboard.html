@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}My venue bookings &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="Venue bookings" intro="The halls and grounds you have asked for." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_bookings }}</b><span>Requests</span></li>
+        <li class="ee-stat"><b>{{ pending_bookings }}</b><span>Waiting</span></li>
+        <li class="ee-stat"><b>{{ confirmed_bookings }}</b><span>Confirmed</span></li>
+        <li class="ee-stat"><b>&#2547;{{ total_spent|floatformat:0|intcomma }}</b><span>Spent</span></li>
+    </ul>
+
+    <section data-ee-tabs aria-label="Bookings">
+        <div class="ee-tabs" role="tablist">
+            <button type="button" class="ee-tab" role="tab" id="tab-pending" aria-controls="panel-pending" aria-selected="true">Pending <span class="ee-tab-count">{{ pending_bookings }}</span></button>
+            <button type="button" class="ee-tab" role="tab" id="tab-confirmed" aria-controls="panel-confirmed" aria-selected="false">Confirmed <span class="ee-tab-count">{{ confirmed_bookings }}</span></button>
+            <button type="button" class="ee-tab" role="tab" id="tab-completed" aria-controls="panel-completed" aria-selected="false">Completed <span class="ee-tab-count">{{ completed_bookings }}</span></button>
+            <button type="button" class="ee-tab" role="tab" id="tab-cancelled" aria-controls="panel-cancelled" aria-selected="false">Cancelled <span class="ee-tab-count">{{ cancelled_bookings }}</span></button>
+        </div>
+
+        <div class="ee-tabpanels">
+            <div class="ee-tabpanel" id="panel-pending" role="tabpanel" aria-labelledby="tab-pending">
+                <ul class="ee-rows">
+                    {% for booking in bookings %}{% if booking.status == 'pending' %}{% include 'components/booking_row.html' with kind='venue' mode='pending' %}{% endif %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">Nothing waiting. <a href="{% url 'venues:venue_list' %}">Browse venues</a>.</p></li>{% endfor %}
+                </ul>
+            </div>
+            <div class="ee-tabpanel" id="panel-confirmed" role="tabpanel" aria-labelledby="tab-confirmed">
+                <ul class="ee-rows">
+                    {% for booking in bookings %}{% if booking.status == 'confirmed' %}{% include 'components/booking_row.html' with kind='venue' mode='confirmed' %}{% endif %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No confirmed bookings yet.</p></li>{% endfor %}
+                </ul>
+            </div>
+            <div class="ee-tabpanel" id="panel-completed" role="tabpanel" aria-labelledby="tab-completed">
+                <ul class="ee-rows">
+                    {% for booking in bookings %}{% if booking.status == 'completed' %}{% include 'components/booking_row.html' with kind='venue' mode='past' %}{% endif %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No completed bookings yet.</p></li>{% endfor %}
+                </ul>
+            </div>
+            <div class="ee-tabpanel" id="panel-cancelled" role="tabpanel" aria-labelledby="tab-cancelled">
+                <ul class="ee-rows">
+                    {% for booking in bookings %}{% if booking.status == 'cancelled' or booking.status == 'rejected' %}{% include 'components/booking_row.html' with kind='venue' mode='cancelled' %}{% endif %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No cancelled bookings.</p></li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/components/tabs.js' %}" defer></script>{% endblock %}

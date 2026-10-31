@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}{% if existing_review %}Edit your review{% else %}Write a review{% endif %} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/components/rate.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/reviews.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% if event %}
+        <a class="ee-back" href="{% url 'events:event_detail' event.pk %}">&larr; {{ event.title }}</a>
+    {% elif venue %}
+        <a class="ee-back" href="{% url 'venues:venue_detail' venue.pk %}">&larr; {{ venue.name }}</a>
+    {% else %}
+        <a class="ee-back" href="{% url 'reviews:all_reviews' %}">&larr; All reviews</a>
+    {% endif %}
+
+    {% include 'components/page_head.html' with title=existing_review|yesno:"Edit your review,Write a review" %}
+
+    <div class="ee-review-layout">
+        {% if event or venue %}
+        <aside class="ee-panel ee-panel--flat ee-stock ee-review-subject">
+            <p class="ee-tag">{% if event %}Reviewing an event{% else %}Reviewing a venue{% endif %}</p>
+            <h2 class="ee-panel-title">{% if event %}{{ event.title }}{% else %}{{ venue.name }}{% endif %}</h2>
+            <p class="ee-panel-text">
+                {% if event %}{{ event.start_date|date:"D j M Y" }} &middot; {{ event.venue_name }}
+                {% else %}{{ venue.get_venue_type_display }} &middot; {{ venue.city }}{% endif %}
+            </p>
+        </aside>
+        {% endif %}
+
+        <form method="post" class="ee-form ee-panel ee-stock ee-review-form" novalidate>
+            {% csrf_token %}
+            {% include 'components/form_errors.html' %}
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">Your ratings</legend>
+                <div class="ee-rate-grid">
+                    {% for field in form.rating_fields %}{% include 'components/star_input.html' %}{% endfor %}
+                </div>
+            </fieldset>
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">In your words</legend>
+                <div class="ee-form-row ee-form-row--1">
+                    {% include 'components/form_field.html' with field=form.title %}
+                    {% include 'components/form_field.html' with field=form.body_field %}
+                </div>
+            </fieldset>
+
+            <div class="ee-form-actions">
+                <button type="submit" class="ee-pill ee-pill--ink">{% if existing_review %}Update review{% else %}Post review{% endif %}</button>
+                <a class="ee-pill ee-pill--line" href="{% if event %}{% url 'events:event_detail' event.pk %}{% elif venue %}{% url 'venues:venue_detail' venue.pk %}{% else %}{% url 'reviews:all_reviews' %}{% endif %}">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

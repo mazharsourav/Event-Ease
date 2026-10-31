@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Log in &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/auth.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-auth">
+    <h1 class="ee-h1 ee-auth-title">Log in</h1>
+
+    <form method="post" class="ee-form ee-panel ee-panel--taped ee-stock ee-auth-panel">
+        <span class="ee-tape" aria-hidden="true"></span>
+        {% csrf_token %}
+        {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+        <div class="ee-form-field">
+            <label class="ee-form-label" for="username">Username or email</label>
+            <input type="text" id="username" name="username" value="{{ request.POST.username }}" autocomplete="username" required autofocus>
+        </div>
+        <div class="ee-form-field">
+            <label class="ee-form-label" for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+        <div class="ee-form-actions">
+            <button type="submit" class="ee-pill ee-pill--ink">Log in</button>
+        </div>
+    </form>
+
+    <p class="ee-auth-switch"><a href="{% url 'users:password_reset' %}">Forgotten your password?</a></p>
+    <p class="ee-auth-switch">New here? <a href="{% url 'users:signup' %}">Make an account</a></p>
+</div>
+{% endblock %}

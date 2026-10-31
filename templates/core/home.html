@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}EventEase &middot; What's on in Dhaka{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/home.css' %}">{% endblock %}
+
+{% block content %}
+    {% include 'core/home/wall.html' %}
+    {% include 'core/home/marquee.html' %}
+    {% include 'core/home/bill.html' %}
+    {% include 'core/home/halls.html' %}
+    {% include 'core/home/stage.html' %}
+    {% include 'core/home/overheard.html' %}
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/home.js' %}" defer></script>{% endblock %}

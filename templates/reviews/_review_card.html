@@ -1,0 +1,38 @@
+{% comment %}
+    One event or venue review.
+    Context: review, delete_url (shown to the review's author only), edit_url (optional).
+{% endcomment %}
+{% load core_tags %}
+<li class="ee-review ee-stock">
+    <span class="ee-tape" aria-hidden="true"></span>
+    <header class="ee-review-head">
+        {% include 'components/pic.html' with person=review.user %}
+        <div class="ee-review-who">
+            <span class="ee-review-name">{{ review.user.get_full_name|default:review.user.username }}</span>
+            <time datetime="{{ review.created_at|date:'c' }}">{{ review.created_at|date:"j M Y" }}</time>
+        </div>
+        {% if review.is_verified %}<span class="ee-stamp ee-stamp--confirmed">Verified</span>{% endif %}
+    </header>
+
+    <div class="ee-review-rating">
+        {% include 'components/stars.html' with rating=review.rating %}
+        <b>{{ review.rating }}/5</b>
+    </div>
+
+    <h3 class="ee-review-title">{{ review.title }}</h3>
+    {% if review.comment %}<div class="ee-review-text">{{ review.comment|linebreaks }}</div>{% endif %}
+
+    <dl class="ee-review-cats">
+        {% for key, value in review.category_ratings.items %}
+            <div><dt>{{ key|rating_label }}</dt><dd>{{ value }}/5</dd></div>
+        {% endfor %}
+    </dl>
+
+    {% if delete_url and review.user == user %}
+        <form method="post" action="{{ delete_url }}" class="ee-review-actions">
+            {% csrf_token %}
+            {% if edit_url %}<a class="ee-pill ee-pill--line" href="{{ edit_url }}">Edit</a>{% endif %}
+            <button type="submit" class="ee-pill ee-pill--line" data-confirm="Delete your review?">Delete</button>
+        </form>
+    {% endif %}
+</li>

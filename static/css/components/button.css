@@ -1,0 +1,22 @@
+/* Buttons. A pill is the one button shape; --ink fills it, --line outlines it. */
+
+.ee-pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 8px 26px; border-radius: 999px; border: 2px solid transparent;
+  font-weight: 800; font-size: 16px; line-height: 1.2; letter-spacing: .02em; text-transform: uppercase; text-align: center;
+  text-decoration: none; cursor: pointer; max-width: 100%;
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), background-color .2s;
+}
+.ee-pill:hover { transform: translateY(-2px) rotate(-1deg); }
+.ee-pill:active { transform: translateY(0) scale(.98); }
+
+.ee-pill--ink { background: var(--ink); color: var(--paper); }
+.ee-pill--ink:hover { box-shadow: 0 8px 20px rgba(17, 17, 17, .3); }
+.ee-pill--line { border-color: currentColor; background: transparent; }
+
+/* On white stock the ink never inverts with the theme */
+.ee-stock .ee-pill--ink { background: var(--stock-ink); color: var(--stock); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-pill { transition: none; }
+}

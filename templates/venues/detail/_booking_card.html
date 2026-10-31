@@ -1,0 +1,56 @@
+{% load humanize %}
+{# Price, taken dates and the booking action. Booking is for organisers; everyone else is shown the next step. #}
+<section class="ee-ticket ee-stock" aria-labelledby="booking-title">
+    <h2 id="booking-title" class="ee-ticket-label">Book this venue</h2>
+
+    <div class="ee-price">
+        {% if venue.price_per_day %}
+            <div class="ee-price-line">
+                <span class="ee-price-amount">&#2547;{{ venue.price_per_day|floatformat:0|intcomma }}</span>
+                <span class="ee-price-unit">per day</span>
+            </div>
+        {% endif %}
+        {% if venue.price_per_hour %}
+            <div class="ee-price-line">
+                <span class="ee-price-amount">&#2547;{{ venue.price_per_hour|floatformat:0|intcomma }}</span>
+                <span class="ee-price-unit">per hour</span>
+            </div>
+        {% endif %}
+        {% if not venue.price_per_day and not venue.price_per_hour %}
+            <p class="ee-price-ask">Ask for a quote</p>
+        {% endif %}
+    </div>
+
+    {% if upcoming_bookings %}
+        <div>
+            <span class="ee-ticket-label">Already taken</span>
+            <ul class="ee-booked">
+                {% for booking in upcoming_bookings %}
+                    <li><s>{{ booking.start_date|date:"j M" }} &ndash; {{ booking.end_date|date:"j M Y" }}</s></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if not venue.is_available %}
+        <div class="ee-ticket-status">
+            <b>Not taking bookings</b>
+            <p>The owner has paused bookings for this venue.</p>
+        </div>
+    {% elif can_book %}
+        <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_book' venue.pk %}">Request a booking</a>
+        <p class="ee-ticket-note">The owner confirms your dates before any payment is taken.</p>
+    {% elif user.is_authenticated %}
+        <a class="ee-pill ee-pill--ink" href="{{ list_event_url }}">Become an organiser to book</a>
+        <p class="ee-ticket-note">Booking a venue is for organisers. Apply once and an admin approves it.</p>
+    {% else %}
+        <a class="ee-pill ee-pill--ink" href="{% url 'users:login' %}?next={% url 'venues:venue_detail' venue.pk %}">Log in to book</a>
+    {% endif %}
+</section>
+
+{% if can_manage %}
+    <div class="ee-manage">
+        <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_edit' venue.pk %}">Edit venue</a>
+        <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_delete' venue.pk %}" data-confirm="Delete this venue? This cannot be undone.">Delete</a>
+    </div>
+{% endif %}

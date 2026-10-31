@@ -1,0 +1,25 @@
+{% load core_tags %}<!DOCTYPE html>
+{# Server error page. It stands alone (no header, no database, no context processors) so it can still render when something is badly broken. #}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Something went wrong &middot; EventEase</title>
+    {% include 'layout/styles.html' %}
+    <link rel="stylesheet" href="{% asset 'css/pages/error.css' %}">
+</head>
+<body class="ee">
+    <script src="{% asset 'js/core/theme.js' %}"></script>
+    <main id="main" class="ee-wrap ee-page">
+        <p class="ee-error-mark">EventEase</p>
+        <section class="ee-error">
+            <p class="ee-error-code" aria-hidden="true">500</p>
+            <h1 class="ee-h1 ee-error-title">Something went wrong</h1>
+            <p class="ee-error-text">It's on our side, not yours. We have been told. Please try again in a moment.</p>
+            <div class="ee-actions-inline">
+                <a class="ee-pill ee-pill--ink" href="/">Back to home</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

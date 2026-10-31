@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ viewed_user.get_full_name|default:viewed_user.username }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'users:search_users' %}">&larr; Find people</a>
+
+    {% include 'users/_profile_head.html' with person=viewed_user %}
+
+    <div class="ee-profile-actions">
+        {% if friendship_status == 'friends' %}
+            <span class="ee-stamp ee-stamp--confirmed">Friends</span>
+            <a class="ee-pill ee-pill--ink" href="{% url 'users:conversation' viewed_user.id %}">Send a message</a>
+            <form method="post" action="{% url 'users:unfriend_user' viewed_user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="ee-pill ee-pill--line" data-confirm="Remove {{ viewed_user.get_full_name|default:viewed_user.username }} from your friends?">Unfriend</button>
+            </form>
+        {% elif friendship_status == 'request_sent' %}
+            <span class="ee-stamp ee-stamp--pending">Request sent</span>
+        {% elif friendship_status == 'request_received' %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'users:friends' %}">Answer their request</a>
+        {% else %}
+            <form method="post" action="{% url 'users:send_friend_request' viewed_user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="ee-pill ee-pill--ink">Send friend request</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <section class="ee-panel ee-stock ee-narrow">
+        <h2 class="ee-panel-title">About</h2>
+        <dl class="ee-summary">
+            <div class="ee-summary-line"><dt>Member since</dt><dd>{{ viewed_user.date_joined|date:"F Y" }}</dd></div>
+            {% if mutual_friends_count > 0 %}<div class="ee-summary-line"><dt>Mutual friends</dt><dd>{{ mutual_friends_count }}</dd></div>{% endif %}
+            {# Contact details are deliberately not shown on anyone else's profile, not even to friends.
+               People reach each other through the messages feature instead. #}
+        </dl>
+        {% if viewed_user.profile.bio %}<p class="ee-panel-text">{{ viewed_user.profile.bio }}</p>{% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}My dashboard &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="My dashboard" intro="Your tickets and venue bookings in one place." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_events }}</b><span>Events booked</span></li>
+        <li class="ee-stat"><b>{{ total_venues }}</b><span>Venues booked</span></li>
+        <li class="ee-stat"><b>&#2547;{{ total_spent|floatformat:0|intcomma }}</b><span>Total spent</span></li>
+        <li class="ee-stat"><b>{{ total_bookings }}</b><span>All bookings</span></li>
+    </ul>
+
+    <section data-ee-tabs aria-label="Bookings">
+        <div class="ee-tabs" role="tablist">
+            <button type="button" class="ee-tab" role="tab" id="tab-upcoming" aria-controls="panel-upcoming" aria-selected="true">Upcoming</button>
+            <button type="button" class="ee-tab" role="tab" id="tab-past" aria-controls="panel-past" aria-selected="false">Past</button>
+            <button type="button" class="ee-tab" role="tab" id="tab-confirmed" aria-controls="panel-confirmed" aria-selected="false">Confirmed venues <span class="ee-tab-count">{{ confirmed_venues|length }}</span></button>
+            <button type="button" class="ee-tab" role="tab" id="tab-pending" aria-controls="panel-pending" aria-selected="false">Pending <span class="ee-tab-count">{{ pending_venues|length }}</span></button>
+            <button type="button" class="ee-tab" role="tab" id="tab-cancelled" aria-controls="panel-cancelled" aria-selected="false">Cancelled <span class="ee-tab-count">{{ cancelled_venues|length }}</span></button>
+        </div>
+
+        <div class="ee-tabpanels">
+            <div class="ee-tabpanel" id="panel-upcoming" role="tabpanel" aria-labelledby="tab-upcoming">
+                <h2 class="ee-tabpanel-title">Upcoming events</h2>
+                <ul class="ee-rows">
+                    {% for booking in upcoming_events %}{% include 'components/booking_row.html' with kind='event' mode='upcoming' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No upcoming event bookings. <a href="{% url 'events:event_list' %}">Find an event</a>.</p></li>{% endfor %}
+                </ul>
+                <h2 class="ee-tabpanel-title">Upcoming venues</h2>
+                <ul class="ee-rows">
+                    {% for booking in upcoming_venues %}{% include 'components/booking_row.html' with kind='venue' mode='upcoming' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No upcoming venue bookings.</p></li>{% endfor %}
+                </ul>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-past" role="tabpanel" aria-labelledby="tab-past">
+                <h2 class="ee-tabpanel-title">Past events</h2>
+                <ul class="ee-rows">
+                    {% for booking in past_events %}{% include 'components/booking_row.html' with kind='event' mode='past' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No past event bookings.</p></li>{% endfor %}
+                </ul>
+                <h2 class="ee-tabpanel-title">Past venues</h2>
+                <ul class="ee-rows">
+                    {% for booking in past_venues %}{% include 'components/booking_row.html' with kind='venue' mode='past' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No past venue bookings.</p></li>{% endfor %}
+                </ul>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-confirmed" role="tabpanel" aria-labelledby="tab-confirmed">
+                <h2 class="ee-tabpanel-title">Confirmed venue bookings</h2>
+                <ul class="ee-rows">
+                    {% for booking in confirmed_venues %}{% include 'components/booking_row.html' with kind='venue' mode='confirmed' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No confirmed venue bookings.</p></li>{% endfor %}
+                </ul>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-pending" role="tabpanel" aria-labelledby="tab-pending">
+                <h2 class="ee-tabpanel-title">Pending venue requests</h2>
+                <ul class="ee-rows">
+                    {% for booking in pending_venues %}{% include 'components/booking_row.html' with kind='venue' mode='pending' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No pending venue requests.</p></li>{% endfor %}
+                </ul>
+            </div>
+
+            <div class="ee-tabpanel" id="panel-cancelled" role="tabpanel" aria-labelledby="tab-cancelled">
+                <h2 class="ee-tabpanel-title">Cancelled venue bookings</h2>
+                <ul class="ee-rows">
+                    {% for booking in cancelled_venues %}{% include 'components/booking_row.html' with kind='venue' mode='cancelled' %}
+                    {% empty %}<li class="ee-row ee-row--noimg"><p class="ee-row-meta">No cancelled venue bookings.</p></li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/components/tabs.js' %}" defer></script>{% endblock %}

@@ -1,0 +1,21 @@
+/* Filter chips: square, outlined; the chosen one is solid. They are links, so each filter is a plain URL. */
+
+.ee-chips { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+.ee-chip {
+  display: inline-flex; align-items: center; min-height: 38px; padding: 0 16px;
+  border: 2px solid var(--ink); background: transparent; color: var(--ink);
+  font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+  transition: background-color .15s, color .15s;
+}
+.ee-chip:hover { background: var(--paper-2); }
+.ee-chip[aria-current] { background: var(--ink); color: var(--paper); }
+
+.ee-chips-label {
+  margin-right: 4px;
+  font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-chip { transition: none; }
+}

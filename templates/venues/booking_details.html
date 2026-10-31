@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Booking #{{ booking.id }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'venues:my_venues' %}">&larr; Back to my venues</a>
+
+    <div class="ee-page ee-narrow">
+        {% include 'venues/booking_details_modal.html' %}
+
+        <div class="ee-actions-inline">
+            {% if booking.status == 'pending' %}
+                <a class="ee-pill ee-pill--ink" href="{% url 'venues:cancel_venue_booking' booking.id %}"
+                   data-confirm="Cancel this booking request?">Cancel booking</a>
+            {% elif booking.status == 'confirmed' or booking.status == 'completed' %}
+                <a class="ee-pill ee-pill--ink" href="{% url 'venues:generate_invoice' booking.id %}">Download invoice</a>
+                {% if booking.status == 'completed' %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'venues:submit_review' booking.id %}">Write a review</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

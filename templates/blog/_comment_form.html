@@ -1,0 +1,22 @@
+{% comment %}
+    A comment or reply form. Context: form (the blog comment form), parent_id (optional), placeholder,
+    cancel_id (optional: shows a Cancel button that hides the reply form with this id).
+{% endcomment %}
+<form class="ee-comment-form ee-stock" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if parent_id %}<input type="hidden" name="parent_id" value="{{ parent_id }}">{% endif %}
+    <label class="ee-visually-hidden" for="comment-text-{{ parent_id|default:'new' }}">Your comment</label>
+    <textarea id="comment-text-{{ parent_id|default:'new' }}" name="content" rows="3" required
+              placeholder="{{ placeholder }}">{% if not parent_id %}{{ form.content.value|default_if_none:'' }}{% endif %}</textarea>
+    {% if not parent_id and form.content.errors %}<p role="alert"><b>{{ form.content.errors.0 }}</b></p>{% endif %}
+    <div class="ee-comment-form-foot">
+        <label class="ee-comment-file">
+            <span>Photos</span>
+            <input type="file" name="comment_images" accept="image/*" multiple>
+        </label>
+        <span>
+            {% if cancel_id %}<button type="button" class="ee-pill ee-pill--line" data-action="cancel" data-id="{{ cancel_id }}">Cancel</button>{% endif %}
+            <button type="submit" class="ee-pill ee-pill--ink">Post</button>
+        </span>
+    </div>
+</form>

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Reviews &middot; Admin &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/admin.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'users:admin_dashboard' %}">&larr; Admin</a>
+    {% include 'components/page_head.html' with title="Reviews" intro="What people have said about events, venues and EventEase, newest first." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ counts.total }}</b><span>All reviews</span></li>
+        <li class="ee-stat"><b>{{ counts.event }}</b><span>On events</span></li>
+        <li class="ee-stat"><b>{{ counts.venue }}</b><span>On venues</span></li>
+        <li class="ee-stat"><b>{{ counts.site }}</b><span>On EventEase</span></li>
+    </ul>
+
+    <form class="ee-finder ee-stock ee-admin-filter" method="get" role="search" action="{% url 'users:admin_reviews_management' %}">
+        <div class="ee-fields">
+            <label class="ee-field">
+                <span>Search</span>
+                <input type="search" name="search" value="{{ search_query }}" placeholder="Words, event, venue or person" autocomplete="off">
+            </label>
+            <label class="ee-field">
+                <span>Show</span>
+                <select name="type">
+                    <option value="all"{% if review_type == 'all' %} selected{% endif %}>All reviews</option>
+                    <option value="event"{% if review_type == 'event' %} selected{% endif %}>Event reviews</option>
+                    <option value="venue"{% if review_type == 'venue' %} selected{% endif %}>Venue reviews</option>
+                    <option value="site"{% if review_type == 'site' %} selected{% endif %}>Reviews of EventEase</option>
+                </select>
+            </label>
+        </div>
+        <div class="ee-finder-foot">
+            <span>{{ page_obj.paginator.count }} match{{ page_obj.paginator.count|pluralize:"es" }}</span>
+            <button class="ee-pill ee-pill--ink" type="submit">Filter</button>
+        </div>
+    </form>
+
+    {% if page_obj %}
+        <table class="ee-table ee-table--wide">
+            <thead>
+                <tr>
+                    <th scope="col">On</th>
+                    <th scope="col">Person</th>
+                    <th scope="col" class="ee-num">Rating</th>
+                    <th scope="col">Review</th>
+                    <th scope="col">Posted</th>
+                    <th scope="col"><span class="ee-visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for review in page_obj %}
+                <tr>
+                    <td data-label="On"><span class="ee-cell">
+                        {% if review.kind == 'event' %}
+                            <a href="{% url 'events:event_detail' review.about_id %}">{{ review.about }}</a>
+                        {% elif review.kind == 'venue' %}
+                            <a href="{% url 'venues:venue_detail' review.about_id %}">{{ review.about }}</a>
+                        {% else %}
+                            <a href="{% url 'reviews:all_reviews' %}">{{ review.about }}</a>
+                        {% endif %}
+                        <small>{{ review.kind_label }}</small>
+                    </span></td>
+                    <td data-label="Person"><span class="ee-cell">
+                        {{ review.user.get_full_name|default:review.user.username }}
+                        <small>{{ review.user.email }}</small>
+                    </span></td>
+                    <td data-label="Rating" class="ee-num"><span class="ee-cell">
+                        {{ review.rating }}/5
+                        {% include 'components/stars.html' with rating=review.rating %}
+                    </span></td>
+                    <td data-label="Review"><span class="ee-cell">
+                        {{ review.title }}
+                        <small>{{ review.body|truncatewords:25|default:"No words, a rating only" }}</small>
+                    </span></td>
+                    <td data-label="Posted"><span class="ee-cell ee-admin-when">{{ review.created_at|date:"j M Y" }}<small>{{ review.created_at|time:"g:i A" }}</small></span></td>
+                    <td>
+                        <form method="post" action="{% url 'users:delete_review' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="review_id" value="{{ review.id }}">
+                            <input type="hidden" name="review_type" value="{{ review.kind }}">
+                            <button type="submit" class="ee-pill ee-pill--line ee-pill--small" data-confirm="Delete this review? This cannot be undone.">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include 'components/pagination.html' %}
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">{% if search_query or review_type != 'all' %}Nothing matches{% else %}No reviews yet{% endif %}</h2>
+            <p class="ee-blank-text">{% if search_query or review_type != 'all' %}Try different words or show all reviews.{% else %}Reviews of events, venues and EventEase will show up here.{% endif %}</p>
+            {% if search_query or review_type != 'all' %}<a class="ee-pill ee-pill--ink" href="{% url 'users:admin_reviews_management' %}">Show all reviews</a>{% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

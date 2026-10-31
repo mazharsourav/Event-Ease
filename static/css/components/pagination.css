@@ -1,0 +1,18 @@
+/* Pagination: numbered squares with previous and next. */
+
+.ee-pager { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
+
+.ee-pager-page, .ee-pager-step {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 44px; padding: 0 14px;
+  border: 2px solid var(--ink); color: var(--ink); text-decoration: none;
+  font-weight: 800; font-size: 14px; letter-spacing: .04em; text-transform: uppercase;
+  transition: background-color .15s, color .15s;
+}
+.ee-pager-page:hover, .ee-pager-step:hover { background: var(--paper-2); }
+.ee-pager-page[aria-current] { background: var(--ink); color: var(--paper); }
+.ee-pager-step[aria-disabled="true"] { opacity: .35; pointer-events: none; }
+.ee-pager-gap { font-weight: 800; letter-spacing: .1em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-pager-page, .ee-pager-step { transition: none; }
+}

@@ -1,0 +1,68 @@
+/* Booking and payment pages: a form on the left, a sticky summary on the right (layout from detail.css). */
+
+.ee-form.ee-detail-main { gap: clamp(28px, 3.4vw, 40px); }
+.ee-form .ee-tiers.ee-panel { gap: 10px; padding: clamp(14px, 2vw, 20px); }
+.ee-form .ee-tier { background: var(--stock); }
+
+.ee-terms { margin: 0; padding: 0 0 0 18px; display: grid; gap: 6px; font-size: 14px; color: var(--stock-muted); }
+
+/* Payment method choices: each is a square card holding a radio */
+.ee-methods { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+.ee-method {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 14px; align-items: center;
+  padding: 14px 16px; border: 2px solid var(--stock-ink); background: var(--stock); color: var(--stock-ink); cursor: pointer;
+}
+.ee-method input { width: 20px; height: 20px; margin: 0; accent-color: var(--stock-ink); }
+.ee-method b { font-weight: 800; font-size: 18px; text-transform: uppercase; }
+.ee-method small { grid-column: 2; font-size: 14px; color: var(--stock-muted); }
+.ee-method-tag { font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.ee-method:has(input:checked) { background: var(--stock-ink); color: var(--stock); }
+.ee-method:has(input:checked) small { color: inherit; opacity: .8; }
+.ee-method:has(input:checked) input { accent-color: var(--stock); }
+.ee-method:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+/* Wallet screens (bKash, Nagad): amount, then the number and PIN */
+.ee-amount { display: grid; gap: 4px; }
+.ee-amount-figure { font-weight: 800; font-size: clamp(44px, 7vw, 72px); line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.ee-phone { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+.ee-phone-code {
+  display: grid; place-items: center; padding: 0 14px; border: 2px solid var(--stock-ink); border-right: 0;
+  background: var(--paper-2); color: var(--stock-ink); font-weight: 800;
+}
+.ee-pin { position: relative; }
+.ee-pin button {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%); padding: 8px 10px; border: 0; background: transparent;
+  color: var(--stock-ink); font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+}
+.ee-pin input { padding-right: 70px; }
+.ee-wallet-methods { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+
+/* Receipt: a ticket stub with a tear line */
+.ee-stub { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 210px; background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow-lift); }
+.ee-stub-main { display: grid; gap: 16px; padding: clamp(20px, 3vw, 32px); }
+.ee-stub-side {
+  display: grid; gap: 8px; align-content: center; justify-items: center; padding: 20px; text-align: center;
+  border-left: 3px dashed var(--stock-ink); background: var(--stock-tint);
+}
+/* A booking reference (EE-000044) is longer than the number it replaced, so it is set
+   smaller and kept on one line: a stub code that breaks in half reads as two codes. */
+.ee-stub-code { font-weight: 800; font-size: 24px; letter-spacing: .04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ee-stub-title { margin: 0; font-weight: 800; font-stretch: 85%; font-size: clamp(30px, 4vw, 48px); line-height: .95; text-transform: uppercase; overflow-wrap: anywhere; }
+
+.ee-note-text { margin: 0; color: var(--muted); }
+
+@media (max-width: 720px) {
+  .ee-stub { grid-template-columns: minmax(0, 1fr); }
+  .ee-stub-side { border-left: 0; border-top: 3px dashed var(--stock-ink); }
+}
+
+/* The facts of a booking, as a column of blocks */
+.ee-bookingfacts { display: grid; gap: clamp(22px, 3vw, 32px); }
+.ee-bookingfacts-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ee-bookingfacts-title { margin: 0; font-weight: 800; font-stretch: 85%; font-size: clamp(32px, 5vw, 56px); line-height: .95; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-bookingfacts-block { display: grid; gap: 12px; }
+.ee-bookingfacts .ee-facts { margin: 0; }
+
+@media (max-width: 560px) {
+  .ee-wallet-methods { grid-template-columns: minmax(0, 1fr); }
+}

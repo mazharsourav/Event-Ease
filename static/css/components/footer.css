@@ -1,0 +1,47 @@
+/* Site footer: a hollow wordmark over two link columns. Solid black so the small type stays legible. */
+
+.ee-foot {
+  position: relative; background: var(--band); color: var(--band-fg);
+  padding: clamp(80px, 8vw, 120px) 0 40px;
+}
+.ee-foot :focus-visible { outline-color: var(--band-fg); }
+
+/* The wordmark scales with its own column (cqw), not the viewport, so it can never run past the edge */
+.ee-foot-inner { container-type: inline-size; }
+.ee-foot-mark {
+  display: flex; justify-content: space-between; margin: 0;
+  font-weight: 800; font-stretch: 115%; text-transform: uppercase; line-height: .8; white-space: nowrap;
+  font-size: clamp(40px, 14.9cqw, 214px);
+  color: var(--band-fg);
+}
+/* Alternate letters are hollow: a double-width stroke under a band-coloured fill */
+.ee-foot-mark span:nth-child(even) {
+  color: var(--band); -webkit-text-stroke: clamp(3px, .5cqw, 8px) var(--band-fg); paint-order: stroke fill;
+}
+
+.ee-foot-cols {
+  display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 32px;
+  margin-top: clamp(40px, 4vw, 56px); padding-top: 32px; border-top: 2px solid var(--band-fg);
+}
+.ee-foot-cols nav { display: grid; gap: 12px; align-content: start; }
+.ee-foot-cols nav::before {
+  content: attr(aria-label); margin-bottom: 4px;
+  font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--band-muted);
+}
+.ee-foot-cols a {
+  justify-self: start; font-weight: 800; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.2;
+  text-transform: uppercase; letter-spacing: .03em; text-decoration: none; color: var(--band-fg);
+  border-bottom: 3px solid transparent; transition: border-color .2s;
+}
+.ee-foot-cols a:hover { border-bottom-color: var(--band-fg); }
+
+.ee-foot-note {
+  justify-self: end; max-width: 30em; text-align: right; text-wrap: balance;
+  font-size: 16px; line-height: 1.55; color: color-mix(in srgb, var(--band-fg) 88%, var(--band));
+}
+
+@media (max-width: 720px) {
+  .ee-foot-mark { font-size: 14cqw; }
+  .ee-foot-cols { grid-template-columns: 1fr 1fr; }
+  .ee-foot-note { grid-column: 1 / -1; justify-self: start; text-align: left; }
+}

@@ -1,0 +1,43 @@
+/* Listing pages (events, venues): heading, search card, filter chips, a wall of cards, pagination. */
+
+.ee-listing { padding-bottom: clamp(64px, 8vw, 112px); }
+
+.ee-listing-tools { display: grid; gap: 20px; margin-top: clamp(20px, 3vw, 32px); }
+.ee-listing-tools .ee-finder { max-width: none; }
+.ee-listing-tools .ee-finder .ee-fields { grid-template-columns: var(--finder-cols); }
+.ee-finder--wide { --finder-cols: 1.6fr 1fr 1fr 1fr; }
+
+.ee-listing-count { margin: 0; font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.ee-listing-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+.ee-listing-clear { font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* The wall: three across, each card tilted a little and the middle column hung lower */
+.ee-cards {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start;
+  gap: clamp(32px, 3.4vw, 48px) clamp(24px, 2.6vw, 36px);
+  margin-top: clamp(28px, 3.4vw, 44px);
+}
+.ee-cards > :nth-child(3n + 1) { --r: -1deg; }
+.ee-cards > :nth-child(3n + 2) { --r: .8deg; margin-top: 18px; }
+.ee-cards > :nth-child(3n) { --r: -.6deg; }
+
+.ee-listing-pager { margin-top: clamp(40px, 5vw, 64px); }
+
+@media (max-width: 1100px) {
+  .ee-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ee-cards > :nth-child(n) { --r: -.6deg; margin-top: 0; }
+  .ee-cards > :nth-child(even) { --r: .6deg; margin-top: 18px; }
+  .ee-finder--wide { --finder-cols: 1fr 1fr; }
+  /* Search and Sort take a full row; Type and When share one */
+  .ee-listing-tools .ee-field:nth-child(1), .ee-listing-tools .ee-field:nth-child(4) { grid-column: 1 / -1; }
+  .ee-listing-tools .ee-field:nth-child(n + 2) { border-left: 0; border-top: 1px solid var(--stock-line); }
+  .ee-listing-tools .ee-field:nth-child(3) { border-left: 1px solid var(--stock-line); }
+}
+
+@media (max-width: 720px) {
+  .ee-cards { grid-template-columns: 1fr; gap: 30px; }
+  .ee-cards > :nth-child(n) { margin-top: 0; }
+  .ee-listing-tools .ee-finder .ee-fields { grid-template-columns: 1fr; }
+  .ee-listing-tools .ee-finder .ee-field:nth-child(n) { grid-column: auto; border-left: 0; border-top: 1px solid var(--stock-line); }
+  .ee-listing-tools .ee-finder .ee-field:first-child { border-top: 0; }
+}

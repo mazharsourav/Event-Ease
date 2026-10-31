@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Venue bookings &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+    {% include 'components/page_head.html' with title="Venue bookings" intro="Halls and grounds you have booked through EventEase." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_bookings }}</b><span>Bookings</span></li>
+        <li class="ee-stat"><b>{{ confirmed_count }}</b><span>Confirmed</span></li>
+        <li class="ee-stat"><b>{{ pending_count }}</b><span>Pending</span></li>
+        <li class="ee-stat"><b>&#2547;{{ total_spent|floatformat:0|intcomma }}</b><span>Spent</span></li>
+    </ul>
+
+    {% if venue_bookings %}
+        <table class="ee-table">
+            <thead><tr><th>Venue</th><th>Event</th><th>When</th><th class="ee-num">Amount</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for booking in venue_bookings %}
+                <tr>
+                    <td data-label="Venue"><a href="{% url 'venues:booking_details' booking.pk %}">{{ booking.venue.name }}</a><small>{{ booking.venue.address|truncatechars:40 }}</small></td>
+                    <td data-label="Event">{{ booking.event_title }}{% if booking.special_requirements %}<small>{{ booking.special_requirements|truncatewords:12 }}</small>{% endif %}</td>
+                    <td data-label="When">{{ booking.start_date|date:"j M Y" }}<small>Booked {{ booking.booking_date|date:"j M Y" }}</small></td>
+                    <td data-label="Amount" class="ee-num">&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}</td>
+                    <td data-label="Status"><span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.get_status_display }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No venue bookings</h2>
+            <p class="ee-blank-text">Halls you request for your events will be listed here.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_list' %}">Browse venues</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

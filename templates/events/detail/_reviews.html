@@ -1,0 +1,33 @@
+{# Event reviews: the average, the three latest, and links to read or write more #}
+<section aria-labelledby="reviews-title">
+    <h2 id="reviews-title" class="ee-h1 ee-section-title">Reviews</h2>
+
+    {% if event.review_count > 0 %}
+        <div class="ee-rating">
+            <span class="ee-rating-score">{{ event.average_rating|floatformat:1 }}</span>
+            {% include 'components/stars.html' with rating=event.average_rating %}
+            <span class="ee-rating-count">{{ event.review_count }} review{{ event.review_count|pluralize }}</span>
+        </div>
+
+        <ul class="ee-review-list">
+            {% for review in recent_reviews %}
+                <li class="ee-note">
+                    <span class="ee-tape" aria-hidden="true"></span>
+                    {% include 'components/stars.html' with rating=review.rating %}
+                    <blockquote>
+                        <p class="ee-note-title">{{ review.title }}</p>
+                        {% if review.comment %}<p class="ee-note-body">{{ review.comment|truncatewords:28 }}</p>{% endif %}
+                    </blockquote>
+                    <figcaption>{{ review.user.get_full_name|default:review.user.username }} &middot; {{ review.created_at|date:"j M Y" }}</figcaption>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="ee-comments-none">No reviews yet.</p>
+    {% endif %}
+
+    <div class="ee-review-actions">
+        {% if user_can_review %}<a class="ee-pill ee-pill--ink" href="{% url 'reviews:submit_event_review' event.id %}">Write a review</a>{% endif %}
+        {% if event.review_count > 0 %}<a class="ee-pill ee-pill--line" href="{% url 'reviews:event_reviews' event.id %}">All {{ event.review_count }} reviews</a>{% endif %}
+    </div>
+</section>

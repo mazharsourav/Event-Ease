@@ -1,0 +1,17 @@
+/* Facts: a small label over a bold value, divided by hairlines. Used for date, venue, capacity and so on. */
+
+.ee-facts {
+  display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 0 clamp(20px, 3vw, 36px);
+  margin: 0; padding: 0;
+}
+.ee-fact { padding: 14px 0; border-top: 2px solid var(--ink); min-width: 0; }
+.ee-fact dt {
+  font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.ee-fact dd { margin: 2px 0 0; font-weight: 800; font-size: 19px; line-height: 1.25; overflow-wrap: anywhere; }
+.ee-fact dd a { text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.ee-fact dd small { display: block; font-weight: 500; font-size: 15px; color: var(--muted); }
+
+@media (max-width: 720px) {
+  .ee-facts { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,29 @@
+/* Panels: white cards that hold a block of information or a form. --taped adds a strip of tape and a tilt. */
+
+.ee-panel {
+  position: relative; display: grid; gap: 16px; min-width: 0; padding: clamp(18px, 2.4vw, 28px);
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow);
+}
+.ee-panel--taped { transform: rotate(var(--r, -.4deg)); }
+.ee-panel--flat { box-shadow: none; border: 2px solid var(--stock-ink); }
+.ee-panel :focus-visible { outline-color: var(--stock-ink); }
+.ee-panel .ee-pill--ink { background: var(--stock-ink); color: var(--stock); }
+.ee-panel .ee-form-help, .ee-panel .ee-form-label { color: var(--stock-muted); }
+
+.ee-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ee-panel-title {
+  margin: 0; font-weight: 800; font-stretch: 85%; font-size: clamp(22px, 2.4vw, 28px); line-height: 1; text-transform: uppercase;
+}
+.ee-panel-link {
+  font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--stock-ink);
+  border-bottom: 2px solid currentColor; text-decoration: none;
+}
+.ee-panel-text { margin: 0; color: var(--stock-muted); }
+
+/* A set of panels in a grid */
+.ee-panels { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: clamp(20px, 3vw, 36px); align-items: start; }
+.ee-panels--3 { --cols: 3; }
+
+@media (max-width: 960px) {
+  .ee-panels, .ee-panels--3 { grid-template-columns: minmax(0, 1fr); }
+}

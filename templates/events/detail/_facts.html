@@ -1,0 +1,38 @@
+{# Date, time, venue, organiser, contact and capacity as a fact list #}
+<dl class="ee-facts">
+    <div class="ee-fact">
+        <dt>Date</dt>
+        <dd>
+            {{ event.start_date|date:"l j F Y" }}
+            {% if event.start_date|date:"Ymd" != event.end_date|date:"Ymd" %}<small>to {{ event.end_date|date:"l j F Y" }}</small>{% endif %}
+        </dd>
+    </div>
+    <div class="ee-fact">
+        <dt>Time</dt>
+        <dd>{{ event.start_date|time:"g:i A" }} &ndash; {{ event.end_date|time:"g:i A" }}</dd>
+    </div>
+    <div class="ee-fact">
+        <dt>Venue</dt>
+        <dd>
+            {% if event.venue %}<a href="{% url 'venues:venue_detail' event.venue.pk %}">{{ event.venue.name }}</a>{% else %}{{ event.venue_name|default:"Venue to be announced" }}{% endif %}
+            {% if event.venue_address %}<small>{{ event.venue_address }}</small>{% endif %}
+        </dd>
+    </div>
+    <div class="ee-fact">
+        <dt>Organiser</dt>
+        <dd>{{ event.organizer.get_full_name|default:event.organizer.username }}</dd>
+    </div>
+    {% if event.contact_email or event.contact_phone %}
+    <div class="ee-fact">
+        <dt>Contact</dt>
+        <dd>
+            {% if event.contact_email %}<a href="mailto:{{ event.contact_email }}">{{ event.contact_email }}</a>{% endif %}
+            {% if event.contact_phone %}<small><a href="tel:{{ event.contact_phone }}">{{ event.contact_phone }}</a></small>{% endif %}
+        </dd>
+    </div>
+    {% endif %}
+    <div class="ee-fact">
+        <dt>Registered</dt>
+        <dd>{{ current_bookings }} of {{ event.max_attendees }}</dd>
+    </div>
+</dl>

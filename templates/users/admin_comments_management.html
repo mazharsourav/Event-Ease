@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Comments &middot; Admin &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/components/lightbox.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'users:admin_dashboard' %}">&larr; Admin</a>
+    {% include 'components/page_head.html' with title="Comments" intro="Every question and reply on events and venues, newest first." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_comments }}</b><span>All comments</span></li>
+        <li class="ee-stat"><b>{{ total_event_comments }}</b><span>On events</span></li>
+        <li class="ee-stat"><b>{{ total_venue_comments }}</b><span>On venues</span></li>
+    </ul>
+
+    <form class="ee-finder ee-stock ee-admin-filter" method="get" role="search" action="{% url 'users:admin_comments_management' %}">
+        <div class="ee-fields">
+            <label class="ee-field">
+                <span>Search</span>
+                <input type="search" name="search" value="{{ search_query }}" placeholder="Words, event, venue or person" autocomplete="off">
+            </label>
+            <label class="ee-field">
+                <span>Show</span>
+                <select name="type">
+                    <option value="all"{% if comment_type == 'all' %} selected{% endif %}>All comments</option>
+                    <option value="event"{% if comment_type == 'event' %} selected{% endif %}>Event comments</option>
+                    <option value="venue"{% if comment_type == 'venue' %} selected{% endif %}>Venue comments</option>
+                </select>
+            </label>
+        </div>
+        <div class="ee-finder-foot">
+            <span>{{ page_obj.paginator.count }} match{{ page_obj.paginator.count|pluralize:"es" }}</span>
+            <button class="ee-pill ee-pill--ink" type="submit">Filter</button>
+        </div>
+    </form>
+
+    {% if page_obj %}
+        <table class="ee-table ee-table--wide">
+            <thead>
+                <tr>
+                    <th scope="col">On</th>
+                    <th scope="col">Person</th>
+                    <th scope="col">Comment</th>
+                    <th scope="col">Posted</th>
+                    <th scope="col"><span class="ee-visually-hidden">Actions</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comment in page_obj %}
+                <tr>
+                    <td data-label="On"><span class="ee-cell">
+                        {% if comment.type == 'event' %}
+                            <a href="{% url 'events:event_detail' comment.content_id %}">{{ comment.content_name }}</a>
+                        {% else %}
+                            <a href="{% url 'venues:venue_detail' comment.content_id %}">{{ comment.content_name }}</a>
+                        {% endif %}
+                        <small>{% if comment.type == 'event' %}Event{% else %}Venue{% endif %}{% if comment.is_reply %} &middot; reply{% endif %}</small>
+                    </span></td>
+                    <td data-label="Person"><span class="ee-cell">
+                        {{ comment.user.get_full_name|default:comment.user.username }}
+                        <small>{{ comment.user.email }}</small>
+                    </span></td>
+                    <td data-label="Comment">
+                        <div class="ee-admin-comment">
+                            <span>{{ comment.comment|truncatewords:30 }}</span>
+                            {% if comment.image_url %}
+                                <button type="button" class="ee-admin-thumb" data-lightbox="{{ comment.image_url }}" aria-label="Open the attached photo">
+                                    <img src="{{ comment.image_url }}" alt="" loading="lazy">
+                                </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td data-label="Posted"><span class="ee-cell ee-admin-when">{{ comment.created_at|date:"j M Y" }}<small>{{ comment.created_at|time:"g:i A" }}</small></span></td>
+                    <td>
+                        <form method="post" action="{% url 'users:delete_comment' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            <input type="hidden" name="comment_type" value="{{ comment.type }}">
+                            <button type="submit" class="ee-pill ee-pill--line ee-pill--small" data-confirm="Delete this comment? This cannot be undone.">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include 'components/pagination.html' %}
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">{% if search_query or comment_type != 'all' %}Nothing matches{% else %}No comments yet{% endif %}</h2>
+            <p class="ee-blank-text">{% if search_query or comment_type != 'all' %}Try different words or show all comments.{% else %}Comments on events and venues will show up here.{% endif %}</p>
+            {% if search_query or comment_type != 'all' %}<a class="ee-pill ee-pill--ink" href="{% url 'users:admin_comments_management' %}">Show all comments</a>{% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/components/lightbox.js' %}" defer></script>{% endblock %}

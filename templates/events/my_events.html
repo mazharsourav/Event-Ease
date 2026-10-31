@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}{% if is_organiser %}Organiser dashboard{% else %}My events{% endif %} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% if is_organiser %}
+        {% include 'components/page_head.html' with title="Organiser dashboard" intro="Your events, your bookings and what you have earned." %}
+
+        <ul class="ee-stats">
+            <li><a class="ee-stat" href="{% url 'events:events_created_detail' %}"><b>{{ dashboard_stats.total_events_created }}</b><span>Events created</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:event_bookings_detail' %}"><b>{{ dashboard_stats.total_event_bookings }}</b><span>Bookings</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:revenue_detail' %}"><b>&#2547;{{ dashboard_stats.total_revenue|floatformat:0|intcomma }}</b><span>Revenue</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:tickets_sold_detail' %}"><b>{{ dashboard_stats.total_tickets_sold }}</b><span>Tickets sold</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:events_live_detail' %}"><b>{{ dashboard_stats.live_events }}</b><span>On now</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:events_upcoming_detail' %}"><b>{{ dashboard_stats.upcoming_events }}</b><span>Coming up</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:events_completed_detail' %}"><b>{{ dashboard_stats.completed_events }}</b><span>Completed</span></a></li>
+            <li><a class="ee-stat" href="{% url 'events:venue_bookings_detail' %}"><b>{{ dashboard_stats.total_venue_bookings }}</b><span>Venues booked</span></a></li>
+        </ul>
+
+        <section class="ee-section" aria-labelledby="mine-title">
+            <div class="ee-head">
+                <h2 id="mine-title" class="ee-h2">My events</h2>
+                <a class="ee-pill ee-pill--ink" href="{% url 'events:event_create' %}">Create an event</a>
+            </div>
+            {% if organized_events %}
+                <ul class="ee-rows">
+                    {% for event in organized_events %}{% include 'events/_organiser_row.html' with show_delete=True %}{% endfor %}
+                </ul>
+            {% else %}
+                <div class="ee-blank ee-stock">
+                    <h2 class="ee-blank-title">No events yet</h2>
+                    <p class="ee-blank-text">Put your first event on the wall in a few minutes.</p>
+                    <a class="ee-pill ee-pill--ink" href="{% url 'events:event_create' %}">Create your first event</a>
+                </div>
+            {% endif %}
+        </section>
+    {% else %}
+        {% include 'components/page_head.html' with title="My events" intro="The events you have booked." %}
+
+        {% if bookings %}
+            <ul class="ee-rows">
+                {% for booking in bookings %}
+                <li class="ee-row">
+                    <a class="ee-row-img" href="{% url 'events:event_detail' booking.event.pk %}" tabindex="-1" aria-hidden="true">
+                        {% if booking.event.image %}<img src="{{ booking.event.image.url }}" alt="" loading="lazy">{% endif %}
+                    </a>
+                    <div class="ee-row-body">
+                        <h2 class="ee-row-title"><a href="{% url 'events:event_detail' booking.event.pk %}">{{ booking.event.title }}</a></h2>
+                        <p class="ee-row-meta">
+                            {{ booking.event.start_date|date:"D j M Y, g:i A" }} &middot; {{ booking.event.venue_name }}
+                            &middot; Booked {{ booking.booking_date|date:"j M Y" }}
+                            &middot; {% if booking.event.is_free %}Free{% else %}&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}{% endif %}
+                        </p>
+                        {% if booking.special_requests %}<p class="ee-row-meta">Your request: {{ booking.special_requests|truncatewords:15 }}</p>{% endif %}
+                    </div>
+                    <div class="ee-row-side">
+                        <span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.get_status_display }}</span>
+                        {% if booking.has_ticket %}
+                            <a class="ee-pill ee-pill--ink" href="{% url 'events:download_ticket' booking.pk %}">Ticket</a>
+                        {% endif %}
+                        <a class="ee-pill ee-pill--line" href="{% url 'events:event_detail' booking.event.pk %}">View</a>
+                        {% if booking.can_cancel %}
+                            <a class="ee-pill ee-pill--line" href="{% url 'events:cancel_booking' booking.pk %}" data-confirm="Cancel this booking?">Cancel</a>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="ee-blank ee-stock">
+                <h2 class="ee-blank-title">No tickets yet</h2>
+                <p class="ee-blank-text">Events you book will show up here.</p>
+                <a class="ee-pill ee-pill--ink" href="{% url 'events:event_list' %}">Browse events</a>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% comment %}
+    One comment and, below it, its replies (this template includes itself).
+    Context: comment, depth (1 for a top-level comment), form.
+    Replies are allowed three levels deep; the fourth level is shown without actions.
+{% endcomment %}
+{% load core_tags %}
+<li class="ee-comment-item">
+    <article class="ee-comment">
+        <span class="ee-comment-avatar">
+            {% if comment.user.profile.avatar %}<img src="{{ comment.user.profile.avatar.url }}" alt="">{% else %}{{ comment.user|initials }}{% endif %}
+        </span>
+        <div class="ee-comment-who">
+            <span class="ee-comment-name">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+            {% if comment.user.profile.role and comment.user.profile.role != 'basic_user' %}
+                <span class="ee-comment-role">{{ comment.user.profile|role_label }}</span>
+            {% endif %}
+            <time class="ee-comment-date" datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"j M Y, g:i A" }}</time>
+        </div>
+        <div class="ee-comment-text">
+            {{ comment.comment|linebreaks }}
+            {% if comment.image %}
+                <button type="button" class="ee-comment-image" data-lightbox="{{ comment.image.url }}" aria-label="Open photo">
+                    <img src="{{ comment.image.url }}" alt="Photo attached to the comment" loading="lazy">
+                </button>
+            {% endif %}
+        </div>
+        {% if depth < 4 %}
+        <div class="ee-comment-actions">
+            {% if user.is_authenticated and depth < 3 %}
+                <button type="button" class="ee-comment-action" data-action="reply" data-id="{{ comment.id }}">Reply</button>
+            {% endif %}
+            <button type="button" class="ee-comment-action" data-action="like" data-id="{{ comment.id }}"
+                    data-liked="{% if comment|is_liked_by:user %}true{% else %}false{% endif %}"
+                    aria-pressed="{% if comment|is_liked_by:user %}true{% else %}false{% endif %}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.9a4.3 4.3 0 0 1 7.5 2.6c0 5.4-7.5 10-7.5 10Z"/></svg>
+                Like <span data-like-count>{{ comment.like_count }}</span>
+            </button>
+            {% if user.is_authenticated and comment.user == user or user.is_staff %}
+                <button type="button" class="ee-comment-action" data-action="delete" data-id="{{ comment.id }}">Delete</button>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated and depth < 3 %}
+            <div class="ee-reply-form" id="reply-form-{{ comment.id }}" hidden>
+                {% include 'components/comment_form.html' with parent_id=comment.id cancel_id=comment.id placeholder="Write a reply…" %}
+            </div>
+        {% endif %}
+    </article>
+
+    {% if depth < 4 %}
+        {% with replies=comment.replies.all %}
+            {% if replies %}
+                <ul class="ee-thread">
+                    {% for reply in replies %}
+                        {% include 'components/comment.html' with comment=reply depth=depth|add:1 %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    {% endif %}
+</li>

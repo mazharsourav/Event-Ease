@@ -1,0 +1,13 @@
+/* Lightbox: a photo from a comment, shown large over the page. Behaviour: js/components/lightbox.js. */
+
+.ee-lightbox {
+  position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px;
+  background: rgba(17, 17, 17, .88);
+}
+.ee-lightbox[hidden] { display: none; }
+.ee-lightbox img { display: block; max-width: min(100%, 1100px); max-height: 100%; background: var(--stock); }
+.ee-lightbox-close {
+  position: absolute; top: 16px; right: 16px; display: grid; place-items: center; width: 44px; height: 44px;
+  border: 2px solid #fff; background: transparent; color: #fff; font-size: 26px; line-height: 1; cursor: pointer;
+}
+.ee-lightbox :focus-visible { outline-color: #fff; }

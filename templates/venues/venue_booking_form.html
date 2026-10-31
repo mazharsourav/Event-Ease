@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Book {{ venue.name }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/pages/detail.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'venues:venue_detail' venue.pk %}">&larr; {{ venue.name }}</a>
+    {% include 'components/page_head.html' with title="Book this venue" %}
+
+    <div class="ee-detail">
+        <form class="ee-form ee-detail-main" method="post" novalidate
+              data-ee-estimate data-hourly="{{ venue.price_per_hour|default:0 }}" data-daily="{{ venue.price_per_day|default:0 }}">
+            {% csrf_token %}
+            {% include 'components/form_errors.html' %}
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">1. When</legend>
+                <div class="ee-form-row">
+                    {% include 'components/form_field.html' with field=form.start_date label="Starts" %}
+                    {% include 'components/form_field.html' with field=form.end_date label="Ends" %}
+                </div>
+            </fieldset>
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">2. Your event</legend>
+                <div class="ee-form-row ee-form-row--1">
+                    {% include 'components/form_field.html' with field=form.event_title label="Event title" %}
+                    {% include 'components/form_field.html' with field=form.event_description label="Description" help="A short description helps the owner say yes." %}
+                    {% include 'components/form_field.html' with field=form.special_requirements label="Special requirements" help="Set-up, equipment, catering or anything else you need." %}
+                </div>
+            </fieldset>
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">3. How to reach you</legend>
+                <div class="ee-form-row">
+                    {% include 'components/form_field.html' with field=form.contact_email label="Email" %}
+                    {% include 'components/form_field.html' with field=form.contact_phone label="Phone" %}
+                </div>
+            </fieldset>
+
+            <div class="ee-form-section">
+                <h2 class="ee-form-title">Before you send</h2>
+                <ul class="ee-terms">
+                    <li>This is a request. It depends on the dates being free and the owner saying yes.</li>
+                    <li>You will hear back within 24 to 48 hours.</li>
+                    <li>The owner confirms the final price and terms. No payment is taken now.</li>
+                    <li>You are responsible for any damage during your event.</li>
+                </ul>
+                <label class="ee-check">
+                    <input type="checkbox" id="accept-terms" name="accept_terms" required>
+                    <span>I agree to these terms and understand this is a booking request.</span>
+                </label>
+            </div>
+
+            <div class="ee-form-actions">
+                <button type="submit" class="ee-pill ee-pill--ink">Send booking request</button>
+                <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_detail' venue.pk %}">Cancel</a>
+            </div>
+        </form>
+
+        <aside class="ee-detail-aside" aria-label="Venue summary">
+            <section class="ee-panel ee-panel--taped ee-stock">
+                <span class="ee-tape" aria-hidden="true"></span>
+                {% with primary=venue.images.all|first %}
+                <div class="ee-summary-head">
+                    <span class="ee-summary-img">{% if primary %}<img src="{{ primary.image.url }}" alt="">{% elif venue.main_image %}<img src="{{ venue.main_image.url }}" alt="">{% endif %}</span>
+                    <div>
+                        <h2 class="ee-summary-name">{{ venue.name }}</h2>
+                        <p class="ee-summary-meta">{{ venue.get_venue_type_display }} &middot; {{ venue.city }}</p>
+                    </div>
+                </div>
+                {% endwith %}
+                <dl class="ee-summary">
+                    <div class="ee-summary-line"><dt>Capacity</dt><dd>{{ venue.capacity|intcomma }} people</dd></div>
+                    {% if venue.price_per_hour %}<div class="ee-summary-line"><dt>Per hour</dt><dd>&#2547;{{ venue.price_per_hour|floatformat:0|intcomma }}</dd></div>{% endif %}
+                    {% if venue.price_per_day %}<div class="ee-summary-line"><dt>Per day</dt><dd>&#2547;{{ venue.price_per_day|floatformat:0|intcomma }}</dd></div>{% endif %}
+                </dl>
+                <div class="ee-summary-total">
+                    <span>Estimate</span>
+                    <b data-estimate-amount>&mdash;</b>
+                </div>
+                <p class="ee-form-help" data-estimate-note>Choose your dates to see an estimate. The owner confirms the final price.</p>
+            </section>
+
+            <section class="ee-panel ee-stock">
+                <h2 class="ee-panel-title">Questions?</h2>
+                <p class="ee-panel-text">{{ venue.manager.get_full_name|default:venue.manager.username }}</p>
+                {% if venue.contact_email %}<p class="ee-panel-text"><a href="mailto:{{ venue.contact_email }}">{{ venue.contact_email }}</a></p>{% endif %}
+                {% if venue.contact_phone %}<p class="ee-panel-text"><a href="tel:{{ venue.contact_phone }}">{{ venue.contact_phone }}</a></p>{% endif %}
+            </section>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/venue-booking.js' %}" defer></script>{% endblock %}

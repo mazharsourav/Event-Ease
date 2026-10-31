@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Delete {{ venue.name }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'venues:venue_detail' venue.pk %}">&larr; {{ venue.name }}</a>
+    {% include 'components/page_head.html' with title="Delete venue" intro="This cannot be undone." %}
+
+    <div class="ee-page ee-narrow">
+        <section class="ee-panel ee-panel--taped ee-stock">
+            <span class="ee-tape" aria-hidden="true"></span>
+            <h2 class="ee-panel-title">{{ venue.name }}</h2>
+            <dl class="ee-summary">
+                <div class="ee-summary-line"><dt>Type</dt><dd>{{ venue.get_venue_type_display }}</dd></div>
+                <div class="ee-summary-line"><dt>Capacity</dt><dd>{{ venue.capacity|intcomma }} people</dd></div>
+                <div class="ee-summary-line"><dt>Location</dt><dd>{{ venue.address }}, {{ venue.city }}</dd></div>
+                {% if venue.price_per_hour %}<div class="ee-summary-line"><dt>Per hour</dt><dd>&#2547;{{ venue.price_per_hour|floatformat:0|intcomma }}</dd></div>{% endif %}
+                {% if venue.price_per_day %}<div class="ee-summary-line"><dt>Per day</dt><dd>&#2547;{{ venue.price_per_day|floatformat:0|intcomma }}</dd></div>{% endif %}
+            </dl>
+        </section>
+
+        {% if has_active_bookings %}
+        <section class="ee-panel ee-panel--flat ee-stock">
+            <h2 class="ee-panel-title">{{ active_bookings_count }} active booking{{ active_bookings_count|pluralize }}</h2>
+            <p class="ee-panel-text">Deleting this venue cancels every pending and confirmed booking, and the organisers will need another venue. Consider marking it unavailable instead.</p>
+        </section>
+        {% endif %}
+
+        {% if has_events %}
+        <section class="ee-panel ee-panel--flat ee-stock">
+            <h2 class="ee-panel-title">{{ events_count }} event{{ events_count|pluralize }} use this venue</h2>
+            <ul class="ee-terms">
+                {% for event in associated_events|slice:":5" %}<li>{{ event.title }}, {{ event.start_date|date:"j M Y" }}</li>{% endfor %}
+                {% if events_count > 5 %}<li>and {{ events_count|add:"-5" }} more</li>{% endif %}
+            </ul>
+        </section>
+        {% endif %}
+
+        <form method="post" class="ee-form">
+            {% csrf_token %}
+            {% if has_active_bookings or has_events %}
+                <label class="ee-check">
+                    <input type="checkbox" id="confirm-impact" name="confirm_impact" required>
+                    <span>I understand this venue has bookings or events, and I want to delete it anyway.</span>
+                </label>
+            {% endif %}
+            <div class="ee-form-actions">
+                <button type="submit" class="ee-pill ee-pill--ink"{% if has_active_bookings or has_events %} data-confirm="Are you sure? This affects active bookings and events."{% endif %}>Yes, delete this venue</button>
+                <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_detail' venue.pk %}">Keep it</a>
+                {% if has_active_bookings or has_events %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_edit' venue.pk %}">Mark as unavailable instead</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

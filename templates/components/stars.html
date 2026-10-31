@@ -1,0 +1,4 @@
+{% comment %}Five-star display. Context: rating (a number from 0 to 5).{% endcomment %}
+<span class="ee-stars" role="img" aria-label="{{ rating|floatformat:1 }} out of 5">
+    {% for i in "12345" %}<svg viewBox="0 0 24 24" class="{% if forloop.counter <= rating %}on{% endif %}" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></svg>{% endfor %}
+</span>

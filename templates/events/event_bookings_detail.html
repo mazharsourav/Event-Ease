@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Event bookings &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+    {% include 'components/page_head.html' with title="Bookings" intro="Everyone who has booked one of your events." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_bookings }}</b><span>Bookings</span></li>
+        <li class="ee-stat"><b>{{ confirmed_count }}</b><span>Paid</span></li>
+        <li class="ee-stat"><b>{{ pending_count }}</b><span>Pending</span></li>
+        <li class="ee-stat"><b>&#2547;{{ total_revenue|floatformat:0|intcomma }}</b><span>Revenue</span></li>
+    </ul>
+
+    {% if bookings %}
+        <p class="ee-note-text">Average &#2547;{{ avg_booking_value|floatformat:0|intcomma }} per paid booking.</p>
+        <table class="ee-table">
+            <thead>
+                <tr><th>Event</th><th>Customer</th><th>Booked</th><th class="ee-num">Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td data-label="Event">{{ booking.event.title }}<small>{{ booking.event.start_date|date:"j M Y" }}</small></td>
+                    <td data-label="Customer">{{ booking.user.get_full_name|default:booking.user.username }}<small>{{ booking.user.email }}</small></td>
+                    <td data-label="Booked">{{ booking.booking_date|date:"j M Y" }}<small>{{ booking.booking_date|time:"g:i A" }}</small></td>
+                    <td data-label="Amount" class="ee-num">&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}</td>
+                    <td data-label="Status">
+                        <span class="ee-stamp ee-stamp--{% if booking.payment_status == 'completed' %}confirmed{% else %}{{ booking.status }}{% endif %}">
+                            {% if booking.payment_status == 'completed' %}Paid{% elif booking.status == 'pending' %}Awaiting payment{% else %}{{ booking.get_status_display }}{% endif %}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No bookings yet</h2>
+            <p class="ee-blank-text">Nobody has booked your events yet.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'events:my_events' %}">Back to the dashboard</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

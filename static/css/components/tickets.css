@@ -1,0 +1,74 @@
+/* Ticket card: a white card with one row per ticket tier, a quantity stepper on each, and the total.
+   Behaviour: js/pages/event-detail.js. */
+
+.ee-ticket {
+  position: relative; display: grid; gap: 16px; padding: 26px;
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow);
+}
+.ee-ticket-label {
+  font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--stock-muted);
+}
+
+.ee-tiers { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.ee-tier {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center;
+  padding: 12px 14px; border: 2px solid var(--stock-ink);
+}
+.ee-tier-name { font-weight: 800; font-size: 18px; text-transform: uppercase; line-height: 1.1; }
+.ee-tier-price { font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; text-align: right; }
+.ee-tier-note { grid-column: 1 / -1; font-size: 14px; color: var(--stock-muted); }
+.ee-tier-left { grid-column: 1 / -1; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--stock-muted); }
+.ee-tier--sold { border-style: dashed; opacity: .6; }
+.ee-tier--sold .ee-tier-name { text-decoration: line-through; }
+
+.ee-stepper { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.ee-stepper-controls { display: inline-flex; align-items: center; gap: 4px; }
+.ee-stepper button {
+  display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+  border: 2px solid var(--stock-ink); background: var(--stock); color: var(--stock-ink);
+  font-weight: 800; font-size: 22px; line-height: 1; cursor: pointer;
+}
+.ee-stepper button:hover:not(:disabled) { background: var(--stock-ink); color: var(--stock); }
+.ee-stepper button:disabled { opacity: .3; cursor: not-allowed; }
+.ee-stepper input {
+  width: 48px; height: 40px; padding: 0; border: 0; background: transparent; color: var(--stock-ink);
+  font-weight: 800; font-size: 20px; text-align: center; -moz-appearance: textfield; appearance: textfield;
+}
+.ee-stepper input::-webkit-outer-spin-button, .ee-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ee-ticket :focus-visible { outline-color: var(--stock-ink); }
+
+.ee-total {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  padding-top: 14px; border-top: 2px solid var(--stock-ink);
+}
+.ee-total-amount { font-weight: 800; font-size: 38px; line-height: 1; font-variant-numeric: tabular-nums; }
+.ee-total-count { font-size: 14px; color: var(--stock-muted); }
+.ee-total-count[data-over] { color: var(--stock-ink); font-weight: 800; text-decoration: underline; }
+
+.ee-ticket .ee-pill { width: 100%; }
+.ee-ticket .ee-pill:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+.ee-ticket-note { margin: 0; font-size: 14px; text-align: center; color: var(--stock-muted); }
+
+/* A message inside the card: registered, payment pending, closed, full */
+.ee-ticket-status { display: grid; gap: 6px; padding: 14px; border: 2px dashed var(--stock-ink); }
+.ee-ticket-status b { font-weight: 800; font-size: 18px; text-transform: uppercase; line-height: 1.1; }
+.ee-ticket-status p { margin: 0; font-size: 15px; color: var(--stock-muted); }
+
+.ee-deadline { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--stock-ink); }
+.ee-deadline[data-state="urgent"] { text-decoration: underline; text-decoration-thickness: 2px; }
+
+
+/* A phone gets the price and the button pinned to the bottom edge */
+.ee-ticket-bar { display: none; }
+
+@media (max-width: 960px) {
+  .ee-ticket-bar {
+    position: fixed; z-index: 30; left: 0; right: 0; bottom: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px var(--gutter);
+    background: var(--ink); color: var(--paper);
+  }
+  .ee-ticket-bar-label { display: block; font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+  .ee-ticket-bar b { font-weight: 800; font-size: 26px; line-height: 1.1; }
+  .ee-ticket-bar .ee-pill { background: var(--paper); color: var(--ink); min-height: 44px; }
+  .ee-has-ticket-bar { padding-bottom: 84px; }
+}

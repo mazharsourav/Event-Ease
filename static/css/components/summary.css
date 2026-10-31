@@ -1,0 +1,27 @@
+/* Order summary: label and value lines with a ruled total. Used for tickets, bookings and receipts. */
+
+.ee-summary { display: grid; margin: 0; padding: 0; list-style: none; }
+.ee-summary-line {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  padding: 10px 0; border-top: 1px solid var(--stock-line);
+}
+.ee-summary-line:first-child { border-top: 0; }
+.ee-summary-line dt, .ee-summary-line > span:first-child { color: var(--stock-muted); font-size: 15px; }
+.ee-summary-line dd, .ee-summary-line > b, .ee-summary-line > span:last-child { margin: 0; font-weight: 700; text-align: right; overflow-wrap: anywhere; }
+.ee-summary-sub { display: block; font-weight: 500; font-size: 14px; color: var(--stock-muted); }
+
+.ee-summary-total {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  margin-top: 6px; padding-top: 14px; border-top: 2px solid var(--stock-ink);
+}
+.ee-summary-total span { font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--stock-muted); }
+.ee-summary-total b { font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* The event or venue at the top of a summary */
+.ee-summary-head { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: center; }
+.ee-summary-img { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--print); }
+.ee-summary-img img { width: 100%; height: 100%; object-fit: cover; }
+.ee-summary-img:empty { display: none; }
+.ee-summary-head:has(.ee-summary-img:empty) { grid-template-columns: minmax(0, 1fr); }
+.ee-summary-name { margin: 0; font-weight: 800; font-size: 19px; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-summary-meta { margin: 4px 0 0; font-size: 14px; color: var(--stock-muted); }

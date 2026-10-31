@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Become an organiser &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/manage.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'users:profile' %}">&larr; My profile</a>
+    {% include 'components/page_head.html' with title="Become an organiser" intro="Tell us a little about you. An admin reviews every application." %}
+
+    <form method="post" class="ee-form ee-narrow-wide">
+        {% csrf_token %}
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">1. What would you like to do?</legend>
+            <div class="ee-methods">
+                <label class="ee-method">
+                    <input type="radio" name="requested_role" value="event_manager" id="event_manager" required>
+                    <b>Organise events</b><span class="ee-method-tag">Event manager</span>
+                    <small>Create events, sell tickets and manage bookings.</small>
+                </label>
+                <label class="ee-method">
+                    <input type="radio" name="requested_role" value="venue_manager" id="venue_manager">
+                    <b>List venues</b><span class="ee-method-tag">Venue manager</span>
+                    <small>List your halls or grounds and take booking requests.</small>
+                </label>
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">2. About you</legend>
+            <div class="ee-form-row">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="first_name">First name</label>
+                    <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" readonly>
+                </div>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="last_name">Last name</label>
+                    <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" readonly>
+                </div>
+            </div>
+            <div class="ee-form-row">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" readonly>
+                </div>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="phone">Phone <span class="ee-required" aria-hidden="true">*</span></label>
+                    <input type="tel" id="phone" name="phone" value="{{ user.profile.phone|default:'' }}" placeholder="01XXXXXXXXX" required>
+                </div>
+            </div>
+            <div class="ee-form-row">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="company_name">Company or organisation</label>
+                    <input type="text" id="company_name" name="company_name">
+                </div>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="portfolio">Website or portfolio</label>
+                    <input type="url" id="portfolio" name="portfolio" placeholder="https://">
+                </div>
+            </div>
+            <div class="ee-form-row ee-form-row--1">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="address">Address <span class="ee-required" aria-hidden="true">*</span></label>
+                    <textarea id="address" name="address" rows="2" required>{{ user.profile.address|default:'' }}</textarea>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">3. Why you</legend>
+            <div class="ee-form-row ee-form-row--1">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="experience">Relevant experience <span class="ee-required" aria-hidden="true">*</span></label>
+                    <textarea id="experience" name="experience" rows="4" placeholder="Events you have run, venues you manage" required></textarea>
+                </div>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="reason">Why do you want this role? <span class="ee-required" aria-hidden="true">*</span></label>
+                    <textarea id="reason" name="reason" rows="4" required></textarea>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="ee-form-actions">
+            <button type="submit" class="ee-pill ee-pill--ink">Send application</button>
+            <a class="ee-pill ee-pill--line" href="{% url 'users:profile' %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

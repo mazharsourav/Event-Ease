@@ -1,0 +1,22 @@
+{% comment %}
+    One ticket tier in the event form. Context: tier (a TicketCategoryForm, or the formset's empty_form
+    whose field names carry __prefix__ until the script fills in the number).
+{% endcomment %}
+<fieldset class="ee-panel ee-panel--flat ee-tier-form" data-tier-form>
+    <div class="ee-panel-head">
+        <legend class="ee-panel-title">Ticket tier</legend>
+        <button type="button" class="ee-pill ee-pill--line" data-remove-tier>Remove</button>
+    </div>
+    <div class="ee-form-row">
+        {% include 'components/form_field.html' with field=tier.name label="Name" %}
+        {% include 'components/form_field.html' with field=tier.category_type label="Type" %}
+    </div>
+    <div class="ee-form-row">
+        {% include 'components/form_field.html' with field=tier.price label="Price (&#2547;)" %}
+        {% include 'components/form_field.html' with field=tier.quantity_available label="Tickets available" %}
+    </div>
+    <div class="ee-form-row ee-form-row--1">
+        {% include 'components/form_field.html' with field=tier.description label="Description" %}
+    </div>
+    <div class="ee-visually-hidden">{{ tier.DELETE }}</div>
+</fieldset>

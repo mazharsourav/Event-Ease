@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Friends &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="Friends" intro="Keep in touch with the people you go out with." %}
+
+    <section class="ee-section" aria-labelledby="find-title">
+        <h2 id="find-title" class="ee-h1 ee-section-title">Find people</h2>
+        <form method="get" class="ee-searchbar ee-narrow" role="search">
+            <div class="ee-form-field">
+                <label class="ee-form-label" for="user_search">Name or username</label>
+                <input type="search" id="user_search" name="user_search" value="{{ user_search_query }}" autocomplete="off">
+            </div>
+            <button type="submit" class="ee-pill ee-pill--ink">Search</button>
+        </form>
+        {% if user_search_query %}
+            {% if search_results %}
+                <ul class="ee-people">
+                    {% for person in search_results %}{% include 'users/_person_card.html' %}{% endfor %}
+                </ul>
+            {% else %}
+                <p class="ee-note-text">No one matches &ldquo;{{ user_search_query }}&rdquo;. <a href="?">Clear</a></p>
+            {% endif %}
+        {% endif %}
+    </section>
+
+    {% if pending_requests %}
+    <section class="ee-section" aria-labelledby="requests-title">
+        <h2 id="requests-title" class="ee-h1 ee-section-title">Requests <span class="ee-count-badge">{{ pending_requests|length }}</span></h2>
+        <ul class="ee-people">
+            {% for friend_request in pending_requests %}
+            <li class="ee-person-card">
+                {% include 'components/pic.html' with person=friend_request.from_user size='lg' %}
+                <h3 class="ee-person-card-name">{{ friend_request.from_user.get_full_name|default:friend_request.from_user.username }}</h3>
+                <p class="ee-person-card-handle">@{{ friend_request.from_user.username }} &middot; {{ friend_request.created_at|timesince }} ago</p>
+                <div class="ee-person-card-actions">
+                    <form method="post" action="{% url 'users:accept_friend_request' friend_request.id %}">
+                        {% csrf_token %}<button type="submit" class="ee-pill ee-pill--ink">Accept</button>
+                    </form>
+                    <form method="post" action="{% url 'users:reject_friend_request' friend_request.id %}">
+                        {% csrf_token %}<button type="submit" class="ee-pill ee-pill--line">Decline</button>
+                    </form>
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:view_user_profile' friend_request.from_user.id %}">Profile</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <section class="ee-section" aria-labelledby="friends-title">
+        <h2 id="friends-title" class="ee-h1 ee-section-title">My friends{% if friends %} <span class="ee-count-badge">{{ friends|length }}</span>{% endif %}</h2>
+        {% if friends %}
+            <div class="ee-form-field ee-narrow">
+                <label class="ee-form-label" for="friendSearch">Filter friends</label>
+                <input type="search" id="friendSearch" placeholder="Name or username" autocomplete="off">
+            </div>
+            <ul class="ee-people" id="friendsGrid">
+                {% for person in friends %}{% include 'users/_person_card.html' with is_friend=True %}{% endfor %}
+            </ul>
+        {% else %}
+            <div class="ee-blank ee-stock">
+                <h2 class="ee-blank-title">No friends yet</h2>
+                <p class="ee-blank-text">Search for someone above, or look through everyone on EventEase.</p>
+                <a class="ee-pill ee-pill--ink" href="{% url 'users:search_users' %}">Find people</a>
+            </div>
+        {% endif %}
+    </section>
+
+    {% if sent_requests %}
+    <section class="ee-section" aria-labelledby="sent-title">
+        <h2 id="sent-title" class="ee-h1 ee-section-title">Sent requests</h2>
+        <ul class="ee-people">
+            {% for friend_request in sent_requests %}
+            <li class="ee-person-card">
+                {% include 'components/pic.html' with person=friend_request.to_user size='lg' %}
+                <h3 class="ee-person-card-name">{{ friend_request.to_user.get_full_name|default:friend_request.to_user.username }}</h3>
+                <p class="ee-person-card-handle">@{{ friend_request.to_user.username }}</p>
+                <div class="ee-person-card-actions">
+                    <span class="ee-stamp ee-stamp--pending">Waiting</span>
+                    <a class="ee-pill ee-pill--line" href="{% url 'users:view_user_profile' friend_request.to_user.id %}">Profile</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/friends.js' %}" defer></script>{% endblock %}

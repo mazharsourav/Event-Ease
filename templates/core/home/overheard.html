@@ -1,0 +1,14 @@
+{# Overheard: the latest real reviews, shown only when there are some #}
+{% if latest_reviews %}
+<section class="ee-overheard ee-wrap" aria-labelledby="ee-overheard-title">
+    <div class="ee-head">
+        <h2 id="ee-overheard-title" class="ee-h2">Overheard</h2>
+        <a class="ee-more" href="{% url 'reviews:all_reviews' %}">All reviews <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="ee-notes">
+        {% for review in latest_reviews|slice:":3" %}
+            {% include 'components/review_note.html' %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

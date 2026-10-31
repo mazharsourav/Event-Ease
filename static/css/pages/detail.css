@@ -1,0 +1,90 @@
+/* Detail pages (event, venue): the story on the left, a sticky booking card on the right. */
+
+.ee-detail {
+  display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: clamp(32px, 4.4vw, 56px); align-items: start;
+  padding-top: clamp(16px, 2vw, 24px); padding-bottom: clamp(56px, 7vw, 96px);
+}
+.ee-detail-main { min-width: 0; }
+.ee-detail-aside { position: sticky; top: calc(var(--nav-height) + 20px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; min-width: 0; }
+
+/* The artwork, as a taped print */
+.ee-detail-print {
+  position: relative; padding: 12px; background: var(--stock); box-shadow: var(--shadow); transform: rotate(-.5deg);
+}
+.ee-detail-print .ee-print { aspect-ratio: 16 / 9; }
+.ee-detail-print .ee-gig { aspect-ratio: 16 / 9; padding: 28px; }
+.ee-detail-print .ee-gig b { font-size: clamp(34px, 5vw, 64px); -webkit-line-clamp: 4; }
+
+.ee-detail-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: clamp(24px, 3vw, 34px); }
+.ee-detail-title { margin-top: 14px; font-size: clamp(44px, 6.4vw, 88px); overflow-wrap: anywhere; }
+.ee-detail-title--long { font-size: clamp(38px, 5.2vw, 72px); }
+.ee-detail .ee-facts { margin-top: clamp(22px, 3vw, 30px); }
+.ee-detail-copy { max-width: 660px; font-size: 18px; }
+.ee-detail-copy p { margin: 0 0 1em; }
+
+/* Reviews and the venue / organiser cards under the story */
+.ee-detail-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 4vw, 40px); align-items: start; }
+
+.ee-venue-card {
+  position: relative; display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 18px; align-items: center;
+  padding: 12px; background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow); text-decoration: none;
+  transform: rotate(-.5deg);
+}
+.ee-venue-card-img { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--print); }
+.ee-venue-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.ee-venue-card-body { display: grid; gap: 4px; min-width: 0; }
+.ee-venue-card-body b { font-weight: 800; font-size: 20px; line-height: 1.05; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-venue-card-body span { font-size: 15px; color: var(--stock-muted); }
+.ee-venue-card-body .ee-venue-card-link {
+  justify-self: start; margin-top: 6px; border-bottom: 3px solid var(--stock-ink);
+  font-weight: 700; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; color: var(--stock-ink);
+}
+
+.ee-person {
+  position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 4px 16px; align-items: center;
+  padding: 22px; background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow); transform: rotate(.4deg);
+}
+.ee-person-avatar {
+  grid-row: 1 / span 2; display: grid; place-items: center; width: 56px; height: 56px; overflow: hidden;
+  border-radius: 50%; background: var(--stock-ink); color: var(--stock); font-weight: 800; font-size: 20px;
+}
+.ee-person-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ee-person-name { font-weight: 800; font-size: 20px; line-height: 1.1; text-transform: uppercase; }
+.ee-person-name a { text-decoration: none; }
+.ee-person-role { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--stock-muted); }
+.ee-person-more { grid-column: 1 / -1; margin: 12px 0 0; font-size: 15px; color: var(--stock-muted); overflow-wrap: anywhere; }
+.ee-person-more a { color: var(--stock-ink); }
+
+/* Review summary */
+.ee-rating { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 8px; }
+.ee-rating-score { font-weight: 800; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+.ee-rating-count { font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ee-rating .ee-stars svg { stroke: var(--ink); }
+.ee-rating .ee-stars svg.on { fill: var(--ink); }
+.ee-review-list { display: grid; gap: 22px; margin: 18px 0 0; padding: 0; list-style: none; }
+.ee-review-list .ee-note { transform: rotate(var(--r, 0deg)); }
+.ee-review-list > :nth-child(odd) { --r: -.8deg; }
+.ee-review-list > :nth-child(even) { --r: .6deg; }
+.ee-review-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.ee-review-actions .ee-pill { min-height: 42px; padding: 0 20px; font-size: 14px; }
+
+.ee-rating-cats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; margin: 16px 0 0; padding: 0; list-style: none; }
+.ee-rating-cats li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 2px solid var(--ink); font-weight: 700; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+.ee-rating-cats b { font-variant-numeric: tabular-nums; }
+
+/* Management links for the owner of the page */
+.ee-manage { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 4px; }
+.ee-manage .ee-pill { min-height: 40px; padding: 0 18px; font-size: 14px; }
+
+@media (max-width: 960px) {
+  .ee-detail { grid-template-columns: minmax(0, 1fr); }
+  .ee-detail-aside { position: static; }
+  .ee-detail-split { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .ee-venue-card { grid-template-columns: minmax(0, 1fr); }
+  .ee-rating-cats { grid-template-columns: minmax(0, 1fr); }
+}
+
+.ee-detail-comments { padding-bottom: clamp(64px, 8vw, 112px); }

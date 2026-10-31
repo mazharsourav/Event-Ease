@@ -1,0 +1,90 @@
+/* Layout: the content column, section heads and the torn paper edges between bands.
+   Full-width bands are plain blocks that fill their parent. Nothing is sized in vw, so the page can't be wider than the viewport. */
+
+.ee-main { display: block; }
+
+/* The page column: centred, capped, with a fluid side gutter */
+.ee-wrap {
+  width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--gutter);
+}
+
+/* A section title with its "see all" link on the same baseline */
+.ee-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+
+.ee-more {
+  display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 16px;
+  text-transform: uppercase; letter-spacing: .03em; text-decoration: none; white-space: nowrap;
+  border-bottom: 2px solid currentColor; padding-bottom: 2px;
+}
+.ee-more svg { flex: none; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; transition: transform .25s var(--ease); }
+.ee-more:hover svg { transform: translateX(4px); }
+
+.ee-empty { font-size: 19px; color: var(--muted); }
+.ee-empty a { font-weight: 700; color: var(--ink); }
+
+/* Torn paper edge. Place inside a position: relative band; --edge picks the artwork. */
+.ee-torn {
+  position: absolute; left: 0; bottom: -1px; width: 100%; height: 34px; display: block; pointer-events: none;
+  background: var(--paper);
+  -webkit-mask: var(--edge) center / 100% 100% no-repeat;
+          mask: var(--edge) center / 100% 100% no-repeat;
+}
+.ee-torn--top { top: -1px; bottom: auto; }
+.ee-torn--wall { --edge: url('../../img/edge/deckle-wall.svg'); background: var(--band); }
+.ee-torn--halls-top { --edge: url('../../img/edge/deckle-halls-top.svg'); }
+.ee-torn--halls-bottom { --edge: url('../../img/edge/deckle-halls-bottom.svg'); }
+.ee-torn--foot { --edge: url('../../img/edge/deckle-foot.svg'); }
+
+/* A full-width black band. Its ink texture is on a background layer only, so photos and text on top stay clean. */
+.ee-band { position: relative; isolation: isolate; background: transparent; color: var(--band-fg); }
+.ee-band::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; background: var(--band); pointer-events: none;
+  -webkit-mask: url('../../img/texture/ink.svg') 0 0 / 240px 240px repeat;
+          mask: url('../../img/texture/ink.svg') 0 0 / 240px 240px repeat;
+}
+.ee-band :focus-visible { outline-color: var(--band-fg); }
+
+/* Page heading: a big title on the left, a short intro on the right */
+.ee-pagehead {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px 48px; flex-wrap: wrap;
+  padding-top: clamp(20px, 3vw, 40px);
+  container-type: inline-size;
+}
+/* Sized from the column it sits in, so the longest word always fits on a phone */
+.ee-pagehead-title { font-size: clamp(34px, 11cqw, 132px); overflow-wrap: anywhere; }
+.ee-pagehead-intro { max-width: 340px; margin: 0 0 10px auto; text-align: right; color: var(--muted); }
+
+/* "← All events" link above a detail page */
+.ee-back {
+  display: inline-block; margin-top: clamp(16px, 2vw, 24px);
+  font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; color: var(--muted);
+}
+.ee-back:hover { color: var(--ink); }
+
+/* A section on a detail page, with a display title */
+.ee-section { margin-top: clamp(36px, 4vw, 56px); }
+.ee-section-title { margin-bottom: 14px; font-size: clamp(28px, 3vw, 36px); line-height: .92; }
+
+@media (max-width: 720px) {
+  .ee-pagehead-intro { margin: 0; text-align: left; max-width: none; }
+}
+
+/* A row of buttons: wraps instead of overflowing */
+.ee-actions-inline { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.ee-actions-inline form { margin: 0; }
+
+/* A vertical stack of blocks with an even gap */
+.ee-stack { display: grid; gap: clamp(22px, 3vw, 32px); min-width: 0; }
+
+/* A single narrow column for confirmations and forms that don't need a sidebar */
+.ee-narrow { width: 100%; max-width: 760px; }
+.ee-page {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 3vw, 36px);
+  padding-top: clamp(16px, 2vw, 24px); padding-bottom: clamp(56px, 7vw, 96px);
+}
+
+/* A form column: wide enough for two fields side by side */
+.ee-narrow-wide { width: 100%; max-width: 920px; }

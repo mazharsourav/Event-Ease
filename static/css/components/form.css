@@ -1,0 +1,62 @@
+/* Forms: labelled controls with square borders. Works for hand-written inputs and for Django's {{ field }}.
+   Markup: .ee-form > .ee-form-section > .ee-form-row > .ee-form-field (label, control, help, error). */
+
+.ee-form { display: grid; gap: clamp(24px, 3vw, 36px); min-width: 0; }
+
+.ee-form-section { display: grid; gap: 18px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.ee-form-title {
+  margin: 0; padding: 0 0 8px; width: 100%; border-bottom: 2px solid var(--ink);
+  font-weight: 800; font-size: 14px; letter-spacing: .1em; text-transform: uppercase;
+}
+.ee-form-lead { margin: 0; color: var(--muted); }
+
+.ee-form-row { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 18px 20px; }
+.ee-form-row--1 { --cols: 1; }
+.ee-form-row--3 { --cols: 3; }
+
+.ee-form-field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.ee-form-label { font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.ee-form-label .ee-required { margin-left: 2px; color: var(--ink); }
+
+.ee-form-field :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]) {
+  width: 100%; min-height: 50px; padding: 12px 14px; border: 2px solid var(--stock-ink); border-radius: 0;
+  background: var(--stock); color: var(--stock-ink); font-size: 17px; line-height: 1.4;
+  -webkit-appearance: none; appearance: none;
+}
+.ee-form-field textarea { min-height: 120px; resize: vertical; }
+.ee-form-field :is(input, select, textarea) { min-width: 0; }
+@media (max-width: 400px) {
+  .ee-form-field :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="file"]) { font-size: 16px; padding-inline: 10px; }
+}
+.ee-form-field select {
+  padding-right: 40px;
+  background: var(--stock) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") right 14px center / 16px no-repeat;
+  cursor: pointer;
+}
+.ee-form-field input::placeholder, .ee-form-field textarea::placeholder { color: #75736D; opacity: 1; }
+.ee-form-field :is(input, select, textarea):focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.ee-form-field input[type="file"] { max-width: 100%; font-size: 15px; color: var(--ink); }
+.ee-form-field input[type="file"]::file-selector-button {
+  margin-right: 12px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 0; background: transparent; color: var(--ink);
+  font: inherit; font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer;
+}
+
+.ee-form-help { margin: 0; font-size: 14px; color: var(--muted); }
+.ee-form-error { margin: 0; font-size: 14px; font-weight: 700; color: var(--ink); }
+.ee-form-error::before { content: '! '; font-weight: 800; }
+.ee-form-field.has-error :is(input, select, textarea) { border-width: 3px; }
+.ee-form-errors { padding: 14px 16px; border: 2px solid var(--ink); background: var(--stock); color: var(--stock-ink); }
+.ee-form-errors p { margin: 0; font-weight: 700; }
+
+/* A checkbox or radio with its text */
+.ee-check { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; }
+.ee-check input { flex: none; width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); }
+
+.ee-form-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+@media (max-width: 720px) {
+  .ee-form-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* A fieldset's legend is not a grid item, so it carries its own space below */
+legend.ee-form-title { margin-bottom: 18px; }

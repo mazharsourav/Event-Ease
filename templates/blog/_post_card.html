@@ -1,0 +1,29 @@
+{# One post on the blog wall. Context: post, user_reactions (post id -> reaction type). #}
+{% with extra=post.images.all %}
+<li class="ee-post ee-stock">
+    <span class="ee-tape" aria-hidden="true"></span>
+    {% if post.image or extra %}
+        <a class="ee-post-cover" href="{% url 'blog:blog_detail' post.pk %}" tabindex="-1" aria-hidden="true">
+            <img src="{% if post.image %}{{ post.image.url }}{% else %}{{ extra.0.image.url }}{% endif %}" alt="" loading="lazy">
+        </a>
+    {% endif %}
+    <h2 class="ee-post-title"><a href="{% url 'blog:blog_detail' post.pk %}">{{ post.title }}</a></h2>
+    <p class="ee-post-excerpt">{{ post.content|truncatewords:36 }}</p>
+    <p class="ee-post-by">
+        {% include 'components/pic.html' with person=post.author size='sm' %}
+        <span>{{ post.author.get_full_name|default:post.author.username }}<time datetime="{{ post.created_at|date:'c' }}">{{ post.created_at|date:"j M Y" }}</time></span>
+    </p>
+    <div class="ee-post-foot">
+        {% if user.is_authenticated %}
+            <button type="button" class="ee-react" data-react data-url="{% url 'blog:blog_react' post.pk %}" data-type="like"
+                    aria-pressed="{% if post.id in user_reactions %}true{% else %}false{% endif %}">
+                Like <span data-react-count>{{ post.get_reactions_count }}</span>
+            </button>
+        {% else %}
+            <span class="ee-react-static">{{ post.get_reactions_count }} like{{ post.get_reactions_count|pluralize }}</span>
+        {% endif %}
+        <a class="ee-post-link" href="{% url 'blog:blog_detail' post.pk %}#comments">{{ post.get_comments_count }} comment{{ post.get_comments_count|pluralize }}</a>
+        {% if post.files.all %}<span class="ee-post-link">{{ post.files.all|length }} file{{ post.files.all|length|pluralize }}</span>{% endif %}
+    </div>
+</li>
+{% endwith %}

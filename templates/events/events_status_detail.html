@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ page_title }} &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+    {% include 'components/page_head.html' with title=page_title intro=page_subtitle %}
+
+    {% if events %}
+        <ul class="ee-rows">
+            {% for event in events %}{% include 'events/_organiser_row.html' %}{% endfor %}
+        </ul>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">{{ empty_message }}</h2>
+            <p class="ee-blank-text">
+                {% if status_filter == 'live' %}Nothing is running right now. Check back when your events start.
+                {% elif status_filter == 'upcoming' %}You have nothing scheduled. Create an event to get started.
+                {% else %}Events you have finished will appear here.{% endif %}
+            </p>
+            {% if status_filter == 'upcoming' %}<a class="ee-pill ee-pill--ink" href="{% url 'events:event_create' %}">Create an event</a>{% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

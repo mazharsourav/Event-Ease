@@ -1,0 +1,29 @@
+{% comment %}
+    Numbered pager. Context: page_obj. Keeps the current filters by rewriting only ?page=.
+{% endcomment %}
+{% load core_tags %}
+{% if page_obj.has_other_pages %}
+<nav class="ee-pager" aria-label="Pages">
+    {% if page_obj.has_previous %}
+        <a class="ee-pager-step" href="{% querystring page=page_obj.previous_page_number %}" rel="prev">&larr; Prev</a>
+    {% else %}
+        <span class="ee-pager-step" aria-disabled="true">&larr; Prev</span>
+    {% endif %}
+
+    {% for number in page_obj|page_window %}
+        {% if number == page_obj.number %}
+            <span class="ee-pager-page" aria-current="page">{{ number }}</span>
+        {% elif number == page_obj.paginator.ELLIPSIS %}
+            <span class="ee-pager-gap" aria-hidden="true">&hellip;</span>
+        {% else %}
+            <a class="ee-pager-page" href="{% querystring page=number %}">{{ number }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a class="ee-pager-step" href="{% querystring page=page_obj.next_page_number %}" rel="next">Next &rarr;</a>
+    {% else %}
+        <span class="ee-pager-step" aria-disabled="true">Next &rarr;</span>
+    {% endif %}
+</nav>
+{% endif %}

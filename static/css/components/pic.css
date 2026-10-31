@@ -1,0 +1,12 @@
+/* Pic: a round picture or initials for a person. */
+
+.ee-pic {
+  flex: none; display: inline-grid; place-items: center; width: var(--size, 44px); height: var(--size, 44px); overflow: hidden;
+  border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 800; font-size: calc(var(--size, 44px) * .38);
+  text-decoration: none; line-height: 1;
+}
+.ee-pic img { width: 100%; height: 100%; object-fit: cover; }
+.ee-pic--lg { --size: 96px; }
+.ee-pic--xl { --size: 128px; }
+.ee-pic--sm { --size: 34px; }
+.ee-panel .ee-pic, .ee-stock .ee-pic { background: var(--stock-ink); color: var(--stock); }

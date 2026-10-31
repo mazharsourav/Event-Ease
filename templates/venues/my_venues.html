@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}My venues &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/manage.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="My venues" intro="Your halls and grounds, and who has asked to book them." %}
+
+    <div class="ee-actions-inline">
+        <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_create' %}">List a venue</a>
+        <a class="ee-pill ee-pill--line" href="{% url 'venues:my_bookings' %}">All booking requests</a>
+        <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_list' %}">Browse all venues</a>
+    </div>
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_venues }}</b><span>Venues</span></li>
+        <li class="ee-stat"><b>{{ total_bookings }}</b><span>Bookings</span></li>
+        <li class="ee-stat"><b>{{ pending_bookings }}</b><span>Waiting for you</span></li>
+        <li class="ee-stat"><b>&#2547;{{ total_revenue|floatformat:0|intcomma }}</b><span>Confirmed revenue</span></li>
+    </ul>
+
+    {% if pending_booking_requests %}
+    <section class="ee-section" id="pending-bookings" aria-labelledby="pending-title">
+        <h2 id="pending-title" class="ee-h1 ee-section-title">Waiting for you</h2>
+        <ul class="ee-rows">
+            {% for booking in pending_booking_requests %}{% include 'venues/_manager_row.html' %}{% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <section class="ee-section" id="venue-list" aria-labelledby="venues-title">
+        <h2 id="venues-title" class="ee-h1 ee-section-title">Your venues</h2>
+        {% if user_venues %}
+            <ul class="ee-rows">
+                {% for venue in user_venues %}
+                <li class="ee-row">
+                    {% with primary=venue.images.all|first %}
+                    <a class="ee-row-img" href="{% url 'venues:venue_detail' venue.pk %}" tabindex="-1" aria-hidden="true">
+                        {% if primary %}<img src="{{ primary.image.url }}" alt="" loading="lazy">{% elif venue.main_image %}<img src="{{ venue.main_image.url }}" alt="" loading="lazy">{% endif %}
+                    </a>
+                    {% endwith %}
+                    <div class="ee-row-body">
+                        <h3 class="ee-row-title"><a href="{% url 'venues:venue_detail' venue.pk %}">{{ venue.name }}</a></h3>
+                        <p class="ee-row-meta">
+                            {{ venue.get_venue_type_display }} &middot; {{ venue.city }} &middot; {{ venue.capacity|intcomma }} people
+                            {% if venue.price_per_day %}&middot; &#2547;{{ venue.price_per_day|floatformat:0|intcomma }}/day{% elif venue.price_per_hour %}&middot; &#2547;{{ venue.price_per_hour|floatformat:0|intcomma }}/hour{% endif %}
+                        </p>
+                        <p class="ee-row-meta">{{ venue.total_bookings }} booking{{ venue.total_bookings|pluralize }} &middot; {{ venue.pending_bookings }} pending &middot; &#2547;{{ venue.total_revenue|floatformat:0|intcomma }} earned</p>
+                    </div>
+                    <div class="ee-row-side">
+                        <span class="ee-stamp ee-stamp--{% if venue.is_available %}confirmed{% else %}cancelled{% endif %}">{% if venue.is_available %}Open{% else %}Closed{% endif %}</span>
+                        <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_edit' venue.pk %}">Edit</a>
+                        <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_delete' venue.pk %}" data-confirm="Delete this venue?">Delete</a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="ee-blank ee-stock">
+                <h2 class="ee-blank-title">No venues yet</h2>
+                <p class="ee-blank-text">List your first hall or ground and start taking requests.</p>
+                <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_create' %}">List your first venue</a>
+            </div>
+        {% endif %}
+    </section>
+
+    {% if recent_bookings %}
+    <section class="ee-section" aria-labelledby="recent-title">
+        <h2 id="recent-title" class="ee-h1 ee-section-title">Recent activity</h2>
+        <ul class="ee-rows">
+            {% for booking in recent_bookings %}
+            <li class="ee-row ee-row--noimg">
+                <div class="ee-row-body">
+                    <h3 class="ee-row-title">{{ booking.event_title }}</h3>
+                    <p class="ee-row-meta">{{ booking.venue.name }} &middot; {{ booking.user.get_full_name|default:booking.user.username }} &middot; {{ booking.booking_date|timesince }} ago</p>
+                </div>
+                <div class="ee-row-side"><span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.get_status_display }}</span></div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

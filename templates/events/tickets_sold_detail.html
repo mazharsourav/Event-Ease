@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Tickets sold &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+    {% include 'components/page_head.html' with title="Tickets sold" intro="Ticket sales across every event you run." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>{{ total_tickets }}</b><span>Tickets</span></li>
+        <li class="ee-stat"><b>&#2547;{{ total_revenue|floatformat:0|intcomma }}</b><span>Revenue</span></li>
+        <li class="ee-stat"><b>&#2547;{{ avg_ticket_price|floatformat:0|intcomma }}</b><span>Average ticket</span></li>
+        <li class="ee-stat"><b>{{ avg_tickets_per_event|floatformat:1 }}</b><span>Per event</span></li>
+    </ul>
+
+    {% if total_tickets > 0 %}
+        <section class="ee-section" aria-labelledby="by-event">
+            <h2 id="by-event" class="ee-h1 ee-section-title">By event</h2>
+            <table class="ee-table">
+                <thead>
+                    <tr><th>Event</th><th>Status</th><th class="ee-num">Tickets</th><th class="ee-num">Revenue</th><th class="ee-num">Average</th><th>Capacity</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for data in tickets_data %}
+                    <tr>
+                        <td data-label="Event"><a href="{% url 'events:event_detail' data.event.pk %}">{{ data.event.title }}</a><small>{{ data.event.start_date|date:"j M Y" }}</small></td>
+                        <td data-label="Status">
+                            <span class="ee-stamp ee-stamp--{{ data.event.status }}">{% if data.event.status == 'upcoming' %}Coming up{% elif data.event.status == 'ongoing' %}On now{% else %}Ended{% endif %}</span>
+                        </td>
+                        <td data-label="Tickets" class="ee-num">{{ data.tickets_sold }}</td>
+                        <td data-label="Revenue" class="ee-num">&#2547;{{ data.revenue|floatformat:0|intcomma }}</td>
+                        <td data-label="Average" class="ee-num">&#2547;{{ data.avg_ticket_price|floatformat:0|intcomma }}</td>
+                        <td data-label="Capacity">
+                            {{ data.event.current_attendees }} of {{ data.event.max_attendees }}
+                            <progress class="ee-meter" value="{{ data.event.current_attendees }}" max="{{ data.event.max_attendees }}" aria-hidden="true"></progress>
+                        </td>
+                        <td><a href="{% url 'events:event_edit' data.event.pk %}">Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="ee-section" aria-labelledby="insights">
+            <h2 id="insights" class="ee-h1 ee-section-title">At a glance</h2>
+            <div class="ee-panels ee-panels--3">
+                <div class="ee-panel ee-stock">
+                    <h3 class="ee-panel-title">Best seller</h3>
+                    {% if tickets_data %}
+                        <p class="ee-panel-text"><b>{{ tickets_data.0.event.title }}</b><br>{{ tickets_data.0.tickets_sold }} tickets sold</p>
+                    {% else %}<p class="ee-panel-text">Nothing sold yet.</p>{% endif %}
+                </div>
+                <div class="ee-panel ee-stock">
+                    <h3 class="ee-panel-title">Pace</h3>
+                    <p class="ee-panel-text">{{ avg_tickets_per_event|floatformat:0 }} tickets per event at &#2547;{{ avg_ticket_price|floatformat:0|intcomma }} on average.</p>
+                </div>
+                <div class="ee-panel ee-stock">
+                    <h3 class="ee-panel-title">Events</h3>
+                    <p class="ee-panel-text">{{ total_events }} events created, {{ total_tickets }} tickets sold in all.</p>
+                </div>
+            </div>
+        </section>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No tickets sold yet</h2>
+            <p class="ee-blank-text">Once people book, their tickets are counted here.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'events:event_create' %}">Create an event</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

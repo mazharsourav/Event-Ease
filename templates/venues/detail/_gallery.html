@@ -1,0 +1,43 @@
+{# Photo gallery: the first photo large, the rest as thumbnails. Without any photo, a typeset plate. #}
+{% with photos=venue.images.all %}
+    {% if photos %}
+        <div class="ee-gallery" data-ee-gallery>
+            <figure class="ee-gallery-main">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <div class="ee-gallery-frame">
+                    {% with first=photos|first %}<img data-gallery-image src="{{ first.image.url }}" alt="{{ venue.name }}">{% endwith %}
+                </div>
+                <figcaption class="ee-gallery-caption" data-gallery-caption>{% with first=photos|first %}{{ first.caption|default_if_none:'' }}{% endwith %}</figcaption>
+            </figure>
+            {% if photos|length > 1 %}
+                <ul class="ee-gallery-thumbs">
+                    {% for photo in photos %}
+                        <li>
+                            <button type="button" class="ee-gallery-thumb" data-src="{{ photo.image.url }}" data-alt="{{ venue.name }}, photo {{ forloop.counter }}"
+                                    data-caption="{{ photo.caption|default_if_none:'' }}" aria-label="Show photo {{ forloop.counter }}"{% if forloop.first %} aria-current="true"{% endif %}>
+                                <img src="{{ photo.image.url }}" alt="" loading="lazy">
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% elif venue.main_image %}
+        <div class="ee-gallery">
+            <figure class="ee-gallery-main">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <div class="ee-gallery-frame"><img src="{{ venue.main_image.url }}" alt="{{ venue.name }}"></div>
+            </figure>
+        </div>
+    {% else %}
+        <div class="ee-gallery">
+            <div class="ee-gallery-main">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <div class="ee-gallery-plate" aria-hidden="true">
+                    <b>{{ venue.name }}</b>
+                    <small>{{ venue.get_venue_type_display }}</small>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}

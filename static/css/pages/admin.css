@@ -1,0 +1,31 @@
+/* Admin pages: the dashboard and comment moderation. Tables: components/table.css, tabs: components/tabs.css. */
+
+.ee-tabpanels { margin-top: clamp(20px, 3vw, 32px); }
+.ee-tabpanel + .ee-tabpanel { margin-top: 28px; }
+.js-tabs .ee-tabpanel + .ee-tabpanel { margin-top: 0; }
+.ee-tabpanel .ee-panels { margin-top: 8px; }
+
+/* Ranked list inside a panel */
+.ee-rank { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; counter-reset: rank; }
+.ee-rank li {
+  display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-top: 1px solid var(--stock-line);
+  counter-increment: rank; overflow-wrap: anywhere;
+}
+.ee-rank li:first-child { border-top: 0; }
+.ee-rank li:not(:only-child)::before { content: counter(rank); flex: none; width: 1.6em; font-weight: 800; color: var(--stock-muted); }
+.ee-rank li > span { flex: 1 1 auto; min-width: 0; }
+.ee-rank b { flex: none; font-variant-numeric: tabular-nums; }
+
+/* Comment moderation */
+.ee-admin-filter { max-width: 760px; }
+.ee-admin-comment { display: grid; gap: 8px; justify-items: start; }
+.ee-admin-thumb { display: block; width: 120px; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.ee-admin-thumb img { display: block; width: 100%; height: auto; }
+/* Table cells break long words, which would otherwise split a button's label in half. */
+.ee-pill--small { min-height: 38px; padding: 0 16px; font-size: 13px; white-space: nowrap; }
+.ee-admin-when { white-space: nowrap; }
+.ee-table form { margin: 0; }
+
+@media (max-width: 1040px) {
+  .ee-table--wide .ee-admin-comment { justify-items: end; text-align: right; min-width: 0; }
+}

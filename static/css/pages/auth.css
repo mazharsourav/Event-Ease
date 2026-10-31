@@ -1,0 +1,13 @@
+/* Log in and sign up: one centred panel on the paper, with the headline above it. */
+
+.ee-auth {
+  display: grid; justify-items: center; gap: clamp(20px, 3vw, 32px);
+  padding-block: clamp(32px, 6vw, 80px) clamp(56px, 8vw, 112px);
+}
+/* `justify-items: center` sizes each child to its own content, so the heading is capped to the
+   column and allowed to break: a long title cannot push the page sideways. */
+.ee-auth-title { text-align: center; font-size: clamp(52px, 10vw, 120px); max-width: 100%; overflow-wrap: anywhere; }
+.ee-auth-panel { width: 100%; max-width: 520px; padding: clamp(22px, 3vw, 34px); }
+.ee-auth-switch { margin: 0; text-align: center; color: var(--muted); }
+.ee-auth-switch a { font-weight: 800; }
+.ee-auth .ee-form-actions .ee-pill { width: 100%; }

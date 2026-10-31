@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Page not found &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/error.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <section class="ee-error">
+        <p class="ee-error-code" aria-hidden="true">404</p>
+        <h1 class="ee-h1 ee-error-title">Page not found</h1>
+        <p class="ee-error-text">That page has moved, been removed, or never existed. Check the address, or pick up from one of these.</p>
+        <div class="ee-actions-inline">
+            <a class="ee-pill ee-pill--ink" href="{% url 'home' %}">Home</a>
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_list' %}">Browse events</a>
+            <a class="ee-pill ee-pill--line" href="{% url 'venues:venue_list' %}">Find a venue</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

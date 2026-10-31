@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Find people &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'users:profile' %}">&larr; My profile</a>
+    {% include 'components/page_head.html' with title="Find people" intro="Look someone up by name, username or email." %}
+
+    <form method="get" class="ee-searchbar ee-narrow" role="search">
+        <div class="ee-form-field">
+            <label class="ee-form-label" for="q">Search</label>
+            <input type="search" id="q" name="q" value="{{ query }}" placeholder="Name, username or email" required>
+        </div>
+        <button type="submit" class="ee-pill ee-pill--ink">Search</button>
+    </form>
+
+    {% if query %}
+        <h2 class="ee-tabpanel-title">{% if users %}{{ users|length }} result{{ users|length|pluralize }} for &ldquo;{{ query }}&rdquo;{% else %}No one found for &ldquo;{{ query }}&rdquo;{% endif %}</h2>
+        {% if users %}
+            <ul class="ee-people">
+                {% for person in users %}
+                    {% include 'users/_person_card.html' %}
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="ee-blank ee-stock">
+                <h2 class="ee-blank-title">No one found</h2>
+                <p class="ee-blank-text">Try a different spelling, or fewer words.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="ee-note-text">Start typing a name above to find other people on EventEase.</p>
+    {% endif %}
+</div>
+{% endblock %}

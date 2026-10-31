@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Notifications &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/account.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="Notifications" intro="What's happened to your bookings and events." %}
+
+    <div class="ee-form-actions">
+        <span class="ee-tag">{{ total_count }} in total &middot; {{ unread_count }} unread</span>
+        {% if unread_count > 0 %}
+            <form method="post" action="{% url 'notifications:mark_all_read' %}">
+                {% csrf_token %}
+                <button type="submit" class="ee-pill ee-pill--line">Mark all as read</button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+        <ul class="ee-rows">
+            {% for notification in notifications %}
+                <li class="ee-row ee-row--noimg{% if not notification.is_read %} is-unread{% endif %}">
+                    <div class="ee-row-body">
+                        <h2 class="ee-row-title">{{ notification.title }}</h2>
+                        <p class="ee-row-meta">{{ notification.message }}</p>
+                        <p class="ee-row-meta"><time datetime="{{ notification.created_at|date:'c' }}">{{ notification.created_at|date:"j M Y, g:i A" }}</time></p>
+                    </div>
+                    {% if not notification.is_read %}
+                    <div class="ee-row-side">
+                        <form method="post" action="{% url 'notifications:mark_read' notification.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="ee-pill ee-pill--line">Mark as read</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% include 'components/pagination.html' with page_obj=notifications %}
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">All quiet</h2>
+            <p class="ee-blank-text">Bookings, payments and reminders will show up here.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'events:event_list' %}">Browse events</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

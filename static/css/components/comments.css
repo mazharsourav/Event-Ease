@@ -1,0 +1,59 @@
+/* Comment thread: questions and replies under an event or venue. Behaviour: js/components/comments.js. */
+
+.ee-comments { max-width: 860px; }
+
+.ee-comment-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px 18px; background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow); }
+.ee-comment-form textarea {
+  width: 100%; min-height: 72px; padding: 0; border: 0; resize: vertical; background: transparent; color: var(--stock-ink);
+  font-size: 17px; line-height: 1.5;
+}
+.ee-comment-form textarea:focus-visible { outline: none; }
+.ee-comment-form-foot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: 12px; border-top: 1px dashed var(--stock-line);
+}
+.ee-comment-file { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.ee-comment-file { flex-wrap: wrap; max-width: 100%; }
+.ee-comment-file input { width: 100%; max-width: 240px; min-width: 0; font-size: 14px; }
+.ee-comment-form :focus-visible { outline-color: var(--stock-ink); }
+.ee-comment-form .ee-pill { min-height: 42px; padding: 0 20px; font-size: 14px; }
+
+.ee-comment-file input::file-selector-button {
+  margin-right: 10px; padding: 6px 12px; border: 2px solid var(--stock-ink); background: var(--stock); color: var(--stock-ink);
+  font: inherit; font-weight: 800; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer;
+}
+
+.ee-comment-login { padding: 16px 18px; border: 2px dashed var(--ink); }
+
+.ee-thread { display: grid; gap: 22px; margin: 22px 0 0; padding: 0; list-style: none; }
+.ee-thread .ee-thread { margin: 14px 0 0 clamp(14px, 3vw, 28px); padding-left: clamp(12px, 2vw, 20px); border-left: 2px solid var(--ink); gap: 16px; }
+
+.ee-comment { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 14px; }
+.ee-comment-avatar {
+  grid-row: 1 / span 3; display: grid; place-items: center; width: 40px; height: 40px; overflow: hidden;
+  border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 800; font-size: 15px;
+}
+.ee-comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ee-comment-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.ee-comment-name { font-weight: 800; }
+.ee-comment-role, .ee-comment-date { font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.ee-comment-text { overflow-wrap: anywhere; }
+.ee-comment-text p { margin: 0 0 .6em; }
+.ee-comment-image { display: block; max-width: 280px; margin-top: 8px; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.ee-comment-image img { display: block; width: 100%; height: auto; }
+
+.ee-comment-actions { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 2px; }
+.ee-comment-action {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; border: 0; background: none; color: var(--ink);
+  font-weight: 800; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+}
+.ee-comment-action:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ee-comment-action svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.ee-comment-action[data-liked="true"] svg { fill: currentColor; }
+.ee-comment-action[aria-busy="true"] { opacity: .5; pointer-events: none; }
+
+.ee-reply-form { grid-column: 2; margin-top: 8px; }
+.ee-reply-form[hidden] { display: none; }
+.ee-reply-form .ee-comment-form { box-shadow: none; border: 2px solid var(--ink); }
+
+.ee-comments-none { margin-top: 16px; color: var(--muted); }

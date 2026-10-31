@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{% if post %}Edit post{% else %}Write a post{% endif %} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/blog.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% if post %}
+        <a class="ee-back" href="{% url 'blog:blog_detail' post.pk %}">&larr; {{ post.title }}</a>
+        {% include 'components/page_head.html' with title="Edit post" %}
+    {% else %}
+        <a class="ee-back" href="{% url 'blog:blog_list' %}">&larr; All posts</a>
+        {% include 'components/page_head.html' with title="Write a post" intro="Share a story, a tip or some news with the community." %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="ee-form ee-narrow-wide">
+        {% csrf_token %}
+        {% include 'components/form_errors.html' %}
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">The post</legend>
+            <div class="ee-form-row ee-form-row--1">
+                {% include 'components/form_field.html' with field=form.title %}
+                {% include 'components/form_field.html' with field=form.content %}
+            </div>
+        </fieldset>
+
+        <fieldset class="ee-form-section">
+            <legend class="ee-form-title">Photos and files</legend>
+            <div class="ee-form-row">
+                {% include 'components/form_field.html' with field=form.image help="Shown first. Landscape works best." %}
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="post-images">More photos</label>
+                    <input type="file" id="post-images" name="images" accept="image/*" multiple>
+                    <p class="ee-form-help">Optional. Choose several at once.</p>
+                </div>
+            </div>
+            <div class="ee-form-row ee-form-row--1">
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="post-files">Attach files</label>
+                    <input type="file" id="post-files" name="files" multiple>
+                    <p class="ee-form-help">Optional. PDFs, slides or anything readers might want to download.</p>
+                </div>
+            </div>
+            {% if post and post.images.all or post and post.files.all %}
+                <p class="ee-form-help">This post already has {{ post.images.all|length }} extra photo{{ post.images.all|length|pluralize }} and {{ post.files.all|length }} file{{ post.files.all|length|pluralize }}. Anything you add here is kept alongside them.</p>
+            {% endif %}
+        </fieldset>
+
+        <div class="ee-form-actions">
+            <button type="submit" class="ee-pill ee-pill--ink">{% if post %}Save changes{% else %}Publish post{% endif %}</button>
+            <a class="ee-pill ee-pill--line" href="{% if post %}{% url 'blog:blog_detail' post.pk %}{% else %}{% url 'blog:blog_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

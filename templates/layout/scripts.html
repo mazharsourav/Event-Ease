@@ -1,0 +1,6 @@
+{% load core_tags %}
+<script src="{% asset 'js/core/header.js' %}" defer></script>
+<script src="{% asset 'js/core/toast.js' %}" defer></script>
+<script src="{% asset 'js/core/confirm.js' %}" defer></script>
+<script src="{% asset 'js/components/select.js' %}" defer></script>
+{% if user.is_authenticated %}<script src="{% asset 'js/core/badges.js' %}" defer></script>{% endif %}

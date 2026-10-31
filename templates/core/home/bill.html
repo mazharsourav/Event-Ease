@@ -1,0 +1,25 @@
+{% load humanize %}
+{# The bill: the next events, typeset as a gig list #}
+<section class="ee-bill ee-wrap" aria-labelledby="ee-bill-title">
+    <div class="ee-head">
+        <h2 id="ee-bill-title" class="ee-h2">On the bill</h2>
+        <a class="ee-more" href="{% url 'events:event_list' %}">Every event <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    {% if recent_events %}
+        <ol class="ee-bill-list">
+            {% for event in recent_events %}
+                <li>
+                    <a class="ee-bill-row" href="{% url 'events:event_detail' event.pk %}">
+                        <span class="ee-bill-date"><b>{{ event.start_date|date:"j" }}</b>{{ event.start_date|date:"M" }}{% if event.status == 'completed' %} {{ event.start_date|date:"Y" }}{% endif %}</span>
+                        <span class="ee-bill-name">{{ event.title }}</span>
+                        <span class="ee-bill-venue">{% if event.venue %}{{ event.venue.name }}{% else %}{{ event.venue_name }}{% endif %}<small>{{ event.get_event_type_display }} &middot; {{ event.start_date|date:"D, g:i A" }}</small></span>
+                        <span class="ee-bill-price">{% if event.is_free %}Free{% else %}&#2547;{{ event.ticket_price|floatformat:0|intcomma }}{% endif %}</span>
+                        <span class="ee-stamp ee-stamp--{{ event.status }}">{% if event.status == 'upcoming' %}Coming up{% elif event.status == 'ongoing' %}On now{% else %}Ended{% endif %}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p class="ee-empty">Nothing on the bill yet. <a href="{{ list_event_url }}">List the first event</a>.</p>
+    {% endif %}
+</section>

@@ -1,0 +1,57 @@
+/* Design tokens.
+   One typeface, one ink on grey newsprint. The only colour on a page is the events' own artwork.
+   Components read these variables and never hard-code a colour, so dark mode is a swap of values here. */
+
+:root {
+  /* Surface and text */
+  --paper: #E4E2DC;
+  --paper-2: #D9D6CF;
+  --ink: #111111;
+  --ink-2: #3A3936;
+  --muted: #5E5C57;
+
+  /* Printed stock: white cards that stay white in both themes */
+  --stock: #FFFFFF;
+  --stock-ink: #111111;
+  --stock-muted: #55534E;
+  --stock-line: #DEDBD4;
+  --stock-tint: #F4F2EE;
+
+  /* Solid ink plates (typeset posters) and full-width black bands */
+  --print: #111111;
+  --print-fg: #E4E2DC;
+  --band: #111111;
+  --band-fg: #E4E2DC;
+  --band-muted: #A3A09A;
+
+  /* Riso grain on the paper */
+  --grain: rgba(17, 17, 17, .22);
+  --grain-blend: multiply;
+
+  --shadow: 0 10px 24px rgba(17, 17, 17, .16), 0 2px 4px rgba(17, 17, 17, .08);
+  --shadow-lift: 0 22px 40px rgba(17, 17, 17, .22), 0 4px 8px rgba(17, 17, 17, .1);
+
+  /* Layout */
+  --gutter: clamp(20px, 4.5vw, 64px);
+  --max: 1440px;
+  --nav-height: 70px;
+
+  /* Motion and type */
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --font: 'Anek Bangla', system-ui, sans-serif;
+}
+
+body.dark-mode {
+  --paper: #161615;
+  --paper-2: #21201E;
+  --ink: #ECEAE4;
+  --ink-2: #CFCCC5;
+  --muted: #A19E97;
+  --band: #ECEAE4;
+  --band-fg: #121212;
+  --band-muted: #55534E;
+  --grain: rgba(236, 234, 228, .16);
+  --grain-blend: screen;
+  --shadow: 0 10px 24px rgba(0, 0, 0, .5), 0 2px 4px rgba(0, 0, 0, .3);
+  --shadow-lift: 0 22px 40px rgba(0, 0, 0, .6), 0 4px 8px rgba(0, 0, 0, .3);
+}

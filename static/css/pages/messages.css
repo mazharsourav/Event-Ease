@@ -1,0 +1,96 @@
+/* Messages: a conversation list on the left and the open conversation on the right.
+   On a phone only one of them shows at a time. Behaviour: js/pages/messages.js. */
+
+.ee-chat-page { padding-block: clamp(12px, 2vw, 24px) clamp(20px, 3vw, 40px); }
+
+.ee-chat {
+  display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  height: calc(100vh - var(--nav-height) - 40px); min-height: 460px; max-height: 860px;
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow); border: 2px solid var(--stock-ink);
+}
+.ee-chat :focus-visible { outline-color: var(--stock-ink); }
+
+/* The list */
+.ee-chat-list { display: grid; grid-template-rows: auto minmax(0, 1fr); min-width: 0; border-right: 2px solid var(--stock-ink); }
+.ee-chat-list-head { display: grid; gap: 10px; padding: 16px; border-bottom: 2px solid var(--stock-ink); }
+.ee-chat-heading { margin: 0; font-weight: 800; font-size: 28px; line-height: 1; text-transform: uppercase; }
+.ee-chat-search {
+  width: 100%; min-height: 42px; padding: 8px 12px; border: 2px solid var(--stock-ink); border-radius: 0;
+  background: var(--stock); color: var(--stock-ink); font-size: 16px;
+}
+.ee-chat-people { margin: 0; padding: 0; list-style: none; overflow-y: auto; }
+.ee-chat-person {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%;
+  padding: 12px 16px; border: 0; border-bottom: 1px solid var(--stock-line); background: transparent; color: inherit;
+  text-align: left; cursor: pointer;
+}
+.ee-chat-person:hover { background: var(--stock-tint); }
+.ee-chat-person.is-active { background: var(--stock-ink); color: var(--stock); }
+.ee-chat-person.is-active .ee-pic { background: var(--stock); color: var(--stock-ink); }
+.ee-chat-person-text { display: grid; min-width: 0; }
+.ee-chat-person-text b { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ee-chat-person-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--stock-muted); }
+.ee-chat-person.is-active small { color: inherit; opacity: .8; }
+.ee-chat-person .ee-count-badge { margin: 0; background: var(--stock-ink); color: var(--stock); }
+.ee-chat-person.is-active .ee-count-badge { background: var(--stock); color: var(--stock-ink); }
+.ee-chat-none { display: grid; justify-items: start; gap: 12px; padding: 24px 16px; color: var(--stock-muted); }
+.ee-chat-none p { margin: 0; }
+
+/* The open conversation */
+.ee-chat-thread { position: relative; display: grid; min-width: 0; min-height: 0; }
+.ee-chat-empty { display: grid; place-content: center; gap: 4px; padding: 24px; text-align: center; color: var(--stock-muted); }
+.ee-chat-empty p { margin: 0; }
+.ee-chat-empty-title { font-weight: 800; font-size: 24px; text-transform: uppercase; color: var(--stock-ink); }
+.ee-chat-open { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
+.ee-chat-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 2px solid var(--stock-ink); }
+.ee-chat-with { margin: 0; font-weight: 800; font-size: 20px; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ee-chat-back {
+  display: none; width: 40px; height: 40px; border: 2px solid var(--stock-ink); background: transparent; color: inherit;
+  font-size: 20px; font-weight: 800; cursor: pointer;
+}
+
+.ee-chat-messages { display: grid; align-content: start; gap: 10px; padding: 16px; overflow-y: auto; overscroll-behavior: contain; }
+.ee-chat-bubble { display: grid; gap: 6px; max-width: min(78%, 520px); padding: 10px 14px; overflow-wrap: anywhere; }
+.ee-chat-bubble p { margin: 0; white-space: pre-wrap; }
+.ee-chat-bubble time { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; opacity: .65; }
+.ee-chat-bubble.is-mine { justify-self: end; background: var(--stock-ink); color: var(--stock); }
+.ee-chat-bubble.is-theirs { justify-self: start; background: var(--stock-tint); border: 2px solid var(--stock-ink); }
+.ee-chat-image { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.ee-chat-image img { display: block; max-width: 220px; max-height: 220px; }
+.ee-chat-file { color: inherit; font-weight: 700; text-underline-offset: 3px; }
+
+.ee-chat-new {
+  position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); padding: 8px 16px; border: 2px solid var(--stock-ink);
+  background: var(--stock); color: var(--stock-ink); font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer;
+}
+
+.ee-chat-compose { display: grid; gap: 8px; padding: 12px 16px; border-top: 2px solid var(--stock-ink); }
+.ee-chat-compose-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+.ee-chat-attach {
+  display: grid; place-items: center; width: 46px; height: 46px; border: 2px solid var(--stock-ink); font-weight: 800; font-size: 24px; cursor: pointer;
+}
+.ee-chat-input {
+  width: 100%; min-height: 46px; max-height: 120px; padding: 10px 12px; border: 2px solid var(--stock-ink); border-radius: 0;
+  background: var(--stock); color: var(--stock-ink); font-size: 16px; line-height: 1.4; resize: none;
+}
+.ee-chat-compose .ee-pill { min-height: 46px; padding: 0 20px; }
+.ee-chat-files { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ee-chat-files li { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 10px; border: 2px solid var(--stock-ink); font-size: 14px; }
+.ee-chat-files button { border: 0; background: transparent; color: inherit; font-size: 18px; font-weight: 800; cursor: pointer; }
+
+/* The one-person conversation page */
+.ee-thread-page .ee-chat { grid-template-columns: minmax(0, 1fr); }
+
+@media (max-width: 760px) {
+  .ee-chat { grid-template-columns: minmax(0, 1fr); height: calc(100vh - var(--nav-height) - 24px); }
+  .ee-chat-thread { display: none; }
+  .ee-chat.is-chat-open .ee-chat-list { display: none; }
+  .ee-chat.is-chat-open .ee-chat-thread { display: grid; }
+  .ee-chat-list { border-right: 0; }
+  .ee-chat-back { display: grid; place-items: center; }
+  .ee-chat-bubble { max-width: 88%; }
+}
+
+.ee-chat-compose-row--text { grid-template-columns: minmax(0, 1fr) auto; }
+a.ee-chat-back--link { display: grid; place-items: center; text-decoration: none; }
+.ee-thread-page .ee-chat-back--link { display: grid; }

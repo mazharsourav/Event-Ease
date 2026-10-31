@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Book {{ event.title }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/components/tickets.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/detail.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'events:event_detail' event.pk %}">&larr; {{ event.title }}</a>
+    {% include 'components/page_head.html' with title="Book tickets" %}
+
+    <div class="ee-detail">
+        <form class="ee-form ee-detail-main" method="post" novalidate
+              {% if not is_checkout and has_categories %}data-ee-tickets data-max-tickets="6"{% endif %}>
+            {% csrf_token %}
+            {% include 'components/form_errors.html' %}
+
+            {% if is_checkout %}
+                {% for category, data in selected_quantities.items %}
+                    <input type="hidden" name="quantity_{{ category.id }}" value="{{ data.quantity }}">
+                {% endfor %}
+            {% elif has_categories %}
+                <fieldset class="ee-form-section">
+                    <legend class="ee-form-title">1. Choose your tickets</legend>
+                    <p class="ee-form-lead">Up to 6 tickets per order.</p>
+                    <ul class="ee-tiers ee-panel">
+                        {% for category in event.ticket_categories.all %}
+                            {% if category.tickets_available > 0 %}
+                            <li class="ee-tier" data-tier>
+                                <span class="ee-tier-name">{{ category.name }}</span>
+                                <span class="ee-tier-price">{% if category.price == 0 %}Free{% else %}&#2547;{{ category.price|floatformat:0|intcomma }}{% endif %}</span>
+                                {% if category.description %}<span class="ee-tier-note">{{ category.description }}</span>{% endif %}
+                                <span class="ee-tier-left">{{ category.tickets_available }} left</span>
+                                <div class="ee-stepper">
+                                    <label class="ee-tag" for="id_quantity_{{ category.id }}">Quantity</label>
+                                    <span class="ee-stepper-controls">
+                                        <button type="button" data-step="down" aria-label="One fewer {{ category.name }} ticket">&minus;</button>
+                                        <input type="number" name="quantity_{{ category.id }}" id="id_quantity_{{ category.id }}" value="0" min="0" max="6"
+                                               inputmode="numeric" data-qty data-category-id="{{ category.id }}"
+                                               data-price="{{ category.price }}" data-max="{{ category.tickets_available }}">
+                                        <button type="button" data-step="up" aria-label="One more {{ category.name }} ticket">+</button>
+                                    </span>
+                                </div>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <p class="ee-form-error" data-ticket-error hidden role="alert">Choose at least one ticket to continue.</p>
+                </fieldset>
+            {% endif %}
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">{% if is_checkout or not has_categories %}1{% else %}2{% endif %}. Ticket holder</legend>
+                <p class="ee-form-lead">The person who will come to the event. Your confirmation is sent to this email.</p>
+                <div class="ee-form-row ee-form-row--1">{% include 'components/form_field.html' with field=form.attendee_name label="Full name" %}</div>
+                <div class="ee-form-row">
+                    {% include 'components/form_field.html' with field=form.attendee_email label="Email" %}
+                    {% include 'components/form_field.html' with field=form.attendee_phone label="Phone" help="Used only for updates about this event." %}
+                </div>
+                <div class="ee-form-row ee-form-row--1">
+                    {% include 'components/form_field.html' with field=form.special_requests label="Special requests" help="Dietary needs, accessibility, anything the organiser should know." %}
+                </div>
+            </fieldset>
+
+            <div class="ee-form-actions">
+                <button type="submit" class="ee-pill ee-pill--ink">
+                    {% if event.is_free %}{% if is_checkout %}Complete registration{% else %}Register for free{% endif %}{% elif is_checkout %}Complete booking and pay{% else %}Continue to payment{% endif %}
+                </button>
+                <a class="ee-pill ee-pill--line" href="{% url 'events:event_detail' event.pk %}">Cancel</a>
+            </div>
+        </form>
+
+        <aside class="ee-detail-aside" aria-label="Order summary">
+            <section class="ee-panel ee-panel--taped ee-stock">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <div class="ee-summary-head">
+                    <span class="ee-summary-img">{% if event.image %}<img src="{{ event.image.url }}" alt="">{% endif %}</span>
+                    <div>
+                        <h2 class="ee-summary-name">{{ event.title }}</h2>
+                        <p class="ee-summary-meta">{{ event.get_event_type_display }}</p>
+                    </div>
+                </div>
+                <dl class="ee-summary">
+                    <div class="ee-summary-line"><dt>Date</dt><dd>{{ event.start_date|date:"D j M Y" }}</dd></div>
+                    <div class="ee-summary-line"><dt>Time</dt><dd>{{ event.start_date|time:"g:i A" }}</dd></div>
+                    <div class="ee-summary-line"><dt>Venue</dt><dd>{{ event.venue_name }}</dd></div>
+                    {% if is_checkout %}
+                        {% for category, data in selected_quantities.items %}
+                            <div class="ee-summary-line">
+                                <dt>{{ category.name }} &times; {{ data.quantity }}</dt>
+                                <dd>{% if category.price == 0 %}Free{% else %}&#2547;{{ data.line_total|floatformat:"-2"|intcomma }}{% endif %}</dd>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </dl>
+                <div class="ee-summary-total">
+                    <span>Total</span>
+                    {% if is_checkout %}
+                        <b>{% if total_amount == 0 %}Free{% else %}&#2547;{{ total_amount|floatformat:"-2"|intcomma }}{% endif %}</b>
+                    {% elif has_categories %}
+                        <b data-total-amount>&#2547;0</b>
+                    {% elif event.is_free %}
+                        <b>Free</b>
+                    {% else %}
+                        <b>&#2547;{{ event.ticket_price|floatformat:"-2"|intcomma }}</b>
+                    {% endif %}
+                </div>
+                {% if not is_checkout and has_categories %}<p class="ee-form-help" data-total-count>0 of 6 tickets</p>{% endif %}
+                <ul class="ee-terms">
+                    <li>Your place is confirmed {% if event.is_free %}when you register{% else %}once payment is complete{% endif %}.</li>
+                    <li>For cancellations, contact the organiser.</li>
+                    {% if event.registration_deadline %}<li>Registration closes {{ event.registration_deadline|date:"j M Y" }}, {{ event.registration_deadline|time:"g:i A" }}.</li>{% endif %}
+                </ul>
+            </section>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if not is_checkout and has_categories %}<script src="{% asset 'js/components/ticket-picker.js' %}" defer></script>{% endif %}
+{% endblock %}

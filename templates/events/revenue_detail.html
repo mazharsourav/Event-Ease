@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Revenue &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'events:my_events' %}">&larr; Organiser dashboard</a>
+    {% include 'components/page_head.html' with title="Revenue" intro="What your events have earned." %}
+
+    <ul class="ee-stats">
+        <li class="ee-stat"><b>&#2547;{{ total_revenue|floatformat:0|intcomma }}</b><span>Total</span></li>
+        <li class="ee-stat"><b>{{ total_bookings }}</b><span>Paid bookings</span></li>
+        <li class="ee-stat"><b>&#2547;{{ avg_per_booking|floatformat:0|intcomma }}</b><span>Average booking</span></li>
+        <li class="ee-stat"><b>{{ revenue_by_event|length }}</b><span>Events earning</span></li>
+    </ul>
+
+    {% if total_revenue > 0 %}
+        <section class="ee-section" aria-labelledby="by-event">
+            <h2 id="by-event" class="ee-h1 ee-section-title">By event</h2>
+            <table class="ee-table">
+                <thead><tr><th>Event</th><th class="ee-num">Bookings</th><th class="ee-num">Average</th><th class="ee-num">Revenue</th></tr></thead>
+                <tbody>
+                    {% for event_title, data in revenue_by_event.items %}
+                    <tr>
+                        <td data-label="Event">{{ event_title }}<progress class="ee-meter" value="{{ data.amount|floatformat:0 }}" max="{{ top_event_revenue|floatformat:0 }}" aria-hidden="true"></progress></td>
+                        <td data-label="Bookings" class="ee-num">{{ data.bookings }}</td>
+                        <td data-label="Average" class="ee-num">&#2547;{{ data.avg_per_booking|floatformat:0|intcomma }}</td>
+                        <td data-label="Revenue" class="ee-num">&#2547;{{ data.amount|floatformat:0|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        {% if recent_payments %}
+        <section class="ee-section" aria-labelledby="recent">
+            <h2 id="recent" class="ee-h1 ee-section-title">Latest payments</h2>
+            <table class="ee-table">
+                <thead><tr><th>Event</th><th>Customer</th><th>Paid</th><th class="ee-num">Amount</th></tr></thead>
+                <tbody>
+                    {% for payment in recent_payments %}
+                    <tr>
+                        <td data-label="Event">{{ payment.event.title }}</td>
+                        <td data-label="Customer">{{ payment.user.get_full_name|default:payment.user.username }}<small>{{ payment.user.email|truncatechars:28 }}</small></td>
+                        <td data-label="Paid">{{ payment.booking_date|date:"j M Y" }}<small>{{ payment.booking_date|time:"g:i A" }}</small></td>
+                        <td data-label="Amount" class="ee-num">&#2547;{{ payment.total_amount|floatformat:"-2"|intcomma }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No revenue yet</h2>
+            <p class="ee-blank-text">Paid bookings will add up here.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'events:event_create' %}">Create an event</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{# What the venue includes: only the amenities it actually has (Venue.amenities_list) #}
+{% with amenities=venue.amenities_list %}
+{% if amenities %}
+<section class="ee-section" aria-labelledby="included-title">
+    <h2 id="included-title" class="ee-h1 ee-section-title">What&rsquo;s included</h2>
+    <ul class="ee-amenities">
+        {% for amenity in amenities %}<li class="ee-amenity">{{ amenity }}</li>{% endfor %}
+    </ul>
+</section>
+{% endif %}
+{% endwith %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Reviews of {{ venue.name }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/reviews.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'venues:venue_detail' venue.pk %}">&larr; {{ venue.name }}</a>
+    {% include 'components/page_head.html' with title="Reviews" intro=venue.name %}
+
+    {% if reviews %}
+        {% if user_can_review_venue %}{% url 'reviews:submit_venue_review' venue.id as write_url %}{% endif %}
+        {% include 'reviews/_summary.html' with write_url=write_url %}
+
+        <ul class="ee-reviews">
+            {% for review in reviews %}
+                {% url 'reviews:delete_venue_review' review.id as delete_url %}
+                {% include 'reviews/_review_card.html' with delete_url=delete_url %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No reviews yet</h2>
+            <p class="ee-blank-text">Reviews from people who have used this venue will show up here.</p>
+            {% if user_can_review_venue %}<a class="ee-pill ee-pill--ink" href="{% url 'reviews:submit_venue_review' venue.id %}">Write the first review</a>{% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

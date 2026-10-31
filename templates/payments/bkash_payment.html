@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Pay with bKash &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'payments:payment_process' booking.id %}">&larr; Other ways to pay</a>
+    {% include 'components/page_head.html' with title="Pay with bKash" %}
+
+    <div class="ee-page ee-narrow">
+        {% include 'payments/_wallet_summary.html' %}
+
+        <form class="ee-form" id="walletForm" method="post" action="{% url 'payments:bkash_process' booking.id %}" data-pin-length="5">
+            {% csrf_token %}
+            <input type="hidden" name="payment_method" value="bkash">
+            <input type="hidden" name="bkash_method" id="walletMethod" value="wallet">
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">Pay from</legend>
+                <div class="ee-methods ee-wallet-methods">
+                    <label class="ee-method"><input type="radio" name="wallet_choice" value="wallet" checked><b>Wallet</b><small>Your bKash balance</small></label>
+                    <label class="ee-method"><input type="radio" name="wallet_choice" value="card"><b>Card</b><small>Visa or MasterCard</small></label>
+                    <label class="ee-method"><input type="radio" name="wallet_choice" value="bank"><b>Bank</b><small>Internet banking</small></label>
+                </div>
+            </fieldset>
+
+            <fieldset class="ee-form-section">
+                <legend class="ee-form-title">Your bKash account</legend>
+                <div class="ee-form-field">
+                    <label class="ee-form-label" for="mobile">Mobile number</label>
+                    <div class="ee-phone">
+                        <span class="ee-phone-code">+880</span>
+                        <input type="tel" id="mobile" name="mobile" placeholder="1XXXXXXXXX" inputmode="numeric" pattern="1[0-9]{9}" maxlength="10" required autocomplete="tel-national">
+                    </div>
+                    <p class="ee-form-help">The mobile number your bKash account is registered with.</p>
+                </div>
+                <div class="ee-form-field" data-pin-field>
+                    <label class="ee-form-label" for="pin">bKash PIN</label>
+                    <div class="ee-pin">
+                        <input type="password" id="pin" name="pin" placeholder="5-digit PIN" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="off">
+                        <button type="button" data-pin-toggle aria-controls="pin">Show</button>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="ee-form-actions">
+                <button type="submit" class="ee-pill ee-pill--ink" data-submit>Pay &#2547;{{ booking.amount|floatformat:"-2"|intcomma }}</button>
+                <a class="ee-pill ee-pill--line" href="{% url 'payments:payment_cancel' booking.id %}">Cancel</a>
+            </div>
+            <p class="ee-form-help">Your PIN is used for this payment only and is never saved.</p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/wallet-payment.js' %}" defer></script>{% endblock %}

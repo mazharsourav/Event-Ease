@@ -1,0 +1,10 @@
+{% comment %}
+    One Django form field with its label, help text and errors.
+    Context: field (a bound field), label (optional), help (optional), wide (optional, unused by markup).
+{% endcomment %}
+<div class="ee-form-field{% if field.errors %} has-error{% endif %}">
+    <label class="ee-form-label" for="{{ field.id_for_label }}">{{ label|default:field.label }}{% if field.field.required %}<span class="ee-required" aria-hidden="true">*</span>{% endif %}</label>
+    {{ field }}
+    {% if help %}<p class="ee-form-help">{{ help }}</p>{% elif field.help_text %}<p class="ee-form-help">{{ field.help_text }}</p>{% endif %}
+    {% for error in field.errors %}<p class="ee-form-error" role="alert">{{ error }}</p>{% endfor %}
+</div>

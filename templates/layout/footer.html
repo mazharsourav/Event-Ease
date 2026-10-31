@@ -1,0 +1,20 @@
+<footer class="ee-foot">
+    <span class="ee-torn ee-torn--top ee-torn--foot" aria-hidden="true"></span>
+    <div class="ee-wrap ee-foot-inner">
+        <p class="ee-foot-mark" aria-hidden="true"><span>E</span><span>V</span><span>E</span><span>N</span><span>T</span><span>E</span><span>A</span><span>S</span><span>E</span></p>
+        <div class="ee-foot-cols">
+            <nav aria-label="Explore">
+                <a href="{% url 'events:event_list' %}">Events</a>
+                <a href="{% url 'venues:venue_list' %}">Venues</a>
+                <a href="{% url 'reviews:all_reviews' %}">Reviews</a>
+                <a href="{% url 'blog:blog_list' %}">Blog</a>
+            </nav>
+            <nav aria-label="Organisers">
+                <a href="{{ list_event_url }}">List an event</a>
+                <a href="{{ list_venue_url }}">List a venue</a>
+                {% if user.is_authenticated %}<a href="{% url 'users:dashboard' %}">Dashboard</a>{% else %}<a href="{% url 'users:login' %}">Log in</a>{% endif %}
+            </nav>
+            <p class="ee-foot-note">Events and venues across Bangladesh. Tickets paid with bKash, Nagad or card.<br>&copy; {% now "Y" %} EventEase</p>
+        </div>
+    </div>
+</footer>

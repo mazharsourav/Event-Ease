@@ -1,0 +1,31 @@
+{# Venue reviews: the average, the four category scores, and links to read or write more #}
+<section aria-labelledby="reviews-title">
+    <h2 id="reviews-title" class="ee-h1 ee-section-title">Reviews</h2>
+
+    {% if venue.review_count > 0 %}
+        {% with cats=venue.category_averages %}
+        <div class="ee-rating">
+            <span class="ee-rating-score">{{ venue.average_rating|floatformat:1 }}</span>
+            {% include 'components/stars.html' with rating=venue.average_rating %}
+            <span class="ee-rating-count">{{ venue.review_count }} review{{ venue.review_count|pluralize }}</span>
+        </div>
+        <ul class="ee-rating-cats">
+            <li>Ambience <b>{{ cats.ambience|floatformat:1 }}</b></li>
+            <li>Service <b>{{ cats.service|floatformat:1 }}</b></li>
+            <li>Cleanliness <b>{{ cats.cleanliness|floatformat:1 }}</b></li>
+            <li>Value <b>{{ cats.value|floatformat:1 }}</b></li>
+        </ul>
+        {% endwith %}
+    {% else %}
+        <p class="ee-comments-none">No reviews yet.</p>
+    {% endif %}
+
+    <div class="ee-review-actions">
+        {% if venue.review_count > 0 %}<a class="ee-pill ee-pill--line" href="{% url 'reviews:venue_reviews' venue.id %}">Read the reviews</a>{% endif %}
+        {% if user_venue_review %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'reviews:submit_venue_review' venue.id %}">Edit your review</a>
+        {% elif user_can_review_venue %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'reviews:submit_venue_review' venue.id %}">Write a review</a>
+        {% endif %}
+    </div>
+</section>

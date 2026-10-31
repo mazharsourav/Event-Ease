@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}{{ post.title }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/components/gallery.css' %}">
+<link rel="stylesheet" href="{% asset 'css/components/comments.css' %}">
+<link rel="stylesheet" href="{% asset 'css/components/lightbox.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/blog.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    <a class="ee-back" href="{% url 'blog:blog_list' %}">&larr; All posts</a>
+    {% include 'components/page_head.html' with title=post.title %}
+
+    <p class="ee-byline">
+        {% include 'components/pic.html' with person=post.author size='sm' %}
+        <span>
+            By {{ post.author.get_full_name|default:post.author.username }}
+            <time datetime="{{ post.created_at|date:'c' }}">{{ post.created_at|date:"j M Y" }}</time>
+            {% if was_edited %}<em>Edited {{ post.updated_at|date:"j M Y" }}</em>{% endif %}
+        </span>
+    </p>
+
+    <article class="ee-article ee-narrow-wide">
+        {% include 'blog/_gallery.html' %}
+
+        <div class="ee-article-body">{{ post.content|linebreaks }}</div>
+
+        {% if post.files.all %}
+            <section aria-labelledby="files-title">
+                <h2 id="files-title" class="ee-tabpanel-title">Attached files</h2>
+                <ul class="ee-files">
+                    {% for file in post.files.all %}
+                        <li><a href="{{ file.file.url }}" download><span>{{ file.file_name }}</span><small>{{ file.get_file_size_display }}</small></a></li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% endif %}
+
+        <div class="ee-article-foot">
+            {% if user.is_authenticated %}
+                <div class="ee-reactions" data-react-group role="group" aria-label="React to this post">
+                    {% for value, label in reaction_choices %}
+                        <button type="button" class="ee-react" data-react data-url="{% url 'blog:blog_react' post.pk %}" data-type="{{ value }}"
+                                aria-pressed="{% if user_reaction == value %}true{% else %}false{% endif %}">{{ label }}</button>
+                    {% endfor %}
+                    <span class="ee-react-static"><span data-react-count>{{ post.get_reactions_count }}</span> in total</span>
+                </div>
+            {% else %}
+                <p class="ee-react-static">{{ post.get_reactions_count }} reaction{{ post.get_reactions_count|pluralize }}</p>
+            {% endif %}
+
+            {% if user == post.author %}
+                <div class="ee-actions-inline">
+                    <a class="ee-pill ee-pill--line" href="{% url 'blog:blog_edit' post.pk %}">Edit post</a>
+                    <form method="post" action="{% url 'blog:blog_delete' post.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="ee-pill ee-pill--line" data-confirm="Delete this post and all its comments?">Delete post</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </article>
+
+    <section class="ee-comments ee-narrow-wide" id="comments" aria-labelledby="comments-title"
+             data-ee-comments data-delete-url="{% url 'blog:blog_comment_delete' 0 %}"
+             data-signed-in="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+             data-login-url="{% url 'users:login' %}?next={{ request.path }}">
+        <h2 id="comments-title" class="ee-h1 ee-section-title">Comments <span class="ee-tag">{{ post.get_comments_count }}</span></h2>
+
+        {% if user.is_authenticated %}
+            <div class="ee-comment-new">
+                {% include 'blog/_comment_form.html' with form=comment_form placeholder="Add a comment…" %}
+            </div>
+        {% else %}
+            <p class="ee-comment-login"><a href="{% url 'users:login' %}?next={{ request.path }}#comments">Log in</a> to join the conversation.</p>
+        {% endif %}
+
+        {% if comments %}
+            <ul class="ee-thread">
+                {% for comment in comments %}{% include 'blog/_comment.html' with depth=1 %}{% endfor %}
+            </ul>
+        {% else %}
+            <p class="ee-comments-none">No comments yet. Be the first.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% asset 'js/components/gallery.js' %}" defer></script>
+<script src="{% asset 'js/components/lightbox.js' %}" defer></script>
+<script src="{% asset 'js/components/comments.js' %}" defer></script>
+<script src="{% asset 'js/pages/blog.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,44 @@
+/* Tables: ruled rows. On a phone every row becomes a stacked card, each cell labelled by its data-label. */
+
+.ee-table { width: 100%; border-collapse: collapse; }
+.ee-table th {
+  padding: 10px 12px; border-bottom: 2px solid var(--ink); text-align: left;
+  font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.ee-table td { padding: 14px 12px; border-bottom: 1px solid var(--ink); vertical-align: top; overflow-wrap: anywhere; }
+.ee-table tbody tr:hover { background: var(--paper-2); }
+.ee-table .ee-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ee-table small { display: block; color: var(--muted); }
+.ee-table a { font-weight: 700; }
+.ee-table .ee-cell { display: block; min-width: 0; }
+
+@media (max-width: 720px) {
+  .ee-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ee-table, .ee-table tbody, .ee-table tr, .ee-table td { display: block; width: 100%; }
+  .ee-table tr { padding: 12px 0; border-bottom: 2px solid var(--ink); }
+  .ee-table td { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; border: 0; text-align: right; }
+  .ee-table td::before {
+    content: attr(data-label); flex: none; font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); text-align: left;
+  }
+  .ee-table td:not([data-label])::before { content: none; }
+  .ee-table .ee-num { text-align: right; white-space: normal; }
+  .ee-table small { display: inline; margin-left: 6px; }
+  .ee-table .ee-cell { text-align: right; }
+}
+
+/* A table with many columns stacks earlier. Add .ee-table--wide beside .ee-table. */
+@media (max-width: 1040px) {
+  .ee-table--wide thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ee-table--wide, .ee-table--wide tbody, .ee-table--wide tr, .ee-table--wide td { display: block; width: 100%; }
+  .ee-table--wide tr { padding: 12px 0; border-bottom: 2px solid var(--ink); }
+  .ee-table--wide td { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; border: 0; text-align: right; }
+  .ee-table--wide td::before {
+    content: attr(data-label); flex: none; font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); text-align: left;
+  }
+  .ee-table--wide td:not([data-label])::before { content: none; }
+  .ee-table--wide .ee-num { text-align: right; white-space: normal; }
+  .ee-table--wide small { display: inline; margin-left: 6px; }
+  .ee-table--wide .ee-cell { text-align: right; }
+}

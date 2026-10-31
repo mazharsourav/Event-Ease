@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}My venue bookings &middot; EventEase{% endblock %}
+
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="My venue bookings" intro="Halls and grounds you have asked to book." %}
+
+    {% if bookings %}
+        <ul class="ee-rows">
+            {% for booking in bookings %}
+            <li class="ee-row ee-row--noimg">
+                <div class="ee-row-body">
+                    <h2 class="ee-row-title"><a href="{% url 'venues:booking_details' booking.pk %}">{{ booking.event_title }}</a></h2>
+                    <p class="ee-row-meta">
+                        <a href="{% url 'venues:venue_detail' booking.venue.pk %}">{{ booking.venue.name }}</a>
+                        &middot; {{ booking.start_date|date:"D j M Y, g:i A" }} to {{ booking.end_date|date:"j M, g:i A" }}
+                        &middot; &#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}
+                    </p>
+                    <p class="ee-row-meta">
+                        {% if booking.status == 'pending' %}Waiting for the owner to approve.
+                        {% elif booking.status == 'confirmed' %}Confirmed.
+                        {% elif booking.status == 'completed' %}Your event is complete.
+                        {% elif booking.status == 'rejected' %}The owner couldn&rsquo;t take this one.
+                        {% else %}Cancelled.{% endif %}
+                    </p>
+                </div>
+                <div class="ee-row-side">
+                    <span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.get_status_display }}</span>
+                    <a class="ee-pill ee-pill--line" href="{% url 'venues:booking_details' booking.pk %}">Details</a>
+                    {% if booking.status == 'pending' %}
+                        <a class="ee-pill ee-pill--line" href="{% url 'venues:cancel_venue_booking' booking.pk %}" data-confirm="Cancel this request?">Cancel request</a>
+                    {% elif booking.status == 'confirmed' %}
+                        <a class="ee-pill ee-pill--line" href="mailto:{{ booking.venue.contact_email }}">Contact venue</a>
+                    {% elif booking.status == 'rejected' %}
+                        <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_book' booking.venue.pk %}">Book again</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No bookings yet</h2>
+            <p class="ee-blank-text">When you ask to book a venue it appears here.</p>
+            <a class="ee-pill ee-pill--ink" href="{% url 'venues:venue_list' %}">Browse venues</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

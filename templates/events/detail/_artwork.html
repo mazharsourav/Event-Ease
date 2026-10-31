@@ -1,0 +1,12 @@
+{# The event's artwork as a taped print; events without artwork get a typeset plate #}
+<figure class="ee-detail-print">
+    <span class="ee-tape" aria-hidden="true"></span>
+    {% if event.image %}
+        <span class="ee-print"><img src="{{ event.image.url }}" alt="{{ event.title }}"></span>
+    {% else %}
+        <span class="ee-print ee-gig" aria-hidden="true">
+            <b>{{ event.title }}</b>
+            <small>{{ event.start_date|date:"l j F Y" }}</small>
+        </span>
+    {% endif %}
+</figure>

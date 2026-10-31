@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Delete {{ event.title }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'events:event_detail' event.pk %}">&larr; {{ event.title }}</a>
+    {% include 'components/page_head.html' with title="Delete event" intro="This cannot be undone." %}
+
+    <div class="ee-page ee-narrow">
+        <section class="ee-panel ee-panel--taped ee-stock">
+            <span class="ee-tape" aria-hidden="true"></span>
+            <div class="ee-summary-head">
+                <span class="ee-summary-img">{% if event.image %}<img src="{{ event.image.url }}" alt="">{% endif %}</span>
+                <div>
+                    <h2 class="ee-summary-name">{{ event.title }}</h2>
+                    <p class="ee-summary-meta">{{ event.get_event_type_display }}</p>
+                </div>
+            </div>
+            <dl class="ee-summary">
+                <div class="ee-summary-line"><dt>Date</dt><dd>{{ event.start_date|date:"D j M Y" }}, {{ event.start_date|time:"g:i A" }}</dd></div>
+                <div class="ee-summary-line"><dt>Venue</dt><dd>{{ event.venue_name }}</dd></div>
+                <div class="ee-summary-line"><dt>Registered</dt><dd>{{ event.current_attendees }} of {{ event.max_attendees }}</dd></div>
+                <div class="ee-summary-line"><dt>Price</dt><dd>{% if event.is_free %}Free{% else %}&#2547;{{ event.ticket_price|floatformat:0|intcomma }}{% endif %}</dd></div>
+            </dl>
+        </section>
+
+        {% if event.current_attendees > 0 %}
+        <section class="ee-panel ee-panel--flat ee-stock">
+            <h2 class="ee-panel-title">{{ event.current_attendees }} people are registered</h2>
+            <ul class="ee-terms">
+                <li>Their bookings are cancelled.</li>
+                <li>The event disappears from their schedules.</li>
+                <li>All its data is deleted for good.</li>
+            </ul>
+            <p class="ee-panel-text">Consider telling attendees first.</p>
+        </section>
+        {% endif %}
+
+        <form method="post" class="ee-form-actions">
+            {% csrf_token %}
+            <button type="submit" class="ee-pill ee-pill--ink">Yes, delete this event</button>
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_detail' event.pk %}">Keep it</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

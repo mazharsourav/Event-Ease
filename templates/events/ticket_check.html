@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Ticket {{ reference }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    {% include 'components/page_head.html' with title="Gate check" intro="Where a scanned ticket lands." %}
+
+    <div class="ee-page ee-narrow">
+        {% if unknown %}
+            <div class="ee-blank ee-stock">
+                <h2 class="ee-blank-title">Not a ticket we issued</h2>
+                <p class="ee-blank-text">
+                    No booking on EventEase carries the reference {{ reference }}. Scan the whole code and try again.
+                </p>
+            </div>
+        {% elif not may_check %}
+            <div class="ee-blank ee-stock">
+                <h2 class="ee-blank-title">Only the organiser can check this</h2>
+                <p class="ee-blank-text">
+                    Ticket {{ reference }} belongs to someone else's booking. Ask the people running the event to scan it.
+                </p>
+            </div>
+        {% else %}
+            <article class="ee-stub ee-stock">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <div class="ee-stub-main">
+                    <span class="ee-tag">{% if booking.has_ticket %}Valid{% else %}Not valid{% endif %}</span>
+                    <h2 class="ee-stub-title">
+                        {% if booking.has_ticket %}Admit {{ booking.attendees_count }}{% else %}Do not admit{% endif %}
+                    </h2>
+                    <dl class="ee-summary">
+                        <div class="ee-summary-line"><dt>Event</dt><dd>{{ booking.event.title }}</dd></div>
+                        <div class="ee-summary-line">
+                            <dt>When</dt>
+                            <dd>{{ booking.event.start_date|date:"D j M Y" }}, {{ booking.event.start_date|time:"g:i A" }}</dd>
+                        </div>
+                        <div class="ee-summary-line">
+                            <dt>Where</dt>
+                            <dd>{{ booking.event.venue_name|default:"To be announced" }}</dd>
+                        </div>
+                        <div class="ee-summary-line">
+                            <dt>Ticket holder</dt>
+                            <dd>{{ booking.attendee_name|default:booking.user.get_full_name|default:booking.user.username }}</dd>
+                        </div>
+                        <div class="ee-summary-line"><dt>Booked</dt><dd>{{ booking.booking_date|date:"j M Y" }}</dd></div>
+                        <div class="ee-summary-line">
+                            <dt>Paid</dt>
+                            <dd>
+                                {% if booking.event.is_free %}Free event
+                                {% else %}&#2547;{{ booking.total_amount|floatformat:"-2"|intcomma }}{% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="ee-stub-side">
+                    <span class="ee-tag">Booking</span>
+                    <span class="ee-stub-code">{{ booking.reference }}</span>
+                    <span class="ee-stamp ee-stamp--{{ booking.status }}">{{ booking.get_status_display }}</span>
+                </div>
+            </article>
+
+            <section class="ee-panel ee-stock">
+                <h2 class="ee-panel-title">{% if booking.has_ticket %}On the gate{% else %}Why this is refused{% endif %}</h2>
+                <ul class="ee-terms">
+                    {% if booking.has_ticket %}
+                        <li>Check the name on the ticket against photo ID.</li>
+                        <li>This ticket admits {{ booking.attendees_count }} {% if booking.attendees_count == 1 %}person{% else %}people{% endif %}.</li>
+                        {% if is_holder %}<li>This is your own booking.</li>{% endif %}
+                    {% else %}
+                        <li>The booking is {{ booking.get_status_display|lower }}, so no place is being held.</li>
+                        <li>Send the ticket holder to the box office rather than the gate.</li>
+                    {% endif %}
+                </ul>
+            </section>
+
+            <div class="ee-actions-inline">
+                <a class="ee-pill ee-pill--ink" href="{% url 'events:event_detail' booking.event.pk %}">View event</a>
+                {% if booking.has_ticket %}
+                    <a class="ee-pill ee-pill--line" href="{% url 'events:download_ticket' booking.pk %}">Download ticket</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

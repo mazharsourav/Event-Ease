@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Pay for {{ event.title }} &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/pages/detail.css' %}">
+<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    <a class="ee-back" href="{% url 'events:event_detail' event.pk %}">&larr; {{ event.title }}</a>
+    {% include 'components/page_head.html' with title="Payment" %}
+
+    <div class="ee-detail">
+        <div class="ee-detail-main ee-stack">
+            <form method="post" class="ee-form" id="paymentForm"
+                  data-bkash-url="{% url 'payments:bkash_payment' booking.id %}"
+                  data-nagad-url="{% url 'payments:nagad_payment' booking.id %}">
+                {% csrf_token %}
+                <fieldset class="ee-form-section">
+                    <legend class="ee-form-title">Choose how to pay</legend>
+                    <div class="ee-methods">
+                        <label class="ee-method">
+                            <input type="radio" name="payment_method" value="bkash" checked>
+                            <b>bKash</b><span class="ee-method-tag">Mobile wallet</span>
+                            <small>Pay from your bKash account.</small>
+                        </label>
+                        <label class="ee-method">
+                            <input type="radio" name="payment_method" value="nagad">
+                            <b>Nagad</b><span class="ee-method-tag">Mobile wallet</span>
+                            <small>Pay from your Nagad account.</small>
+                        </label>
+                        <label class="ee-method">
+                            <input type="radio" name="payment_method" value="credit_card">
+                            <b>Credit card</b><span class="ee-method-tag">Card</span>
+                            <small>Visa, MasterCard and others.</small>
+                        </label>
+                        <label class="ee-method">
+                            <input type="radio" name="payment_method" value="debit_card">
+                            <b>Debit card</b><span class="ee-method-tag">Card</span>
+                            <small>Pay straight from your bank account.</small>
+                        </label>
+                        <label class="ee-method">
+                            <input type="radio" name="payment_method" value="paypal">
+                            <b>PayPal</b><span class="ee-method-tag">Online</span>
+                            <small>Pay with your PayPal balance.</small>
+                        </label>
+                    </div>
+                    <p class="ee-form-help">bKash, Nagad and card payments go through a secure gateway.</p>
+                </fieldset>
+
+                <div class="ee-form-actions">
+                    <button type="submit" class="ee-pill ee-pill--ink">Pay &#2547;{{ booking.amount|floatformat:"-2"|intcomma }}</button>
+                    <a class="ee-pill ee-pill--line" href="{% url 'payments:payment_cancel' booking.id %}">Cancel</a>
+                </div>
+            </form>
+
+            {% if allow_quick_pay %}
+            <section class="ee-panel ee-panel--flat">
+                <h2 class="ee-panel-title">Quick pay (demo)</h2>
+                <p class="ee-panel-text">Development only. Marks this booking as paid straight away, with no gateway.</p>
+                <div>
+                    <button type="button" class="ee-pill ee-pill--line" id="quickPay"
+                            data-url="{% url 'payments:quick_pay' booking.id %}" data-next="{% url 'events:event_detail' event.pk %}">
+                        Quick pay &#2547;{{ booking.amount|floatformat:"-2"|intcomma }}
+                    </button>
+                </div>
+            </section>
+            {% endif %}
+        </div>
+
+        <aside class="ee-detail-aside" aria-label="Order summary">
+            <section class="ee-panel ee-panel--taped ee-stock">
+                <span class="ee-tape" aria-hidden="true"></span>
+                <h2 class="ee-summary-name">{{ event.title }}</h2>
+                <dl class="ee-summary">
+                    <div class="ee-summary-line"><dt>Date</dt><dd>{{ event.start_date|date:"D j M Y" }}, {{ event.start_date|time:"g:i A" }}</dd></div>
+                    <div class="ee-summary-line"><dt>Venue</dt><dd>{{ event.venue_name }}</dd></div>
+                    <div class="ee-summary-line"><dt>Attendee</dt><dd>{{ booking.attendee_name }}<span class="ee-summary-sub">{{ booking.attendee_email }}</span></dd></div>
+                    {% for item in booking.ticket_items.all %}
+                        <div class="ee-summary-line"><dt>{{ item.ticket_category.name }} &times; {{ item.quantity }}</dt><dd>&#2547;{{ item.subtotal|floatformat:"-2"|intcomma }}</dd></div>
+                    {% endfor %}
+                </dl>
+                <div class="ee-summary-total"><span>Total</span><b>&#2547;{{ booking.amount|floatformat:"-2"|intcomma }}</b></div>
+            </section>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/pages/payment.js' %}" defer></script>{% endblock %}

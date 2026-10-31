@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Events &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% asset 'css/pages/listing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-listing">
+    {% include 'components/page_head.html' with title="Events" intro="Concerts, festivals, seminars and sport across Bangladesh." %}
+
+    <div class="ee-listing-tools">
+        <form class="ee-finder ee-finder--wide ee-stock" method="get" role="search" action="{% url 'events:event_list' %}">
+            {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+            {% if is_free %}<input type="hidden" name="free" value="{{ is_free }}">{% endif %}
+            <div class="ee-fields">
+                <label class="ee-field">
+                    <span>What</span>
+                    <input type="search" name="q" value="{{ search_query }}" placeholder="Artist, event or venue" autocomplete="off">
+                </label>
+                <label class="ee-field">
+                    <span>Type</span>
+                    <select name="type">
+                        <option value="">Any type</option>
+                        {% for value, label in event_types %}<option value="{{ value }}"{% if value == event_type %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </label>
+                <label class="ee-field">
+                    <span>When</span>
+                    <select name="status">
+                        {% for value, label in status_options %}<option value="{{ value }}"{% if value == status_filter %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </label>
+                <label class="ee-field">
+                    <span>Sort</span>
+                    <select name="sort">
+                        {% for value, label in sort_choices %}<option value="{{ value }}"{% if value == sort_by %} selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div class="ee-finder-foot">
+                <span>{{ page_obj.paginator.count }} event{{ page_obj.paginator.count|pluralize }}</span>
+                <button class="ee-pill ee-pill--ink" type="submit">Find events</button>
+            </div>
+        </form>
+
+        <div class="ee-listing-filters">
+            <div class="ee-chips" role="group" aria-label="Price">
+                <span class="ee-chips-label">Price</span>
+                <a class="ee-chip" href="{% querystring free=None page=None %}"{% if not is_free %} aria-current="true"{% endif %}>Any</a>
+                <a class="ee-chip" href="{% querystring free='true' page=None %}"{% if is_free == 'true' %} aria-current="true"{% endif %}>Free</a>
+                <a class="ee-chip" href="{% querystring free='false' page=None %}"{% if is_free == 'false' %} aria-current="true"{% endif %}>Paid</a>
+            </div>
+            {% if search_query or event_type or is_free or status_filter %}
+                <a class="ee-listing-clear" href="{% url 'events:event_list' %}">Clear all filters</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if page_obj %}
+        <div class="ee-cards">
+            {% for event in page_obj %}
+                {% include 'components/poster_card.html' with stamp=True %}
+            {% endfor %}
+        </div>
+        <div class="ee-listing-pager">{% include 'components/pagination.html' %}</div>
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">{% if search_query or event_type or is_free or status_filter %}Nothing matches{% else %}No events yet{% endif %}</h2>
+            <p class="ee-blank-text">{% if search_query or event_type or is_free or status_filter %}Try a different word, or clear the filters.{% else %}Events will show up here as soon as organisers list them.{% endif %}</p>
+            {% if search_query or event_type or is_free or status_filter %}
+                <a class="ee-pill ee-pill--ink" href="{% url 'events:event_list' %}">Clear filters</a>
+            {% else %}
+                <a class="ee-pill ee-pill--ink" href="{{ list_event_url }}">List an event</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

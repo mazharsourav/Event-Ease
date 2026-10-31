@@ -1,0 +1,18 @@
+/* Organiser pages: the event and venue forms, and the manage lists. */
+
+.ee-tier-form { display: grid; gap: 14px; margin: 0 0 14px; }
+.ee-tier-form[hidden] { display: none; }
+.ee-tier-form legend { padding: 0; }
+.ee-form-section[hidden] { display: none; }
+[data-tier-list] { display: grid; gap: 14px; }
+[data-tier-list]:empty { display: none; }
+
+/* Image gallery editing on the venue form */
+.ee-image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.ee-image-grid li { position: relative; padding: 5px; background: var(--stock); box-shadow: var(--shadow); }
+.ee-image-grid img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.ee-image-grid label { display: flex; gap: 6px; align-items: center; margin-top: 6px; font-size: 13px; color: var(--stock-ink); }
+
+/* Manage lists: the actions under each booking */
+.ee-booking-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ee-booking-actions form { margin: 0; }

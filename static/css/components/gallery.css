@@ -1,0 +1,33 @@
+/* Photo gallery: one large print and a row of small ones; choosing a small print swaps the large one.
+   Behaviour: js/components/gallery.js. Without JavaScript the thumbnails are plain links to the full photos. */
+
+.ee-gallery { display: grid; gap: 12px; }
+
+.ee-gallery-main {
+  position: relative; margin: 0; padding: 10px; background: var(--stock); box-shadow: var(--shadow);
+  transform: rotate(-.4deg);
+}
+.ee-gallery-frame { aspect-ratio: 16 / 10; overflow: hidden; background: var(--print); }
+.ee-gallery-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ee-gallery-caption { padding: 8px 4px 0; font-size: 14px; font-weight: 600; color: var(--stock-muted); }
+.ee-gallery-caption:empty { display: none; }
+
+.ee-gallery-thumbs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.ee-gallery-thumb {
+  display: block; width: 92px; padding: 5px; border: 0; background: var(--stock); box-shadow: var(--shadow);
+  opacity: .72; cursor: pointer; transition: opacity .15s, transform .25s var(--ease);
+}
+.ee-gallery-thumb img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.ee-gallery-thumb:hover { opacity: 1; transform: translateY(-2px); }
+.ee-gallery-thumb[aria-current="true"] { opacity: 1; outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.ee-gallery-plate {
+  aspect-ratio: 16 / 10; display: flex; flex-direction: column; justify-content: space-between; padding: 22px;
+  background: var(--print); color: var(--print-fg); text-transform: uppercase;
+}
+.ee-gallery-plate b { font-weight: 800; font-stretch: 75%; font-size: clamp(34px, 5vw, 64px); line-height: .88; letter-spacing: -.02em; }
+.ee-gallery-plate small { padding-top: 10px; border-top: 3px solid var(--print-fg); font-weight: 700; font-size: 13px; letter-spacing: .12em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-gallery-thumb { transition: none; }
+}

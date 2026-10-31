@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}Payment cancelled &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    {% include 'components/page_head.html' with title="Not paid" intro="Nothing was charged." %}
+
+    <div class="ee-page ee-narrow">
+        <section class="ee-panel ee-panel--taped ee-stock">
+            <span class="ee-tape" aria-hidden="true"></span>
+            <h2 class="ee-panel-title">{{ event.title }}</h2>
+            <dl class="ee-summary">
+                <div class="ee-summary-line"><dt>Booking</dt><dd>#{{ booking.id }}</dd></div>
+                <div class="ee-summary-line"><dt>Status</dt><dd>Payment pending</dd></div>
+            </dl>
+            <p class="ee-panel-text">The booking stays pending. You can pay now, or come back to it later from your dashboard.</p>
+        </section>
+
+        <div class="ee-actions-inline">
+            <a class="ee-pill ee-pill--ink" href="{% url 'payments:payment_process' booking.id %}">Try again</a>
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_detail' event.pk %}">Back to the event</a>
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_list' %}">Browse events</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

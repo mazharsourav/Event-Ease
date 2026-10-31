@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load core_tags humanize %}
+
+{% block title %}Payment received &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/booking.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap">
+    {% include 'components/page_head.html' with title="You're in" intro="Payment received. Your booking is confirmed." %}
+
+    <div class="ee-page ee-narrow">
+        <article class="ee-stub ee-stock">
+            <span class="ee-tape" aria-hidden="true"></span>
+            <div class="ee-stub-main">
+                <span class="ee-tag">Admit {{ booking.attendees_count }}</span>
+                <h2 class="ee-stub-title">{{ event.title }}</h2>
+                <dl class="ee-summary">
+                    <div class="ee-summary-line"><dt>When</dt><dd>{{ event.start_date|date:"D j M Y" }}, {{ event.start_date|time:"g:i A" }}</dd></div>
+                    <div class="ee-summary-line"><dt>Where</dt><dd>{{ event.venue_name }}</dd></div>
+                    <div class="ee-summary-line"><dt>Name</dt><dd>{{ booking.attendee_name }}</dd></div>
+                    <div class="ee-summary-line"><dt>Paid</dt><dd>&#2547;{{ payment.amount|floatformat:"-2"|intcomma }} by {{ payment.get_payment_method_display }}</dd></div>
+                    <div class="ee-summary-line"><dt>Transaction</dt><dd>{{ payment.transaction_id }}</dd></div>
+                </dl>
+            </div>
+            <div class="ee-stub-side">
+                <span class="ee-tag">Booking</span>
+                <span class="ee-stub-code">{{ booking.reference }}</span>
+            </div>
+        </article>
+
+        <section class="ee-panel ee-stock">
+            <h2 class="ee-panel-title">What happens next</h2>
+            <ul class="ee-terms">
+                <li>A confirmation goes to {{ booking.attendee_email }}.</li>
+                <li>Your ticket carries a QR code for the gate. Print it or keep it on your phone.</li>
+                <li>Arrive 15 minutes before the start.</li>
+                <li>Bring a valid ID.</li>
+            </ul>
+        </section>
+
+        <div class="ee-actions-inline">
+            {% if booking.has_ticket %}
+                <a class="ee-pill ee-pill--ink" href="{% url 'events:download_ticket' booking.pk %}">Download ticket</a>
+            {% endif %}
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_detail' event.pk %}">View event</a>
+            <a class="ee-pill ee-pill--line" href="{% url 'users:dashboard' %}">My dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

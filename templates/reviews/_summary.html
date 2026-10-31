@@ -1,0 +1,24 @@
+{% comment %}
+    Rating summary: the overall score and one bar per category.
+    Context: average_rating, review_count, breakdown (list of (label, average)), write_url (optional).
+{% endcomment %}
+<section class="ee-panel ee-panel--taped ee-stock ee-summary-card" aria-label="Rating summary">
+    <span class="ee-tape" aria-hidden="true"></span>
+    <div class="ee-score">
+        <b class="ee-score-number">{{ average_rating|floatformat:1 }}</b>
+        <div>
+            {% include 'components/stars.html' with rating=average_rating %}
+            <p class="ee-score-count">{{ review_count }} review{{ review_count|pluralize }}</p>
+        </div>
+    </div>
+    <ul class="ee-bars">
+        {% for label, value in breakdown %}
+            <li>
+                <span>{{ label }}</span>
+                <progress class="ee-meter" max="5" value="{{ value|floatformat:1 }}" aria-label="{{ label }}: {{ value|floatformat:1 }} out of 5"></progress>
+                <b>{{ value|floatformat:1 }}</b>
+            </li>
+        {% endfor %}
+    </ul>
+    {% if write_url %}<a class="ee-pill ee-pill--ink" href="{{ write_url }}">Write a review</a>{% endif %}
+</section>

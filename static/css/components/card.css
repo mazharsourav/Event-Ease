@@ -1,0 +1,53 @@
+/* Printed cards: the white posters, venue cards and notes that make up the wall.
+   A card is white stock with a strip of tape on top; --r (set per card) tilts it. */
+
+.ee-stock { background: var(--stock); color: var(--stock-ink); }
+
+.ee-tape {
+  position: absolute; top: -13px; left: 50%; width: 92px; height: 26px; margin-left: -46px;
+  background: rgba(255, 255, 255, .62); box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+  transform: rotate(-4deg); pointer-events: none;
+}
+body.dark-mode .ee-tape { background: rgba(236, 234, 228, .38); }
+
+/* An artwork frame: events with art show it whole, without art they are typeset as a gig bill */
+.ee-print { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--stock); }
+.ee-print img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+.ee-gig {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+  padding: 16px; background: var(--print); color: var(--print-fg); text-transform: uppercase; overflow: hidden;
+}
+.ee-gig b {
+  font-weight: 800; font-stretch: 75%; font-size: clamp(26px, 2.5vw, 38px); line-height: .86; letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ee-gig small {
+  padding-top: 8px; border-top: 3px solid var(--print-fg);
+  font-weight: 700; font-size: 12px; letter-spacing: .12em;
+}
+
+/* A status stamp: "Coming up", "On now", "Ended" */
+.ee-stamp {
+  display: inline-block; padding: 5px 10px 4px; border: 2px solid currentColor; border-radius: 4px;
+  font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+  transform: rotate(-5deg);
+}
+.ee-stamp--ongoing { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.ee-stamp--completed { color: var(--muted); border-style: dashed; }
+
+/* Empty or "nothing here" card */
+.ee-blank {
+  position: relative; display: grid; gap: 12px; justify-items: start; max-width: 560px;
+  padding: 32px 28px; background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow);
+  transform: rotate(-.6deg);
+}
+.ee-blank-title { font-weight: 800; font-stretch: 85%; font-size: clamp(24px, 3vw, 32px); line-height: 1; text-transform: uppercase; }
+.ee-blank-text { color: var(--stock-muted); }
+.ee-blank .ee-pill { margin-top: 6px; }
+
+/* Booking states */
+.ee-stamp--confirmed, .ee-stamp--paid, .ee-stamp--approved { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.ee-stamp--cancelled, .ee-stamp--rejected { color: var(--muted); border-style: dashed; text-decoration: line-through; }
+.ee-stamp--pending { border-style: dashed; }

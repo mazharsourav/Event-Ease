@@ -1,0 +1,14 @@
+{% load humanize %}
+{# The amount and what it is for, shown above the wallet form. Context: booking, event. #}
+<section class="ee-panel ee-panel--taped ee-stock">
+    <span class="ee-tape" aria-hidden="true"></span>
+    <div class="ee-amount">
+        <span class="ee-tag">Amount to pay</span>
+        <span class="ee-amount-figure">&#2547;{{ booking.amount|floatformat:"-2"|intcomma }}</span>
+    </div>
+    <dl class="ee-summary">
+        <div class="ee-summary-line"><dt>For</dt><dd>{{ event.title }}</dd></div>
+        <div class="ee-summary-line"><dt>Date</dt><dd>{{ event.start_date|date:"j M Y" }}</dd></div>
+        <div class="ee-summary-line"><dt>Booking</dt><dd>#{{ booking.id }}</dd></div>
+    </dl>
+</section>

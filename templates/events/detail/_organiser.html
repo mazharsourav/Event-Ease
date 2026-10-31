@@ -1,0 +1,17 @@
+{% load core_tags %}
+{# Who is running the event, plus edit and delete for the organiser and admins #}
+<div class="ee-person">
+    <span class="ee-tape" aria-hidden="true"></span>
+    <span class="ee-person-avatar">
+        {% if event.organizer.profile.avatar %}<img src="{{ event.organizer.profile.avatar.url }}" alt="">{% else %}{{ event.organizer|initials }}{% endif %}
+    </span>
+    <span class="ee-person-name">{{ event.organizer.get_full_name|default:event.organizer.username }}</span>
+    <span class="ee-person-role">Organiser</span>
+</div>
+
+{% if user.is_authenticated and event.organizer == user or user.profile.role == 'admin' %}
+    <div class="ee-manage">
+        <a class="ee-pill ee-pill--line" href="{% url 'events:event_edit' event.pk %}">Edit event</a>
+        <a class="ee-pill ee-pill--line" href="{% url 'events:event_delete' event.pk %}" data-confirm="Delete this event? This cannot be undone.">Delete</a>
+    </div>
+{% endif %}

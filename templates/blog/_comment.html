@@ -1,0 +1,51 @@
+{% comment %}
+    One blog comment and, below it, its replies (this template includes itself).
+    Context: comment, depth (1 for a top-level comment). Replies go three levels deep.
+{% endcomment %}
+{% load core_tags %}
+<li class="ee-comment-item">
+    <article class="ee-comment" id="comment-{{ comment.id }}">
+        <span class="ee-comment-avatar">
+            {% if comment.user.profile.avatar %}<img src="{{ comment.user.profile.avatar.url }}" alt="">{% else %}{{ comment.user|initials }}{% endif %}
+        </span>
+        <div class="ee-comment-who">
+            <span class="ee-comment-name">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+            <time class="ee-comment-date" datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"j M Y, g:i A" }}</time>
+        </div>
+        <div class="ee-comment-text">
+            {{ comment.content|linebreaks }}
+            {% for photo in comment.images.all %}
+                <button type="button" class="ee-comment-image" data-lightbox="{{ photo.image.url }}" aria-label="Open photo">
+                    <img src="{{ photo.image.url }}" alt="Photo attached to the comment" loading="lazy">
+                </button>
+            {% endfor %}
+            {% if comment.files.all %}
+                <ul class="ee-files ee-files--inline">
+                    {% for file in comment.files.all %}<li><a href="{{ file.file.url }}" download><span>{{ file.file_name }}</span><small>{{ file.get_file_size_display }}</small></a></li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="ee-comment-actions">
+            {% if user.is_authenticated and depth < 3 %}
+                <button type="button" class="ee-comment-action" data-action="reply" data-id="{{ comment.id }}">Reply</button>
+            {% endif %}
+            {% if user.is_authenticated and comment.user == user or user.is_staff %}
+                <button type="button" class="ee-comment-action" data-action="delete" data-id="{{ comment.id }}">Delete</button>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated and depth < 3 %}
+            <div class="ee-reply-form" id="reply-form-{{ comment.id }}" hidden>
+                {% include 'blog/_comment_form.html' with parent_id=comment.id cancel_id=comment.id placeholder="Write a reply…" %}
+            </div>
+        {% endif %}
+    </article>
+
+    {% with replies=comment.replies.all %}
+        {% if replies %}
+            <ul class="ee-thread">
+                {% for reply in replies %}{% include 'blog/_comment.html' with comment=reply depth=depth|add:1 %}{% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</li>

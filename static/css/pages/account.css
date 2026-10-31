@@ -1,0 +1,54 @@
+/* Account pages: dashboard, profile, people, friends. */
+
+.ee-tabpanels { margin-top: clamp(20px, 3vw, 32px); }
+.ee-tabpanel + .ee-tabpanel { margin-top: 28px; }
+.js-tabs .ee-tabpanel + .ee-tabpanel { margin-top: 0; }
+.ee-row .ee-row-side form { margin: 0; }
+
+/* Profile: edit form beside the account facts */
+.ee-profile-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: clamp(24px, 3.4vw, 44px); align-items: start; }
+.ee-avatar-edit { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ee-avatar-edit .ee-form-field { flex: 1 1 180px; min-width: 0; }
+.ee-avatar-edit .ee-pic { cursor: pointer; }
+.ee-account-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.ee-account-links form { margin: 0; }
+
+/* Someone else's profile */
+.ee-profile-head { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.ee-profile-name { margin: 0; font-weight: 800; font-stretch: 85%; font-size: clamp(34px, 6vw, 64px); line-height: .95; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-profile-handle { margin: 0; color: var(--muted); }
+.ee-profile-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.ee-profile-actions form { margin: 0; }
+.ee-profile-body { display: grid; gap: clamp(20px, 3vw, 32px); }
+
+/* People: search results and friends */
+.ee-people { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: clamp(20px, 3vw, 32px); margin: 0; padding: 0; list-style: none; align-items: start; }
+.ee-person-card {
+  position: relative; display: grid; justify-items: start; gap: 6px; padding: 18px;
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow); min-width: 0;
+}
+.ee-person-card .ee-pic { margin-bottom: 6px; }
+.ee-person-card-name { margin: 0; font-weight: 800; font-size: 20px; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-person-card-handle, .ee-person-card-role { margin: 0; font-size: 14px; color: var(--stock-muted); overflow-wrap: anywhere; }
+.ee-person-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ee-person-card-actions form { margin: 0; }
+.ee-person-card .ee-pill { min-height: 40px; padding: 0 16px; font-size: 13px; }
+.ee-person-card :focus-visible { outline-color: var(--stock-ink); }
+
+.ee-searchbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.ee-searchbar .ee-form-field { min-width: 0; }
+.ee-searchbar .ee-pill { align-self: end; }
+
+.ee-count-badge {
+  display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 8px; margin-left: 8px;
+  background: var(--ink); color: var(--paper); font-weight: 800; font-size: 13px; vertical-align: middle;
+}
+
+@media (max-width: 960px) {
+  .ee-profile-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .ee-searchbar { grid-template-columns: minmax(0, 1fr); }
+  .ee-searchbar .ee-pill { width: 100%; }
+}

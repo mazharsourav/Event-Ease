@@ -1,0 +1,7 @@
+{% load core_tags %}
+{% comment %}The big picture, name, handle and role of a member. Context: person (a User).{% endcomment %}
+<header class="ee-profile-head">
+    {% include 'components/pic.html' with size='xl' %}
+    <h1 class="ee-profile-name">{{ person.get_full_name|default:person.username }}</h1>
+    <p class="ee-profile-handle">@{{ person.username }} &middot; {% if person.is_superuser %}Admin{% else %}{{ person.profile.get_role_display }}{% endif %}</p>
+</header>

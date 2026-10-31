@@ -1,0 +1,16 @@
+{% load humanize %}
+{# The venue this event is held at, when it is a listed venue #}
+{% with primary=event.venue.images.all|first %}
+<a class="ee-venue-card" href="{% url 'venues:venue_detail' event.venue.pk %}">
+    <span class="ee-tape" aria-hidden="true"></span>
+    <span class="ee-venue-card-img">
+        {% if primary %}<img src="{{ primary.image.url }}" alt="" loading="lazy">{% elif event.venue.main_image %}<img src="{{ event.venue.main_image.url }}" alt="" loading="lazy">{% endif %}
+    </span>
+    <span class="ee-venue-card-body">
+        <span class="ee-tag">The venue</span>
+        <b>{{ event.venue.name }}</b>
+        <span>{{ event.venue.city }} &middot; {{ event.venue.capacity|intcomma }} people</span>
+        <span class="ee-venue-card-link">View venue &rarr;</span>
+    </span>
+</a>
+{% endwith %}

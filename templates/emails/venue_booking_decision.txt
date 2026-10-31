@@ -1,0 +1,16 @@
+Hello {{ user.get_full_name|default:user.username }},
+
+{% if booking.status == 'confirmed' %}{{ venue.name }} is yours for {{ booking.event_title }}.{% else %}Your request for {{ venue.name }} was not accepted this time.{% endif %}
+
+  Event     {{ booking.event_title }}
+  Venue     {{ venue.name }}, {{ venue.city }}
+  From      {{ booking.start_date|date:"l j F Y, g:i A" }}
+  Until     {{ booking.end_date|date:"l j F Y, g:i A" }}
+  Amount    Tk {{ booking.total_amount|floatformat:2 }}
+  Booking   #{{ booking.id }}
+{% if booking.status == 'confirmed' %}
+The venue manager will be in touch about access and setup. You can download an invoice from "My bookings" on EventEase.
+{% else %}
+Nothing has been charged. Other venues for the same dates are listed on EventEase.
+{% endif %}
+-- EventEase

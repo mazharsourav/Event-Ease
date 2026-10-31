@@ -1,0 +1,27 @@
+/* Star chooser: five radio buttons drawn as stars.
+   The inputs come first in the DOM from 5 down to 1 and the row is reversed, so
+   "everything after the chosen star" in the DOM is "every lower star" on screen. */
+
+.ee-rate { display: grid; gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.ee-rate legend { padding: 0; }
+
+.ee-rate-stars { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; width: max-content; max-width: 100%; }
+.ee-rate-stars input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ee-rate-stars label { display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; }
+.ee-rate-stars svg { width: 34px; height: 34px; fill: none; stroke: var(--stock-ink); stroke-width: 1.6; stroke-linejoin: round; transition: transform .15s var(--ease); }
+
+.ee-rate-stars input:checked ~ label svg,
+.ee-rate-stars label:hover svg,
+.ee-rate-stars label:hover ~ label svg { fill: var(--stock-ink); }
+.ee-rate-stars label:hover svg { transform: scale(1.12); }
+.ee-rate-stars input:focus-visible + label { outline: 3px solid var(--stock-ink); outline-offset: 1px; }
+
+.ee-rate.has-error .ee-rate-stars { outline: 2px solid var(--stock-ink); outline-offset: 4px; }
+
+@media (max-width: 360px) {
+  .ee-rate-stars label { width: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-rate-stars svg { transition: none; }
+}

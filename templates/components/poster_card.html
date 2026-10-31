@@ -1,0 +1,23 @@
+{% comment %}
+    Event poster. Context: event, stamp (optional: show the Coming up / On now / Ended stamp).
+    Events without artwork are typeset as a plate; the caption name is then read by screen readers only.
+{% endcomment %}
+{% load humanize %}
+<a class="ee-poster{% if not event.image %} ee-poster--plate{% endif %}" href="{% url 'events:event_detail' event.pk %}">
+    <span class="ee-tape" aria-hidden="true"></span>
+    {% if event.image %}
+        <span class="ee-print"><img src="{{ event.image.url }}" alt="" loading="eager"></span>
+    {% else %}
+        <span class="ee-print ee-gig" aria-hidden="true">
+            <b>{{ event.title }}</b>
+            <small>{{ event.start_date|date:"l j F" }}</small>
+        </span>
+    {% endif %}
+    {% if stamp %}<span class="ee-stamp ee-stamp--{{ event.status }} ee-poster-stamp">{% if event.status == 'upcoming' %}Coming up{% elif event.status == 'ongoing' %}On now{% else %}Ended{% endif %}</span>{% endif %}
+    <span class="ee-poster-title">{{ event.title }}</span>
+    <span class="ee-poster-meta">
+        <span>{% if event.status == 'completed' %}Ended &middot; {{ event.start_date|date:"j M Y" }}{% else %}{{ event.start_date|date:"D j M" }}{% endif %}</span>
+        <span>{% if event.is_free %}Free{% else %}&#2547;{{ event.ticket_price|floatformat:0|intcomma }}{% endif %}</span>
+    </span>
+    <span class="ee-poster-venue">{% if event.venue %}{{ event.venue.name }}{% else %}{{ event.venue_name }}{% endif %}</span>
+</a>

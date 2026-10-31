@@ -1,0 +1,83 @@
+/* Blog: a wall of post cards, one article page, and the compose form.
+   Behaviour: js/pages/blog.js (reactions). Comments reuse components/comments.css. */
+
+/* The wall: two across, each card tilted a little */
+.ee-posts {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 3.4vw, 44px) clamp(22px, 2.6vw, 36px);
+  margin: 0; padding: 0; list-style: none; align-items: start;
+}
+.ee-posts > :nth-child(odd) { --r: -.6deg; }
+.ee-posts > :nth-child(even) { --r: .5deg; margin-top: 14px; }
+
+.ee-post {
+  position: relative; display: grid; gap: 14px; min-width: 0; padding: clamp(18px, 2.2vw, 26px);
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow); transform: rotate(var(--r, 0deg));
+}
+.ee-post :focus-visible { outline-color: var(--stock-ink); }
+.ee-post-cover { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--print); }
+.ee-post-cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ee-post-title { margin: 0; font-weight: 800; font-stretch: 85%; font-size: clamp(24px, 2.6vw, 32px); line-height: 1; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-post-title a { text-decoration: none; }
+.ee-post-title a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.ee-post-excerpt { margin: 0; color: var(--stock-muted); overflow-wrap: anywhere; }
+
+.ee-post-by { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; font-weight: 700; min-width: 0; }
+.ee-post-by > span:last-child { display: grid; min-width: 0; overflow-wrap: anywhere; }
+.ee-post-by time, .ee-byline time { font-weight: 600; color: var(--stock-muted); }
+.ee-post-foot {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding-top: 12px; border-top: 1px dashed var(--stock-line);
+}
+.ee-post-link { font-weight: 800; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--stock-ink); }
+a.ee-post-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Reaction buttons: outlined, filled while chosen */
+.ee-react {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px;
+  border: 2px solid currentColor; border-radius: 999px; background: transparent; color: var(--stock-ink); cursor: pointer;
+  font: inherit; font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
+}
+.ee-react:hover { background: var(--stock-tint); }
+.ee-react[aria-pressed="true"] { background: var(--stock-ink); color: var(--stock); border-color: var(--stock-ink); }
+.ee-react[aria-busy="true"] { opacity: .5; pointer-events: none; }
+.ee-react-static { margin: 0; font-weight: 800; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ee-post .ee-react-static { color: var(--stock-muted); }
+
+/* The article page */
+.ee-byline { display: flex; align-items: center; gap: 12px; margin: 0; font-weight: 700; }
+.ee-byline > span:last-child { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
+.ee-byline time, .ee-byline em { font-weight: 600; font-style: normal; color: var(--muted); }
+
+.ee-article { display: grid; gap: clamp(22px, 3vw, 32px); min-width: 0; }
+.ee-article-body { font-size: clamp(18px, 1.5vw, 20px); line-height: 1.65; overflow-wrap: anywhere; }
+.ee-article-body p { margin: 0 0 1em; }
+.ee-article-foot { display: grid; gap: 18px; padding-top: 6px; }
+.ee-reactions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+/* Reactions sit on the paper here, not on white stock */
+.ee-article-foot .ee-react { color: var(--ink); }
+.ee-article-foot .ee-react:hover { background: var(--paper-2); }
+.ee-article-foot .ee-react[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* Photos on a post are shown whole rather than cropped */
+.ee-gallery--whole .ee-gallery-frame { background: var(--print); }
+.ee-gallery--whole .ee-gallery-frame img { object-fit: contain; }
+
+/* Attached files: a ruled list of downloads */
+.ee-files { display: grid; margin: 0; padding: 0; list-style: none; border-bottom: 2px solid var(--ink); }
+.ee-files li { border-top: 2px solid var(--ink); }
+.ee-files a {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 14px 4px;
+  font-weight: 700; text-decoration: none; overflow-wrap: anywhere;
+}
+.ee-files a:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.ee-files small { font-size: 14px; font-weight: 600; color: var(--muted); }
+.ee-files--inline { margin-top: 10px; }
+
+@media (max-width: 800px) {
+  .ee-posts { grid-template-columns: minmax(0, 1fr); }
+  .ee-posts > :nth-child(n) { margin-top: 0; }
+  .ee-posts > :nth-child(even) { --r: .4deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-post { transform: none; }
+}

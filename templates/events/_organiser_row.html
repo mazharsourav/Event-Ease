@@ -1,0 +1,22 @@
+{% load humanize %}
+{% comment %}One of the organiser's events in a list. Context: event, show_delete (optional).{% endcomment %}
+<li class="ee-row">
+    <a class="ee-row-img" href="{% url 'events:event_detail' event.pk %}" tabindex="-1" aria-hidden="true">
+        {% if event.image %}<img src="{{ event.image.url }}" alt="" loading="lazy">{% endif %}
+    </a>
+    <div class="ee-row-body">
+        <h3 class="ee-row-title"><a href="{% url 'events:event_detail' event.pk %}">{{ event.title }}</a></h3>
+        <p class="ee-row-meta">
+            {{ event.start_date|date:"D j M Y, g:i A" }} &middot; {{ event.venue_name }}
+            &middot; {{ event.current_attendees }} of {{ event.max_attendees }} registered
+            &middot; {% if event.is_free %}Free{% else %}&#2547;{{ event.ticket_price|floatformat:0|intcomma }}{% endif %}
+        </p>
+    </div>
+    <div class="ee-row-side">
+        <span class="ee-stamp ee-stamp--{{ event.status }}">{% if event.status == 'upcoming' %}Coming up{% elif event.status == 'ongoing' %}On now{% else %}Ended{% endif %}</span>
+        <a class="ee-pill ee-pill--line" href="{% url 'events:event_edit' event.pk %}">Edit</a>
+        {% if show_delete %}
+            <a class="ee-pill ee-pill--line" href="{% url 'events:event_delete' event.pk %}" data-confirm="Delete this event? This cannot be undone.">Delete</a>
+        {% endif %}
+    </div>
+</li>

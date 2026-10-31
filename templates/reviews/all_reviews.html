@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load core_tags %}
+
+{% block title %}What people say &middot; EventEase{% endblock %}
+
+
+{% block extra_css %}<link rel="stylesheet" href="{% asset 'css/pages/reviews.css' %}">{% endblock %}
+
+{% block content %}
+<div class="ee-wrap ee-page">
+    {% include 'components/page_head.html' with title="What people say" intro="Real words from people who use EventEase." %}
+
+    <ul class="ee-stats ee-stats--pair">
+        <li class="ee-stat"><b>{{ avg_rating|floatformat:1 }}</b><span>Average rating out of 5</span></li>
+        <li class="ee-stat"><b>{{ total_reviews }}</b><span>Review{{ total_reviews|pluralize }}</span></li>
+    </ul>
+
+    <div class="ee-actions-inline">
+        {% if user.is_authenticated %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'reviews:submit_review' %}">Share your experience</a>
+        {% else %}
+            <a class="ee-pill ee-pill--ink" href="{% url 'users:login' %}?next={{ request.path }}">Log in to write a review</a>
+        {% endif %}
+    </div>
+
+    {% if reviews %}
+        <ul class="ee-wall">
+            {% for review in reviews %}
+                <li>
+                  <figure class="ee-note ee-stock">
+                    <span class="ee-tape" aria-hidden="true"></span>
+                    {% if review.is_featured %}<span class="ee-stamp ee-stamp--confirmed ee-note-flag">Featured</span>{% endif %}
+                    {% include 'components/stars.html' with rating=review.rating %}
+                    <blockquote>
+                        <p class="ee-note-title">{{ review.title }}</p>
+                        <p class="ee-note-body">{{ review.content }}</p>
+                    </blockquote>
+                    <figcaption>{{ review.user.get_full_name|default:review.user.username }} &middot; {{ review.created_at|date:"j M Y" }}</figcaption>
+                    {% if review.user == user %}
+                        <form method="post" action="{% url 'reviews:delete_review' review.id %}" class="ee-review-actions">
+                            {% csrf_token %}
+                            <a class="ee-pill ee-pill--line" href="{% url 'reviews:submit_review' %}">Edit</a>
+                            <button type="submit" class="ee-pill ee-pill--line" data-confirm="Delete your review?">Delete</button>
+                        </form>
+                    {% endif %}
+                  </figure>
+                </li>
+            {% endfor %}
+        </ul>
+        {% include 'components/pagination.html' with page_obj=reviews %}
+    {% else %}
+        <div class="ee-blank ee-stock">
+            <h2 class="ee-blank-title">No reviews yet</h2>
+            <p class="ee-blank-text">Be the first to say how EventEase worked for you.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

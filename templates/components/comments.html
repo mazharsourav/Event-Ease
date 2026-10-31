@@ -1,0 +1,29 @@
+{% comment %}
+    Questions and comments section for an event or venue.
+    Context: comments (top-level comments), comment_form, subject ("event" or "venue"),
+    like_url and delete_url (with 0 where the comment id goes).
+{% endcomment %}
+<section class="ee-section ee-comments" id="comments" aria-labelledby="comments-title"
+         data-ee-comments data-like-url="{{ like_url }}" data-delete-url="{{ delete_url }}"
+         data-signed-in="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+         data-login-url="{% url 'users:login' %}?next={{ request.path }}">
+    <h2 id="comments-title" class="ee-h1 ee-section-title">Questions &amp; comments</h2>
+
+    {% if user.is_authenticated %}
+        <div class="ee-comment-new">
+            {% include 'components/comment_form.html' with form=comment_form placeholder="Ask the organiser something, or leave a comment…" %}
+        </div>
+    {% else %}
+        <p class="ee-comment-login"><a href="{% url 'users:login' %}?next={{ request.path }}#comments">Log in</a> to ask a question or leave a comment about this {{ subject }}.</p>
+    {% endif %}
+
+    {% if comments %}
+        <ul class="ee-thread">
+            {% for comment in comments %}
+                {% include 'components/comment.html' with depth=1 %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="ee-comments-none">No questions or comments yet. Be the first to ask about this {{ subject }}.</p>
+    {% endif %}
+</section>

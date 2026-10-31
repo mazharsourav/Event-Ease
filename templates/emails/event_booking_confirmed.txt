@@ -1,0 +1,18 @@
+Hello {{ booking.attendee_name|default:user.get_full_name|default:user.username }},
+
+Your place at {{ event.title }} is booked.
+
+  When      {{ event.start_date|date:"l j F Y, g:i A" }}
+  Where     {{ event.venue_name }}
+            {{ event.venue_address }}
+  Tickets   {{ booking.attendees_count }}
+  Paid      {% if event.is_free %}Free event{% else %}Tk {{ booking.total_amount|floatformat:2 }}{% endif %}
+  Booking   {{ booking.reference }}
+
+Open "My events" on EventEase to download your ticket. It carries a QR code for the
+gate, so bring it printed or on your phone, along with a photo ID.
+Gates close 30 minutes after the start.
+
+Need to cancel? Open "My events" on EventEase and cancel from there.
+
+-- EventEase

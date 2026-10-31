@@ -1,0 +1,27 @@
+/* Display type: big, condensed, upper-case. Used for page titles and section heads. */
+
+.ee-h1 {
+  font-weight: 800; text-transform: uppercase; line-height: .84; letter-spacing: -.035em;
+  /* Display type is printed with uneven ink; body text, photos and controls are not */
+  -webkit-mask: url('../../img/texture/ink.svg') 0 0 / 240px 240px repeat;
+          mask: url('../../img/texture/ink.svg') 0 0 / 240px 240px repeat;
+}
+
+.ee-h2 {
+  font-weight: 800; font-stretch: 105%; text-transform: uppercase; letter-spacing: -.02em;
+  font-size: clamp(40px, 6vw, 84px); line-height: .9;
+}
+
+/* Smaller section title inside a card or panel */
+.ee-h3 {
+  font-weight: 800; font-stretch: 85%; text-transform: uppercase; letter-spacing: -.01em;
+  font-size: clamp(19px, 1.7vw, 24px); line-height: 1.04;
+}
+
+/* Small upper-case label above a value */
+.ee-tag {
+  font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+
+/* On white stock the label colour comes from the stock tokens, so it reads in both themes */
+:is(.ee-stock, .ee-panel, .ee-image-grid) .ee-tag { color: var(--stock-muted); }

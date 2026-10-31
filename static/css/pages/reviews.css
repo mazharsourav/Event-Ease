@@ -1,0 +1,88 @@
+/* Reviews: the site-wide wall, event and venue review lists, and the review form.
+   Star chooser: components/rate.css. */
+
+/* Site reviews: a wall of full-length notes. Columns let short notes sit under each other without gaps. */
+.ee-stats--pair { grid-template-columns: repeat(2, minmax(0, 220px)); }
+.ee-wall { column-count: 3; column-gap: clamp(22px, 2.6vw, 36px); margin: 0; padding: 0; list-style: none; }
+.ee-wall > li { display: block; min-width: 0; margin-bottom: clamp(26px, 3vw, 40px); break-inside: avoid; }
+.ee-wall > :nth-child(3n + 1) { --r: -.8deg; }
+.ee-wall > :nth-child(3n + 2) { --r: .6deg; }
+.ee-wall > :nth-child(3n) { --r: -.4deg; }
+.ee-wall .ee-note { display: grid; gap: 4px; min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.ee-wall .ee-note blockquote { margin: 10px 0 12px; }
+.ee-wall .ee-note figcaption { margin-bottom: 4px; }
+.ee-note-flag { justify-self: start; margin-bottom: 8px; }
+.ee-note :focus-visible { outline-color: var(--stock-ink); }
+
+/* Summary card: the score and a bar per category */
+.ee-summary-card { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 20px clamp(24px, 4vw, 56px); max-width: 920px; }
+.ee-summary-card > .ee-pill { grid-column: 1 / -1; justify-self: start; }
+.ee-score { display: flex; align-items: center; gap: 18px; }
+.ee-score-number { font-weight: 800; font-stretch: 75%; font-size: clamp(64px, 9vw, 104px); line-height: .85; letter-spacing: -.04em; }
+.ee-score-count { margin: 6px 0 0; font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--stock-muted); }
+
+.ee-bars { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.ee-bars li { display: grid; grid-template-columns: minmax(96px, 150px) minmax(0, 1fr) 36px; align-items: center; gap: 12px; }
+.ee-bars span { font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-bars b { font-variant-numeric: tabular-nums; text-align: right; }
+.ee-summary-card .ee-meter { margin-top: 0; border-color: var(--stock-ink); color: var(--stock-ink); }
+.ee-summary-card .ee-meter::-webkit-progress-value { background: var(--stock-ink); }
+.ee-summary-card .ee-meter::-moz-progress-bar { background: var(--stock-ink); }
+
+/* One review in a list */
+.ee-reviews { display: grid; gap: clamp(22px, 3vw, 34px); max-width: 920px; margin: 0; padding: 0; list-style: none; }
+.ee-review {
+  position: relative; display: grid; gap: 12px; min-width: 0; padding: clamp(18px, 2.4vw, 28px);
+  background: var(--stock); color: var(--stock-ink); box-shadow: var(--shadow);
+}
+.ee-review:nth-child(odd) { transform: rotate(-.3deg); }
+.ee-review:nth-child(even) { transform: rotate(.3deg); }
+.ee-review :focus-visible { outline-color: var(--stock-ink); }
+.ee-review-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ee-review-who { display: grid; min-width: 0; flex: 1 1 140px; overflow-wrap: anywhere; }
+.ee-review-name { font-weight: 800; }
+.ee-review-who time { font-size: 14px; font-weight: 600; color: var(--stock-muted); }
+.ee-review-rating { display: flex; align-items: center; gap: 10px; }
+.ee-review-title { margin: 0; font-weight: 800; font-size: clamp(20px, 2.2vw, 26px); line-height: 1.05; text-transform: uppercase; overflow-wrap: anywhere; }
+.ee-review-text { overflow-wrap: anywhere; }
+.ee-review-text p { margin: 0 0 .6em; }
+.ee-review-cats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0; padding-top: 12px; border-top: 1px dashed var(--stock-line); }
+.ee-review-cats div { display: flex; gap: 8px; align-items: baseline; }
+.ee-review-cats dt { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--stock-muted); }
+.ee-review-cats dd { margin: 0; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ee-review-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding-top: 6px; }
+.ee-review-actions .ee-pill { min-height: 40px; padding: 0 18px; font-size: 13px; }
+.ee-review .ee-pill--ink, .ee-wall .ee-pill--ink { background: var(--stock-ink); color: var(--stock); }
+
+/* Review form: the thing being reviewed beside the form */
+.ee-review-layout { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(24px, 3vw, 40px); align-items: start; }
+.ee-review-layout:not(:has(.ee-review-subject)) { grid-template-columns: minmax(0, 720px); }
+.ee-review-subject { position: sticky; top: calc(var(--nav-height) + 16px); }
+.ee-review-form { max-width: 720px; gap: clamp(24px, 3vw, 36px); }
+.ee-rate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
+
+@media (max-width: 1100px) {
+  .ee-wall { column-count: 2; }
+}
+
+@media (max-width: 860px) {
+  .ee-review-layout { grid-template-columns: minmax(0, 1fr); }
+  .ee-review-subject { position: static; }
+}
+
+@media (max-width: 720px) {
+  .ee-wall { column-count: 1; }
+  .ee-wall > :nth-child(n) { --r: 0deg; }
+  .ee-summary-card { grid-template-columns: minmax(0, 1fr); }
+  .ee-rate-grid { grid-template-columns: minmax(0, 1fr); }
+  .ee-stats--pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 420px) {
+  .ee-bars li { grid-template-columns: minmax(0, 1fr) 36px; }
+  .ee-bars li .ee-meter { grid-column: 1 / -1; grid-row: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-review:nth-child(n), .ee-wall > :nth-child(n) { transform: none; }
+}

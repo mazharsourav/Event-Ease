@@ -1,0 +1,52 @@
+/* Event poster: a white card with the artwork (or a typeset plate), then name, date, price and venue. */
+
+.ee-poster {
+  position: relative; display: flex; flex-direction: column; gap: 6px;
+  padding: 12px 12px 16px; background: var(--stock); color: var(--stock-ink);
+  box-shadow: var(--shadow); text-decoration: none;
+  /* --r tilts the card; --lean (set by js/pages/home.js) makes it follow the cursor */
+  transform: rotate(calc(var(--r, 0deg) + var(--lean, 0) * 1.2deg));
+  transition: transform .5s var(--ease), box-shadow .3s var(--ease);
+}
+.ee-poster:hover, .ee-poster:focus-visible {
+  z-index: 5; box-shadow: var(--shadow-lift);
+  transform: rotate(0deg) translateY(-8px) scale(1.02);
+}
+
+/* Without artwork the plate carries the name; the caption below stays for screen readers only */
+.ee-poster .ee-gig { aspect-ratio: 4 / 3; }
+.ee-poster--plate .ee-poster-title {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+}
+
+.ee-poster-title {
+  margin-top: 6px; min-height: 2.04em;
+  font-weight: 800; font-stretch: 85%; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.02; text-transform: uppercase;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.ee-poster-meta, .ee-poster-venue {
+  font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; line-height: 1.3;
+  color: var(--stock-muted);
+}
+.ee-poster-meta { display: flex; justify-content: space-between; gap: 10px; color: var(--stock-ink); }
+.ee-poster-venue { margin-top: -4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Shown when there is nothing to print yet */
+.ee-poster--blank { gap: 14px; padding: 32px 28px; }
+.ee-poster--blank .ee-poster-title { font-size: 34px; -webkit-line-clamp: unset; min-height: 0; }
+.ee-poster--blank .ee-pill { align-self: flex-start; margin-top: 8px; }
+
+@media (max-width: 720px) {
+  .ee-poster { padding: 8px 8px 12px; }
+  .ee-poster .ee-gig { padding: 10px; aspect-ratio: 5 / 4; }
+  .ee-poster .ee-gig b { font-size: 18px; }
+  .ee-poster-title { font-size: 16px; }
+  .ee-poster-meta, .ee-poster-venue { font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ee-poster { transition: none; }
+}
+
+.ee-poster-stamp { align-self: flex-start; margin-top: 6px; }

@@ -1,0 +1,11 @@
+{% if messages %}
+<div class="ee-toasts" role="region" aria-label="Notifications">
+    {% for message in messages %}
+        <div class="ee-toast ee-toast--{{ message.level_tag|default:'info' }}" role="{% if message.level_tag == 'error' %}alert{% else %}status{% endif %}">
+            <span class="ee-toast-icon" aria-hidden="true">{% if message.level_tag == 'success' or message.level_tag == 'info' %}&#10003;{% else %}!{% endif %}</span>
+            <span class="ee-toast-text">{{ message }}</span>
+            <button type="button" class="ee-toast-close" aria-label="Dismiss">&times;</button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,29 @@
+/* Venue detail: what is included, the rules, who runs it, and the booking card. */
+
+.ee-amenities {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 20px; margin: 16px 0 0; padding: 0; list-style: none;
+}
+.ee-amenity {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  font-weight: 700; font-size: 15px; letter-spacing: .03em; text-transform: uppercase;
+}
+.ee-amenity::before {
+  content: ''; flex: none; width: 18px; height: 18px; border: 2px solid var(--ink); background: var(--ink);
+}
+
+.ee-policy { max-width: 660px; margin-top: 14px; }
+.ee-policy p { margin: 0 0 1em; }
+
+.ee-price { display: grid; gap: 4px; }
+.ee-price-line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0; border-top: 2px solid var(--stock-ink); }
+.ee-price-amount { font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.ee-price-unit { font-size: 14px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--stock-muted); }
+.ee-price-ask { margin: 0; font-weight: 800; font-size: 22px; text-transform: uppercase; }
+
+.ee-booked { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 14px; }
+.ee-booked li { display: flex; justify-content: space-between; gap: 12px; color: var(--stock-muted); }
+.ee-booked s { text-decoration-thickness: 2px; }
+
+@media (max-width: 720px) {
+  .ee-amenities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
